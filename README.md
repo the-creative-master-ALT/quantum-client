@@ -7,7 +7,7 @@ It is now a static launcher site that indexes every build, lets you search and
 filter them, remembers what you played, and boots any of them in a full-screen
 iframe — no install, no Java, no downloads, no server-side anything.
 
-Live at **<https://the-creative-masteralt.github.io/Eaglercraft-Versions-List-with-github-pages-website-/>**
+Live at **<https://the-creative-masteralt.github.io/quantum-client/>**
 
 ---
 
