@@ -137,9 +137,17 @@ else
 fi
 
 python3 - "$PORT" <<'PY'
-import json, sys, urllib.parse, urllib.request
+import json, re, sys, urllib.parse, urllib.request
 port = sys.argv[1]
-data = json.load(open('data/versions.json'))
+
+# the catalogue lives inside index.html now, not in data/versions.json
+html = open('index.html', encoding='utf-8').read()
+m = re.search(r'<script id="vault" type="application/json">(.*?)</script>', html, re.S)
+if not m:
+    print('  \033[31m!!\033[0m   index.html has no embedded catalogue')
+    sys.exit(1)
+data = json.loads(m.group(1))
+
 broken = []
 for v in data['versions']:
     url = 'http://localhost:%s/%s' % (port, urllib.parse.quote(v['file']))
@@ -154,9 +162,8 @@ if broken:
     for f, c in broken[:5]:
         print('        %s -> %s' % (f, c))
     sys.exit(1)
-print('  \033[32mok\033[0m   all %d builds reachable, %s, %d with cover art'
-      % (data['count'], data['totalSizeText'],
-         sum(1 for v in data['versions'] if v.get('cover'))))
+print('  \033[32mok\033[0m   all %d builds reachable, %s'
+      % (data['count'], data['totalSizeText']))
 PY
 [ $? -ne 0 ] && fail=1
 
