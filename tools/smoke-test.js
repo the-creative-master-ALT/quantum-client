@@ -166,6 +166,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     $$('.card .card-title')[0].textContent);
   ok($$('.card .card-title')[139].textContent.length > 0, 'last card rendered');
 
+  console.log('\n── card markup ────────────────────────');
+  const c0 = $('.card');
+  ok(!!c0.querySelector('.card-cover .card-badge'), 'runtime badge lives on the cover');
+  ok(!!c0.querySelector('.card-cover .card-cover-label'), 'version label lives on the cover');
+  ok(c0.querySelector('.card-actions .card-fav'), 'favourite button is in the actions overlay');
+  ok(c0.querySelector('.card-actions .card-play'), 'play button is in the actions overlay');
+  ok(c0.children.length === 3 && c0.lastElementChild.classList.contains('card-actions'),
+    'card is cover + body + actions', String(c0.children.length));
+  ok(/^url\(/.test(c0.querySelector('.card-cover').style.getPropertyValue('--cover')),
+    'cover art wired through a custom property');
+
   console.log('\n── view toggle ────────────────────────');
   $('#btnList').click();
   await sleep(60);

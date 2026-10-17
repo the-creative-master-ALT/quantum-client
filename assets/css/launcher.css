@@ -509,8 +509,19 @@ kbd {
 .card-badge[data-rt="wasm"]    { color: #8ad8ff; }
 .card-badge[data-rt="wasm-gc"] { color: #b8f5c4; }
 
+/* overlay that exactly matches the cover box (same width, same 16:10 ratio),
+   so the buttons sit on the artwork in grid view and inline in list view */
+.card-actions {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  aspect-ratio: 16 / 10;
+  padding: 6px;
+  display: flex; align-items: flex-start; justify-content: flex-end;
+  pointer-events: none;
+}
+.card-actions > * { pointer-events: auto; }
+
 .card-fav {
-  position: absolute; right: 6px; top: 6px; z-index: 3;
+  position: relative; z-index: 3;
   width: 30px; height: 30px; border-radius: 50%;
   background: rgba(0,0,0,.5); border: 0; color: #fff;
   display: grid; place-items: center; cursor: pointer;
@@ -561,10 +572,14 @@ kbd {
 .grid[data-view="list"] .card-badge { display: none; }
 .grid[data-view="list"] .card-body { padding: 0 8px; }
 .grid[data-view="list"] .card-meta { margin: 0; padding-top: 3px; }
-.grid[data-view="list"] .card-fav { position: static; opacity: 1; transform: none; background: transparent; color: var(--muted); }
+.grid[data-view="list"] .card-actions {
+  position: static; aspect-ratio: auto; padding: 0;
+  align-items: center; gap: 4px; margin-left: auto;
+}
+.grid[data-view="list"] .card-fav { opacity: 1; transform: none; background: transparent; color: var(--muted); }
 .grid[data-view="list"] .card.is-fav .card-fav { color: var(--accent); }
 .grid[data-view="list"] .card-fav:hover { background: var(--surface-3); }
-.grid[data-view="list"] .card-play { position: static; opacity: 1; transform: none; width: 36px; height: 36px; margin-left: auto; }
+.grid[data-view="list"] .card-play { position: static; opacity: 1; transform: none; width: 36px; height: 36px; }
 .grid[data-view="list"] .card:hover { transform: none; }
 
 /* empty + footer */

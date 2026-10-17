@@ -261,7 +261,11 @@
       onclick: (ev) => { ev.stopPropagation(); launch(e); },
     }, [svgIcon('i-play')]);
 
-    cover.append(favBtn, el('span', { class: 'card-cover-label', text: labelFor(e) }), playBtn);
+    cover.appendChild(el('span', { class: 'card-cover-label', text: labelFor(e) }));
+
+    // the actions live in their own overlay that matches the cover box, so the
+    // same markup works for both the grid card and the compact list row
+    const actions = el('div', { class: 'card-actions' }, [favBtn, playBtn]);
 
     const meta = el('div', { class: 'card-meta' });
     meta.appendChild(el('span', { text: catLabel }));
@@ -277,7 +281,7 @@
     card.append(cover, el('div', { class: 'card-body' }, [
       el('h3', { class: 'card-title', text: e.name }),
       meta,
-    ]));
+    ]), actions);
 
     card.addEventListener('click', () => openDrawer(e));
     card.addEventListener('keydown', (ev) => {
