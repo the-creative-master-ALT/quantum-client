@@ -23,6 +23,7 @@ concurrency:
 jobs:
   regenerate:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout (shallow)
         uses: actions/checkout@v4
@@ -34,6 +35,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      # the game builds are ~2.7 GB in total, so a shallow checkout of the
+      # whole tree is unavoidable -- the catalogue needs each file's size and
+      # a sniff of its payload. It only runs when a build actually changes.
       - name: Generate catalogue
         run: python3 tools/generate_catalog.py
 
