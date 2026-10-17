@@ -182,6 +182,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     String($$('.card .card-cover-img').length));
   ok($$('.card .card-cover-img').every((i) => i.getAttribute('loading') === 'lazy'),
     'cover art is lazy-loaded');
+  ok(CATVERSIONS.every((v) => v.cover),
+    `all ${CATVERSIONS.length} builds advertise a cover`, String(CATVERSIONS.filter((v) => !v.cover).length) + ' missing');
+  ok($$('.card .card-cover-img').length === 140,
+    'every card renders art (nothing blank)', String($$('.card .card-cover-img').length));
   ok($$('.card .card-cover').every((c) => /^url\(/.test(c.style.getPropertyValue('--cover'))),
     'every cover keeps an era fallback behind the art');
   ok($$('.group-heading').length === 9, 'one sticky heading per era', String($$('.group-heading').length));

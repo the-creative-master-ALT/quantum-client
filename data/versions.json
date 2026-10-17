@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-17T10:55:27Z",
+ "generated": "2026-10-17T11:05:21Z",
  "count": 140,
  "totalSize": 2877361122,
  "totalSizeText": "2.68 GB",
@@ -480,7 +480,7 @@
    "title": "Classic 0.0.15a WASM-GC",
    "order": 1000000015000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-15a-d63d10.jpg"
   },
   {
    "id": "classic-0-0-16a-2-042b6a",
@@ -499,7 +499,7 @@
    "title": "Classic 0.0.16a_2",
    "order": 1000000016002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-16a-2-042b6a.jpg"
   },
   {
    "id": "classic-0-0-16a-2-3cbc5b",
@@ -518,7 +518,7 @@
    "title": "Classic 0.0.16a_2 WASM-GC",
    "order": 1000000016002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-16a-2-3cbc5b.jpg"
   },
   {
    "id": "classic-0-0-17a-fab2ce",
@@ -537,7 +537,7 @@
    "title": "Classic 0.0.17a",
    "order": 1000000017000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-17a-fab2ce.jpg"
   },
   {
    "id": "classic-0-0-17a-57fde3",
@@ -556,7 +556,7 @@
    "title": "Classic 0.0.17a WASM-GC",
    "order": 1000000017000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-17a-57fde3.jpg"
   },
   {
    "id": "classic-0-0-18a-2-1b4b31",
@@ -575,7 +575,7 @@
    "title": "Classic 0.0.18a_2",
    "order": 1000000018002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-18a-2-1b4b31.jpg"
   },
   {
    "id": "classic-0-0-18a-2-37d8b9",
@@ -594,7 +594,7 @@
    "title": "Classic 0.0.18a_2 WASM-GC",
    "order": 1000000018002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-18a-2-37d8b9.jpg"
   },
   {
    "id": "classic-0-0-19a-6-4f4f5b",
@@ -613,7 +613,7 @@
    "title": "Classic 0.0.19a_6",
    "order": 1000000019006.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-19a-6-4f4f5b.jpg"
   },
   {
    "id": "classic-0-0-19a-6-96ef71",
@@ -632,7 +632,7 @@
    "title": "Classic 0.0.19a_6 WASM-GC",
    "order": 1000000019006.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-19a-6-96ef71.jpg"
   },
   {
    "id": "classic-0-0-20-2-fd5ff7",
@@ -651,7 +651,7 @@
    "title": "Classic 0.0.20_2",
    "order": 1000000020002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-20-2-fd5ff7.jpg"
   },
   {
    "id": "classic-0-0-20-2-f3ea11",
@@ -670,7 +670,7 @@
    "title": "Classic 0.0.20_2 WASM-GC",
    "order": 1000000020002.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-20-2-f3ea11.jpg"
   },
   {
    "id": "classic-0-0-21a-f626bd",
@@ -689,7 +689,7 @@
    "title": "Classic 0.0.21a",
    "order": 1000000021000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-21a-f626bd.jpg"
   },
   {
    "id": "classic-0-0-21a-4ffee7",
@@ -708,7 +708,7 @@
    "title": "Classic 0.0.21a WASM-GC",
    "order": 1000000021000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-21a-4ffee7.jpg"
   },
   {
    "id": "classic-0-0-22a-5-a93612",
@@ -727,7 +727,7 @@
    "title": "Classic 0.0.22a_5",
    "order": 1000000022005.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-22a-5-a93612.jpg"
   },
   {
    "id": "classic-0-0-22a-5-bc8900",
@@ -746,7 +746,7 @@
    "title": "Classic 0.0.22a_5 WASM-GC",
    "order": 1000000022005.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-22a-5-bc8900.jpg"
   },
   {
    "id": "classic-0-0-23a-01-ab291c",
@@ -765,7 +765,7 @@
    "title": "Classic 0.0.23a_01",
    "order": 1000000023001.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-23a-01-ab291c.jpg"
   },
   {
    "id": "classic-0-0-23a-01-7ecdfd",
@@ -784,7 +784,7 @@
    "title": "Classic 0.0.23a_01 WASM-GC",
    "order": 1000000023001.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-0-23a-01-7ecdfd.jpg"
   },
   {
    "id": "classic-0-24-3-a6221c",
@@ -803,7 +803,7 @@
    "title": "Classic 0.24_3",
    "order": 1000024003000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-24-3-a6221c.jpg"
   },
   {
    "id": "classic-0-24-3-d305d6",
@@ -822,7 +822,7 @@
    "title": "Classic 0.24_3 WASM-GC",
    "order": 1000024003000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-24-3-d305d6.jpg"
   },
   {
    "id": "classic-0-25-5-3914bb",
@@ -841,7 +841,7 @@
    "title": "Classic 0.25_5",
    "order": 1000025005000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-25-5-3914bb.jpg"
   },
   {
    "id": "classic-0-25-5-72d1a1",
@@ -860,7 +860,7 @@
    "title": "Classic 0.25_5 WASM-GC",
    "order": 1000025005000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-25-5-72d1a1.jpg"
   },
   {
    "id": "classic-0-30-f578a8",
@@ -879,7 +879,7 @@
    "title": "Classic 0.30",
    "order": 1000030000000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-30-f578a8.jpg"
   },
   {
    "id": "classic-0-30-4d6e5f",
@@ -900,7 +900,7 @@
    "title": "0.30 WASM (Multiplayer)",
    "order": 1000030000000.0,
    "eraCover": "./assets/img/cat-classic.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/classic-0-30-4d6e5f.jpg"
   },
   {
    "id": "eaglercraft-indev-ce106f",
@@ -919,7 +919,7 @@
    "title": "Eaglercraft Indev",
    "order": 2000000999999.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-indev-ce106f.jpg"
   },
   {
    "id": "indev-20100214-2e6fd2",
@@ -938,7 +938,7 @@
    "title": "Indev 20100214 JS",
    "order": 2000020100214.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100214-2e6fd2.jpg"
   },
   {
    "id": "indev-20100214-2f1533",
@@ -957,7 +957,7 @@
    "title": "Indev 20100214 WASM-GC",
    "order": 2000020100214.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100214-2f1533.jpg"
   },
   {
    "id": "indev-20100219-0b5817",
@@ -976,7 +976,7 @@
    "title": "Eaglercraft 20100219",
    "order": 2000020100219.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100219-0b5817.jpg"
   },
   {
    "id": "indev-20100219-121689",
@@ -995,7 +995,7 @@
    "title": "Eaglercraft 20100219 WASM-GC",
    "order": 2000020100219.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100219-121689.jpg"
   },
   {
    "id": "indev-20100223-d18be8",
@@ -1014,7 +1014,7 @@
    "title": "EaglercraftX 1.8",
    "order": 2000020100223.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100223-d18be8.jpg"
   },
   {
    "id": "indev-20100223-639326",
@@ -1033,7 +1033,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 2000020100223.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/indev-20100223-639326.jpg"
   },
   {
    "id": "indev-20100233-639326",
@@ -1054,7 +1054,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 2000020100233.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null,
+   "cover": "./assets/img/builds/indev-20100233-639326.jpg",
    "duplicateOf": "indev-20100223-639326"
   },
   {
@@ -1076,7 +1076,7 @@
    "title": "EaglercraftX 1.8",
    "order": 2000020100233.0,
    "eraCover": "./assets/img/cat-indev.jpg",
-   "cover": null,
+   "cover": "./assets/img/builds/indev-20100233-d18be8.jpg",
    "duplicateOf": "indev-20100223-d18be8"
   },
   {
@@ -1096,7 +1096,7 @@
    "title": "Infdev",
    "order": 3500000000000.0,
    "eraCover": "./assets/img/cat-infdev.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/infdev-298b75.jpg"
   },
   {
    "id": "alpha-1-0-1-01-186f98",
@@ -1115,7 +1115,7 @@
    "title": "Minecraft Alpha 1.0.1_01",
    "order": 4001000002001.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-0-1-01-186f98.jpg"
   },
   {
    "id": "alpha-1-0-4-69564a",
@@ -1134,7 +1134,7 @@
    "title": "Minecraft Alpha 1.0.4",
    "order": 4001000005000.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-0-4-69564a.jpg"
   },
   {
    "id": "alpha-1-0-6-03-b7da4d",
@@ -1153,7 +1153,7 @@
    "title": "Eaglercraft Alpha 1.0.6_03",
    "order": 4001000007003.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-0-6-03-b7da4d.jpg"
   },
   {
    "id": "alpha-1-0-16-02-fa0257",
@@ -1172,7 +1172,7 @@
    "title": "EaglercraftX 1.8",
    "order": 4001000017002.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-0-16-02-fa0257.jpg"
   },
   {
    "id": "alpha-1-0-16-02-119278",
@@ -1191,7 +1191,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 4001000017002.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-0-16-02-119278.jpg"
   },
   {
    "id": "alpha-1-1-2-01-ac573b",
@@ -1210,7 +1210,7 @@
    "title": "Eaglercraft Alpha 1.1.2_01",
    "order": 4001001003001.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-1-2-01-ac573b.jpg"
   },
   {
    "id": "alpha-1-2-6-14756d",
@@ -1229,7 +1229,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 4001002007000.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-2-6-14756d.jpg"
   },
   {
    "id": "alpha-1-2-6-1e6bc7",
@@ -1248,7 +1248,7 @@
    "title": "Eaglercraft Launcher | Alpha 1.2.6 Offline",
    "order": 4001002007000.0,
    "eraCover": "./assets/img/cat-alpha.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/alpha-1-2-6-1e6bc7.jpg"
   },
   {
    "id": "beta-1-0-2-eb3e83",
@@ -1267,7 +1267,7 @@
    "title": "Beta 1.0.2",
    "order": 5001000003000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-0-2-eb3e83.jpg"
   },
   {
    "id": "eaglercraft-beta-1-1-c66286",
@@ -1286,7 +1286,7 @@
    "title": "Eaglercraft Offline",
    "order": 5001001001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-beta-1-1-c66286.jpg"
   },
   {
    "id": "eaglercraft-beta-1-1-02-7885a7",
@@ -1305,7 +1305,7 @@
    "title": "Beta 1.1_02",
    "order": 5001001001002.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-beta-1-1-02-7885a7.jpg"
   },
   {
    "id": "beta-1-2-02-ae7d06",
@@ -1324,7 +1324,7 @@
    "title": "Eaglercraft Beta 1.2_02",
    "order": 5001002001002.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-2-02-ae7d06.jpg"
   },
   {
    "id": "beta-1-3-f206c3",
@@ -1343,7 +1343,7 @@
    "title": "EaglercraftX 1.8",
    "order": 5001003001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-3-f206c3.jpg"
   },
   {
    "id": "beta-1-3-7a9189",
@@ -1362,7 +1362,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 5001003001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-3-7a9189.jpg"
   },
   {
    "id": "beta-1-3-local-build-ae4e74",
@@ -1381,7 +1381,7 @@
    "title": "eaglercraft local",
    "order": 5001003001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-3-local-build-ae4e74.jpg"
   },
   {
    "id": "beta-1-4-877afe",
@@ -1400,7 +1400,7 @@
    "title": "Eaglercraft Beta 1.4_01",
    "order": 5001004001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-4-877afe.jpg"
   },
   {
    "id": "beta-1-4-01-a1bcb4",
@@ -1419,7 +1419,7 @@
    "title": "Eaglercraft Beta 1.4_01",
    "order": 5001004001001.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-4-01-a1bcb4.jpg"
   },
   {
    "id": "beta-1-5-01-22748c",
@@ -1438,7 +1438,7 @@
    "title": "Eaglercraft Beta 1.5_01",
    "order": 5001005001001.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-5-01-22748c.jpg"
   },
   {
    "id": "beta-1-6-test-build-3-d73be5",
@@ -1459,7 +1459,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 5001006001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-6-test-build-3-d73be5.jpg"
   },
   {
    "id": "beta-1-6-test-build-3-c9dfa6",
@@ -1480,7 +1480,7 @@
    "title": "EaglercraftX 1.8",
    "order": 5001006001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-6-test-build-3-c9dfa6.jpg"
   },
   {
    "id": "beta-1-6-4-63ccb9",
@@ -1499,7 +1499,7 @@
    "title": "Eaglercraft Beta 1.6.4",
    "order": 5001006005000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-6-4-63ccb9.jpg"
   },
   {
    "id": "beta-1-7-3-f309d0",
@@ -1518,7 +1518,7 @@
    "title": "Beta 1.7.3",
    "order": 5001007004000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-7-3-f309d0.jpg"
   },
   {
    "id": "beta-1-8-1-652255",
@@ -1537,7 +1537,7 @@
    "title": "EaglercraftX 1.8",
    "order": 5001008002000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-8-1-652255.jpg"
   },
   {
    "id": "beta-1-8-1-c9fcbb",
@@ -1556,7 +1556,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 5001008002000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-8-1-c9fcbb.jpg"
   },
   {
    "id": "beta-1-9-pre-release-5-a9a267",
@@ -1577,7 +1577,7 @@
    "title": "Eaglercraft Beta 1.9 Pre 5",
    "order": 5001009001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-9-pre-release-5-a9a267.jpg"
   },
   {
    "id": "beta-1-9-pre-release-5-545747",
@@ -1598,7 +1598,7 @@
    "title": "Eaglercraft Beta 1.9 Pre 5 WASM-GC",
    "order": 5001009001000.0,
    "eraCover": "./assets/img/cat-beta.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/beta-1-9-pre-release-5-545747.jpg"
   },
   {
    "id": "eaglercraft-1-0-0-05cee7",
@@ -1617,7 +1617,7 @@
    "title": "Eaglercraft 1.0.0",
    "order": 6001000001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-0-0-05cee7.jpg"
   },
   {
    "id": "eaglercraft-1-1-4d4a5e",
@@ -1636,7 +1636,7 @@
    "title": "Eaglercraft 1.1",
    "order": 6001001001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-1-4d4a5e.jpg"
   },
   {
    "id": "eaglercraft-1-2-3-210966",
@@ -1655,7 +1655,7 @@
    "title": "Eaglercraft 1.2.3",
    "order": 6001002004000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-2-3-210966.jpg"
   },
   {
    "id": "eaglercraft-1-2-3-6cf2d9",
@@ -1674,7 +1674,7 @@
    "title": "Eaglercraft 1.2.3 WASM-GC",
    "order": 6001002004000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-2-3-6cf2d9.jpg"
   },
   {
    "id": "eaglercraft-1-2-5-23bb04",
@@ -1693,7 +1693,7 @@
    "title": "EaglercraftX 1.8",
    "order": 6001002006000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-2-5-23bb04.jpg"
   },
   {
    "id": "eaglercraft-1-2-5-138bb6",
@@ -1712,7 +1712,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 6001002006000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-2-5-138bb6.jpg"
   },
   {
    "id": "eaglercraft-1-3-2-862047",
@@ -1731,7 +1731,7 @@
    "title": "Eaglercraft 1.3.2",
    "order": 6001003003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-3-2-862047.jpg"
   },
   {
    "id": "eaglercraft-1-4-7-9ffa65",
@@ -1750,7 +1750,7 @@
    "title": "Eaglercraft Alpha 1.0.6_03",
    "order": 6001004008000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-4-7-9ffa65.jpg"
   },
   {
    "id": "eaglercraft-1-4-7-67f444",
@@ -1769,7 +1769,7 @@
    "title": "Eaglercraft 1.4.7 WASM",
    "order": 6001004008000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-4-7-67f444.jpg"
   },
   {
    "id": "eaglercraft-1-5-2-eb1ce5",
@@ -1788,7 +1788,7 @@
    "title": "My Drive - Google Drive",
    "order": 6001005003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-5-2-eb1ce5.jpg"
   },
   {
    "id": "eaglercraft-1-5-2-2b9b0f",
@@ -1807,7 +1807,7 @@
    "title": "My Drive - Google Drive",
    "order": 6001005003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-5-2-2b9b0f.jpg"
   },
   {
    "id": "eaglercraft-1-6-4-358523",
@@ -1826,7 +1826,7 @@
    "title": "Eaglercraft 1.6.4",
    "order": 6001006005000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-6-4-358523.jpg"
   },
   {
    "id": "eaglercraft-1-6-4-forge-262a56",
@@ -1847,7 +1847,7 @@
    "title": "Eaglercraft 1.6.4 Forge",
    "order": 6001006005000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-6-4-forge-262a56.jpg"
   },
   {
    "id": "eaglercraft-1-6-4-forge-a6246b",
@@ -1868,7 +1868,7 @@
    "title": "Eaglercraft-1.6.4-Forge",
    "order": 6001006005000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-6-4-forge-a6246b.jpg"
   },
   {
    "id": "eaglercraft-1-7-618291",
@@ -1887,7 +1887,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 6001007001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-7-618291.jpg"
   },
   {
    "id": "eaglercraft-1-7-10-6f1986",
@@ -1906,7 +1906,7 @@
    "title": "EaglercraftX 1.8",
    "order": 6001007011000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-7-10-6f1986.jpg"
   },
   {
    "id": "eaglercraft-1-8-6d31c7",
@@ -1925,7 +1925,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 6001008001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-8-6d31c7.jpg"
   },
   {
    "id": "eaglercraftx-1-8-mobile-8c4368",
@@ -1946,7 +1946,7 @@
    "title": "EaglercraftX 1.8",
    "order": 6001008001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-8-mobile-8c4368.jpg"
   },
   {
    "id": "eaglercraftx-1-8-8-c0a9ac",
@@ -1965,7 +1965,7 @@
    "title": "EaglercraftX 1.8",
    "order": 6001008009000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-8-8-c0a9ac.jpg"
   },
   {
    "id": "eaglercraftx-1-9-b194-2a04a6",
@@ -1984,7 +1984,7 @@
    "title": "EaglercraftL 1.9",
    "order": 6001009001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-9-b194-2a04a6.jpg"
   },
   {
    "id": "eaglercraft-1-11-2-e83dfd",
@@ -2003,7 +2003,7 @@
    "title": "EaglercraftX 1.11.2",
    "order": 6001011003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-11-2-e83dfd.jpg"
   },
   {
    "id": "eaglercraft-1-12-f70b83",
@@ -2022,7 +2022,7 @@
    "title": "Eaglercraft 1.12.2",
    "order": 6001012001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-12-f70b83.jpg"
   },
   {
    "id": "eaglercraft-1-12-2-f1cdd1",
@@ -2041,7 +2041,7 @@
    "title": "EaglercraftX 1.12 WASM-GC",
    "order": 6001012003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-12-2-f1cdd1.jpg"
   },
   {
    "id": "eaglercraftx-1-12-2-f1cdd1",
@@ -2062,7 +2062,7 @@
    "title": "EaglercraftX 1.12 WASM-GC",
    "order": 6001012003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null,
+   "cover": "./assets/img/builds/eaglercraftx-1-12-2-f1cdd1.jpg",
    "duplicateOf": "eaglercraft-1-12-2-f1cdd1"
   },
   {
@@ -2082,7 +2082,7 @@
    "title": "EaglercraftX 1.13 WASM-GC",
    "order": 6001013003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-13-2-609874.jpg"
   },
   {
    "id": "eaglercraft-1-13-2-767e17",
@@ -2101,7 +2101,7 @@
    "title": "Eaglercraft 1.13",
    "order": 6001013003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-13-2-767e17.jpg"
   },
   {
    "id": "eaglercraftx-1-14-4-c69478",
@@ -2120,7 +2120,7 @@
    "title": "EaglercraftX 1.14.4 WASM-GC",
    "order": 6001014005000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-14-4-c69478.jpg"
   },
   {
    "id": "eaglercraftx-1-14-4-u1-4482b3",
@@ -2139,7 +2139,7 @@
    "title": "EaglercraftX 1.14.4 WASM-GC",
    "order": 6001014005000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-14-4-u1-4482b3.jpg"
   },
   {
    "id": "eaglercraft-1-16-5-f0e21a",
@@ -2158,7 +2158,7 @@
    "title": "Eaglercraft 1.16.5 WASM-GC",
    "order": 6001016006000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-16-5-f0e21a.jpg"
   },
   {
    "id": "eaglercraft-1-17-8847f9",
@@ -2177,7 +2177,7 @@
    "title": "EaglercraftX 1.17 WASM-GC",
    "order": 6001017001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-17-8847f9.jpg"
   },
   {
    "id": "eaglercraft-1-20-6-b1ea49",
@@ -2196,7 +2196,7 @@
    "title": "EaglercraftX 1.20.6 WASM-GC",
    "order": 6001020007000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-20-6-b1ea49.jpg"
   },
   {
    "id": "eaglercraft-1-21-11-7ff8ab",
@@ -2215,7 +2215,7 @@
    "title": "Eaglercraft 1.21.11 WASM-GC",
    "order": 6001021012000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-1-21-11-7ff8ab.jpg"
   },
   {
    "id": "eaglercraftx-1-21-11-1882ed",
@@ -2234,7 +2234,7 @@
    "title": "EaglercraftX 1.12 WASM-GC",
    "order": 6001021012000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftx-1-21-11-1882ed.jpg"
   },
   {
    "id": "eaglercraft-26-1-2-3752f8",
@@ -2253,7 +2253,7 @@
    "title": "Minecraft 26.1.2 — eag26 (single file)",
    "order": 6026001003000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-26-1-2-3752f8.jpg"
   },
   {
    "id": "eaglercraft-26-2-a849c3",
@@ -2272,7 +2272,7 @@
    "title": null,
    "order": 6026002001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-26-2-a849c3.jpg"
   },
   {
    "id": "precision-client-429f98",
@@ -2291,7 +2291,7 @@
    "title": "Precision Client (1.5.2-beta_0.1.1) Offline",
    "order": 7001005003000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/precision-client-429f98.jpg"
   },
   {
    "id": "eaglymc-ac3660",
@@ -2310,7 +2310,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglymc-ac3660.jpg"
   },
   {
    "id": "huzzium-client-dca854",
@@ -2329,7 +2329,7 @@
    "title": "EaglercraftX 1.8 WASM-GC",
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/huzzium-client-dca854.jpg"
   },
   {
    "id": "myven-client-9f2146",
@@ -2348,7 +2348,7 @@
    "title": "EaglercraftX 1.8 WASM-GC Offline",
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/myven-client-9f2146.jpg"
   },
   {
    "id": "prism-client-6c9e1f",
@@ -2367,7 +2367,7 @@
    "title": "EaglercraftX 1.8",
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/prism-client-6c9e1f.jpg"
   },
   {
    "id": "wispcraft-eaglercraftx-1-8-b14e9f",
@@ -2386,7 +2386,7 @@
    "title": null,
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/wispcraft-eaglercraftx-1-8-b14e9f.jpg"
   },
   {
    "id": "wurstx-fd42aa",
@@ -2405,7 +2405,7 @@
    "title": "EaglercraftX 1.8",
    "order": 7001008001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/wurstx-fd42aa.jpg"
   },
   {
    "id": "eclipse-client-03a669",
@@ -2424,7 +2424,7 @@
    "title": "Eclipse Client | PVP 1.8.8",
    "order": 7001008009000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eclipse-client-03a669.jpg"
   },
   {
    "id": "kone-client-513241",
@@ -2443,7 +2443,7 @@
    "title": "Untitled document - Google Docs",
    "order": 7001008009000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/kone-client-513241.jpg"
   },
   {
    "id": "pixelclient-872721",
@@ -2462,7 +2462,7 @@
    "title": "PixelClient 1.8.8 JS",
    "order": 7001008009000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/pixelclient-872721.jpg"
   },
   {
    "id": "wispcraft-eaglercraft-1-8-8-091eb7",
@@ -2481,7 +2481,7 @@
    "title": null,
    "order": 7001008009000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/wispcraft-eaglercraft-1-8-8-091eb7.jpg"
   },
   {
    "id": "tuff-client-299ee4",
@@ -2500,7 +2500,7 @@
    "title": "EaglercraftX 1.12 WASM-GC",
    "order": 7001012001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/tuff-client-299ee4.jpg"
   },
   {
    "id": "wispcraft-eaglercraft-1-12-c53829",
@@ -2519,7 +2519,7 @@
    "title": null,
    "order": 7001012001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/wispcraft-eaglercraft-1-12-c53829.jpg"
   },
   {
    "id": "aero-client-19ebce",
@@ -2538,7 +2538,7 @@
    "title": "Aero Client 1.12.2",
    "order": 7001012003000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/aero-client-19ebce.jpg"
   },
   {
    "id": "wispcraft-eaglercraft-1-12-2-c53829",
@@ -2559,7 +2559,7 @@
    "title": null,
    "order": 7001012003000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null,
+   "cover": "./assets/img/builds/wispcraft-eaglercraft-1-12-2-c53829.jpg",
    "duplicateOf": "wispcraft-eaglercraft-1-12-c53829"
   },
   {
@@ -2579,7 +2579,7 @@
    "title": "EaglercraftZ 1.20",
    "order": 7001020001000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraftz-07a333.jpg"
   },
   {
    "id": "novix-26-1-2-3a8a70",
@@ -2598,7 +2598,7 @@
    "title": "Minecraft 26.1.2",
    "order": 7026001003000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/novix-26-1-2-3a8a70.jpg"
   },
   {
    "id": "eb-client-nextgen-cu4-7cacd2",
@@ -2617,7 +2617,7 @@
    "title": null,
    "order": 7500000000000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eb-client-nextgen-cu4-7cacd2.jpg"
   },
   {
    "id": "mega-client-b9daef",
@@ -2636,7 +2636,7 @@
    "title": "My Drive - Google Drive",
    "order": 7500000000000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/mega-client-b9daef.jpg"
   },
   {
    "id": "n0va-client-366db7",
@@ -2655,7 +2655,7 @@
    "title": "N0VA CLIENT",
    "order": 7500000000000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/n0va-client-366db7.jpg"
   },
   {
    "id": "water-client-f07e42",
@@ -2674,7 +2674,7 @@
    "title": "My Drive - Google Drive",
    "order": 7500000000000.0,
    "eraCover": "./assets/img/cat-client.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/water-client-f07e42.jpg"
   },
   {
    "id": "eaglercraft-scratch-c349fb",
@@ -2695,7 +2695,7 @@
    "title": "Eaglercraft Scratch",
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-scratch-c349fb.jpg"
   },
   {
    "id": "eaglercraft-scratch-b000f4",
@@ -2716,7 +2716,7 @@
    "title": null,
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/eaglercraft-scratch-b000f4.jpg"
   },
   {
    "id": "minecraft-4k-59646a",
@@ -2735,7 +2735,7 @@
    "title": "Minecraft 4k",
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/minecraft-4k-59646a.jpg"
   },
   {
    "id": "minecraft-4k-516ac9",
@@ -2754,7 +2754,7 @@
    "title": "Minecraft 4k",
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/minecraft-4k-516ac9.jpg"
   },
   {
    "id": "minicraft-12b94d",
@@ -2773,7 +2773,7 @@
    "title": null,
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/minicraft-12b94d.jpg"
   },
   {
    "id": "wispcraft-injector-d40678",
@@ -2792,7 +2792,7 @@
    "title": "Wispcraft Injector",
    "order": 8500000000000.0,
    "eraCover": "./assets/img/cat-extras.jpg",
-   "cover": null
+   "cover": "./assets/img/builds/wispcraft-injector-d40678.jpg"
   }
  ]
 }
