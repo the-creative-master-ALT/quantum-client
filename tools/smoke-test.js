@@ -65,7 +65,7 @@ ok($$('symbol[id^="scene-"]').length === 11, '11 inline artwork scenes', String(
 
 /* --------------------------------------------------------------- catalog */
 sec('embedded catalogue');
-ok(CAT.count === 137, `${CAT.count} builds embedded`, String(CAT.count));
+ok(CAT.count === 138, `${CAT.count} builds embedded`, String(CAT.count));
 ok(CAT.versions.length === CAT.count, 'count matches array length');
 ok(CAT.versions.every((b) => b.id && b.name && b.file && b.url), 'every build has id, name, file, url');
 ok(!!CAT.totalSizeText, `total size present (${CAT.totalSizeText})`);
@@ -78,8 +78,8 @@ ok(missing.length === 0, `all ${CAT.count} build files exist`, missing.slice(0, 
 /* ---------------------------------------------------------------- groups */
 sec('sidebar groups');
 const EXPECTED = {
-  'All builds': 137, 'Pre-Classic': 10, Classic: 32, Devs: 8, Alpha: 8, Beta: 18,
-  'Early Releases': 19, 'Middle Releases': 10, 'Modern Releases': 6, Clients: 20, Extras: 6,
+  'All builds': 138, 'Pre-Classic': 10, Classic: 32, Devs: 8, Alpha: 8, Beta: 18,
+  'Early Releases': 19, 'Middle Releases': 10, 'Modern Releases': 6, Clients: 21, Extras: 6,
 };
 const btns = $$('#nav [data-group]');
 ok(btns.length === Object.keys(EXPECTED).length, `${btns.length} sidebar entries`, String(btns.length));

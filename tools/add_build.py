@@ -172,9 +172,12 @@ def main() -> int:
     if entry:
         print("indexed as: %s  [%s / %s / %s]"
               % (entry["name"], entry["category"], entry["runtime"], entry["sizeText"]))
-    if cat["totalSize"] > PAGES_SOFT:
-        print("\nnote  : the archive is now %s, over GitHub Pages' 1 GB guidance."
-              % cat["totalSizeText"])
+    # the embedded catalogue keeps only the pre-formatted size string
+    total_bytes = sum(v.get("size", 0) for v in cat["versions"])
+    print("\narchive: %s across %s builds"
+          % (cat.get("totalSizeText", "?"), cat.get("count", "?")))
+    if total_bytes > PAGES_SOFT:
+        print("note  : over GitHub Pages' 1 GB guidance.")
 
     print("\nnext:")
     print("  git add %r index.html" % dest_name)
