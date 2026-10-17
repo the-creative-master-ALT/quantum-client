@@ -90,12 +90,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok(logs.length === 0, 'no console errors during boot', logs.join(' | '));
 
   const CATVERSIONS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'versions.json'), 'utf8')).versions;
+  const N = CATVERSIONS.length;                       // total builds in the vault
+  const nCat = (label) => CATVERSIONS.filter((v) => v.category === label).length;
   const cards = $$('.card');
-  ok(cards.length === 140, 'renders all 140 build cards', 'got ' + cards.length);
-  ok(/140 builds/.test($('#resultCount').textContent) || /140/.test($('#resultCount').textContent),
-    'result count shows 140', $('#resultCount').textContent.trim());
-  ok($('#heroSub').textContent.includes('140'), 'hero copy mentions the build count');
-  ok($('#search').placeholder.includes('140'), 'search placeholder is dynamic');
+  ok(cards.length === N, `renders all ${N} build cards`, 'got ' + cards.length);
+  ok($('#resultCount').textContent.includes(String(N)), `result count shows ${N}`,
+    $('#resultCount').textContent.trim());
+  ok($('#heroSub').textContent.includes(String(N)), 'hero copy mentions the build count');
+  ok($('#search').placeholder.includes(String(N)), 'search placeholder is dynamic');
 
   console.log('\n── sidebar ────────────────────────────');
   const cats = $$('#catList .cat-item');
@@ -111,7 +113,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   s.dispatchEvent(new window.Event('input'));
   await sleep(200);
   const n1 = $$('.card').length;
-  ok(n1 > 0 && n1 < 140, `search “beta 1.8” narrows to ${n1}`);
+  ok(n1 > 0 && n1 < N, `search “beta 1.8” narrows to ${n1}`);
   ok(!$('#activeFilters').hidden, 'active filter chip shown');
 
   s.value = 'zzzznotathing';
@@ -122,14 +124,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   $('#btnEmptyReset').click();
   await sleep(120);
-  ok($$('.card').length === 140, 'reset restores every build');
+  ok($$('.card').length === N, 'reset restores every build');
   ok(s.value === '', 'reset clears the search box');
 
   console.log('\n── filters ────────────────────────────');
   const classicBtn = $$('#catList .cat-item').find((b) => b.querySelector('.cat-name').textContent === 'Classic');
   classicBtn.click();
   await sleep(80);
-  ok($$('.card').length === 32, 'Classic era filter → 32 builds', 'got ' + $$('.card').length);
+  ok($$('.card').length === nCat('classic'), `Classic era filter → ${nCat('classic')} builds`, 'got ' + $$('.card').length);
   const wasmChip = $$('#runtimeList .chip').find((c) => /WebAssembly GC/.test(c.textContent));
   wasmChip.click();
   await sleep(80);
@@ -137,13 +139,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok(n2 === 15, 'Classic + WASM-GC → 15 builds (Classic 0.30 WASM is plain wasm)', 'got ' + n2);
   $('#btnReset').click();
   await sleep(80);
-  ok($$('.card').length === 140, 'reset clears era + runtime filters');
+  ok($$('.card').length === N, 'reset clears era + runtime filters');
 
   const dupe = $('#optDupes');
   dupe.checked = true;
   dupe.dispatchEvent(new window.Event('change'));
   await sleep(80);
-  ok($$('.card').length === 136, 'hide-duplicates drops 4 builds', 'got ' + $$('.card').length);
+  ok($$('.card').length === N - 4, 'hide-duplicates drops 4 builds', 'got ' + $$('.card').length);
   dupe.checked = false;
   dupe.dispatchEvent(new window.Event('change'));
   await sleep(80);
@@ -158,7 +160,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   sort.dispatchEvent(new window.Event('change'));
   await sleep(80);
   const titles = $$('.card .card-title').map((t) => t.textContent);
-  ok(titles[0].includes('Myven'), 'largest build first (Myven Client 80 MB)', titles[0]);
+  const biggest = CATVERSIONS.reduce((a, b) => (b.size > a.size ? b : a));
+  ok(titles[0] === biggest.name,
+    `largest build first (${biggest.name}, ${biggest.sizeText})`, titles[0]);
   sort.value = 'name';
   sort.dispatchEvent(new window.Event('change'));
   await sleep(80);
@@ -184,7 +188,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     'cover art is lazy-loaded');
   ok(CATVERSIONS.every((v) => v.cover),
     `all ${CATVERSIONS.length} builds advertise a cover`, String(CATVERSIONS.filter((v) => !v.cover).length) + ' missing');
-  ok($$('.card .card-cover-img').length === 140,
+  ok($$('.card .card-cover-img').length === N,
     'every card renders art (nothing blank)', String($$('.card .card-cover-img').length));
   ok($$('.card .card-cover').every((c) => /^url\(/.test(c.style.getPropertyValue('--cover'))),
     'every cover keeps an era fallback behind the art');
@@ -196,7 +200,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   gb.value = 'runtime'; gb.dispatchEvent(new window.Event('change'));
   await sleep(80);
   ok($$('.group-heading').length === 3, 'grouping by runtime → 3 headings', String($$('.group-heading').length));
-  ok($$('.card').length === 140, 'still 140 cards after regrouping');
+  ok($$('.card').length === N, `still ${N} cards after regrouping`);
   gb.value = 'none'; gb.dispatchEvent(new window.Event('change'));
   await sleep(80);
   ok($$('.group-heading').length === 0, 'grouping “none” removes headings');
@@ -206,11 +210,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   // collapse the first group
   $$('.group-heading')[0].click();
   await sleep(80);
-  ok($$('.card').length === 130, 'collapsing Pre-Classic hides its 10 cards', String($$('.card').length));
+  ok($$('.card').length === N - nCat('preclassic'), 'collapsing Pre-Classic hides its cards', String($$('.card').length));
   ok($$('.group-heading')[0].getAttribute('aria-expanded') === 'false', 'collapsed heading is aria-expanded=false');
   $$('.group-heading')[0].click();
   await sleep(80);
-  ok($$('.card').length === 140, 'expanding restores the cards');
+  ok($$('.card').length === N, 'expanding restores the cards');
 
   console.log('\n── sort overhaul ──────────────────────');
   const titlesFor = () => $$('.card .card-title').map((t) => t.textContent);
@@ -280,7 +284,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok($$('.card').length === 1, 'favourites-only filter → 1 build');
   $('#btnFavs').click();
   await sleep(80);
-  ok($$('.card').length === 140, 'favourites filter toggled off');
+  ok($$('.card').length === N, 'favourites filter toggled off');
 
   console.log('\n── detail drawer ──────────────────────');
   $('.card').click();

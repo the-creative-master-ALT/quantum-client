@@ -1,8 +1,8 @@
 {
- "generated": "2026-10-17T11:13:26Z",
- "count": 140,
- "totalSize": 2877361122,
- "totalSizeText": "2.68 GB",
+ "generated": "2026-10-17T11:29:04Z",
+ "count": 141,
+ "totalSize": 2968165968,
+ "totalSizeText": "2.76 GB",
  "categories": [
   {
    "id": "preclassic",
@@ -44,7 +44,7 @@
    "id": "release",
    "label": "Full Release",
    "blurb": "1.0.0 all the way to 26.2",
-   "count": 35
+   "count": 36
   },
   {
    "id": "client",
@@ -70,7 +70,7 @@
    "id": "wasm",
    "label": "WebAssembly",
    "short": "WASM",
-   "count": 6
+   "count": 7
   },
   {
    "id": "wasm-gc",
@@ -83,7 +83,7 @@
   {
    "id": "vanilla",
    "label": "Vanilla",
-   "count": 113
+   "count": 114
   },
   {
    "id": "client",
@@ -2273,6 +2273,25 @@
    "order": 6026002001000.0,
    "eraCover": "./assets/img/cat-release.jpg",
    "cover": "./assets/img/builds/eaglercraft-26-2-a849c3.jpg"
+  },
+  {
+   "id": "eaglercraft-26-3-19092c",
+   "sha1_12": "19092cb978b5",
+   "name": "Eaglercraft 26.3",
+   "file": "Eaglercraft 26.3-WASM.html",
+   "url": "./Eaglercraft%2026.3-WASM.html",
+   "category": "release",
+   "type": "vanilla",
+   "runtime": "wasm",
+   "version": "26.3",
+   "size": 90804846,
+   "sizeText": "86.6 MB",
+   "tags": [],
+   "note": "Single-file WASM build",
+   "title": null,
+   "order": 6026003001000.0,
+   "eraCover": "./assets/img/cat-release.jpg",
+   "cover": "./assets/img/builds/eaglercraft-26-3-19092c.jpg"
   },
   {
    "id": "precision-client-429f98",
