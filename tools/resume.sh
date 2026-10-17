@@ -47,10 +47,10 @@ if [ -z "$BRANCH" ]; then
 fi
 ok "$BRANCH"
 
-# A recycle leaves the working tree at the base commit. The 90 MB build and
-# index.html are the cheapest reliable fingerprints of "already restored".
+# A recycle leaves the working tree at the base commit, which has neither
+# index.html nor tools/ -- so their presence is a reliable "already restored".
 needs_restore=0
-for f in index.html data/versions.json assets/js/app.js; do
+for f in index.html tools/embed_catalog.py; do
   [ -f "$f" ] || needs_restore=1
 done
 
@@ -123,10 +123,18 @@ fi
 # ----------------------------------------------------------------- verify --
 step "verify"
 fail=0
-for route in / /data/versions.json /assets/js/app.js /assets/css/launcher.css; do
+for route in / /index.html; do
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT$route" || echo 000)"
   if [ "$code" = "200" ]; then ok "$route -> 200"; else bad "$route -> $code"; fail=1; fi
 done
+
+# the launcher is one file: if the catalogue is not inside it, the page will
+# render but every list will be empty -- a failure that a 200 alone would hide
+if curl -s --max-time 5 "http://localhost:$PORT/" | grep -q 'id="vault"'; then
+  ok "served page embeds the build catalogue"
+else
+  bad "served page has no embedded catalogue"; fail=1
+fi
 
 python3 - "$PORT" <<'PY'
 import json, sys, urllib.parse, urllib.request

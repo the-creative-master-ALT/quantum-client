@@ -70,6 +70,16 @@ def slug(name: str) -> str:
     return s or "build"
 
 
+def load_embedded() -> dict:
+    """Read the catalogue back out of index.html (it no longer lives in data/)."""
+    with open(os.path.join(ROOT, "index.html"), encoding="utf-8") as fh:
+        m = re.search(r'<script id="vault" type="application/json">(.*?)</script>',
+                      fh.read(), re.S)
+    if not m:
+        raise SystemExit("could not find the embedded catalogue in index.html")
+    return json.loads(m.group(1))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -149,14 +159,14 @@ def main() -> int:
     if r.returncode != 0:
         return r.returncode
 
-    # give the new build its own cover art right away
-    cover_script = os.path.join(ROOT, "tools", "make_procedural_covers.py")
-    if os.path.exists(cover_script):
-        subprocess.run([sys.executable, cover_script], cwd=ROOT)
-        subprocess.run([sys.executable, os.path.join(ROOT, "tools", "generate_catalog.py")],
+    # the launcher is a single file, so the catalogue is baked into index.html
+    # rather than sitting in data/versions.json
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "embed_catalog.py")],
                        cwd=ROOT)
+    if r.returncode != 0:
+        return r.returncode
 
-    cat = json.load(open(CATALOG, encoding="utf-8"))
+    cat = load_embedded()
     entry = next((v for v in cat["versions"] if v["file"] == dest_name), None)
     print()
     if entry:
@@ -167,7 +177,7 @@ def main() -> int:
               % cat["totalSizeText"])
 
     print("\nnext:")
-    print("  git add %r data/versions.json" % dest_name)
+    print("  git add %r index.html" % dest_name)
     print("  git commit -m 'Add %s'" % (entry["name"] if entry else dest_name))
     print("  git push")
     print("\nIf the metadata looks wrong, add an entry to the OVERRIDES table")

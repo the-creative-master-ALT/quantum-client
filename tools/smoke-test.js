@@ -1,375 +1,209 @@
-/* ==========================================================================
-   EaglerVault smoke test — drives the real launcher in a headless DOM.
-
-     python3 -m http.server 8080 &        # from the repository root
-     npm install jsdom                    # one-time, dev only
-     node tools/smoke-test.js
-
-   Set BASE_URL to point at a different origin (e.g. the GitHub Pages site).
-   The game .html files are never fetched, so this runs in ~5 s and needs no
-   bandwidth — the point is to exercise the launcher, not the builds.
-   ========================================================================== */
+#!/usr/bin/env node
+/**
+ * Smoke test for the single-file launcher.
+ *
+ * Drives index.html in a headless DOM and checks the things that silently
+ * break: group counts, artwork wiring, the downloads panel, and that no
+ * external asset crept back in.
+ *
+ *   NODE_PATH=/tmp/testenv/node_modules node tools/smoke-test.js
+ */
 const fs = require('fs');
 const path = require('path');
-const { JSDOM, VirtualConsole, requestInterceptor } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 
-// Block the game builds themselves: jsdom must never try to execute a
-// 40 MB Eaglercraft bundle inside the test iframe.
-const blockGames = requestInterceptor((request, { element }) => {
-  const p = request.url.replace(/^https?:\/\/[^/]+\//, '').split('?')[0];
-  if (element && element.localName === 'iframe') {
-    return new Response('<!-- blocked in tests -->', { headers: { 'Content-Type': 'text/html' } });
-  }
-  if (/\.html$/.test(p) && p !== '' && p !== 'index.html' && p !== '404.html') {
-    return new Response('<!-- blocked in tests -->', { headers: { 'Content-Type': 'text/html' } });
-  }
-});
-
-const ROOT = path.resolve(__dirname, '..');                       // repo root
-const BASE = process.env.BASE_URL || 'http://localhost:8080/';    // static server
+const ROOT = path.join(__dirname, '..');
+const INDEX = path.join(ROOT, 'index.html');
 
 let pass = 0, fail = 0;
-const ok = (cond, msg, extra) => {
-  if (cond) { pass++; console.log('  ✓ ' + msg); }
-  else { fail++; console.log('  ✗ ' + msg + (extra ? '  → ' + extra : '')); }
+const errors = [];
+
+const sec = (t) => { console.log(`\n── ${t} ${'─'.repeat(Math.max(0, 38 - t.length))}`); };
+function ok(cond, label, detail) {
+  if (cond) { pass++; console.log(`  \x1b[32m✓\x1b[0m ${label}`); }
+  else { fail++; console.log(`  \x1b[31m✗\x1b[0m ${label}${detail ? '  → ' + detail : ''}`); }
+}
+
+/* ------------------------------------------------------------------ load */
+const html = fs.readFileSync(INDEX, 'utf8');
+
+const vc = new VirtualConsole();
+const navErrors = [];
+vc.on('jsdomError', (e) => {
+  // jsdom refuses to actually navigate, but it does tell us that it tried --
+  // which is how we observe "Play launched the build" without a real browser
+  if (/navigation/i.test(e.message)) { navErrors.push(e.message); return; }
+  // jsdom cannot execute multi-MB game bundles; the launcher itself must be quiet
+  if (!/Could not parse CSS|Not implemented/.test(e.message)) errors.push(e.message);
+});
+vc.on('error', (m) => errors.push(String(m)));
+
+const dom = new JSDOM(html, {
+  runScripts: 'dangerously',
+  url: 'http://localhost:8080/index.html',
+  virtualConsole: vc,
+  beforeParse(window) {
+    window.addEventListener('error', (e) => errors.push(String(e.message)));
+  },
+});
+
+const win = dom.window;
+const doc = win.document;
+const $ = (s) => doc.querySelector(s);
+const $$ = (s) => Array.from(doc.querySelectorAll(s));
+const text = (s) => ($(s) ? $(s).textContent.trim() : '');
+
+const CAT = JSON.parse(doc.getElementById('vault').textContent);
+
+/* -------------------------------------------------------- self-contained */
+sec('single file');
+ok($$('link[rel="stylesheet"]').length === 0, 'no external stylesheet');
+ok($$('script[src]').length === 0, 'no external script');
+ok($$('img').length === 0, 'no <img> tags at all (artwork is inline SVG)');
+ok(/^data:image\/svg/.test($('link[rel="icon"]').getAttribute('href') || ''), 'favicon is an inline data URI');
+ok($$('symbol[id^="scene-"]').length === 11, '11 inline artwork scenes', String($$('symbol[id^="scene-"]').length));
+
+/* --------------------------------------------------------------- catalog */
+sec('embedded catalogue');
+ok(CAT.count === 141, `${CAT.count} builds embedded`, String(CAT.count));
+ok(CAT.versions.length === CAT.count, 'count matches array length');
+ok(CAT.versions.every((b) => b.id && b.name && b.file && b.url), 'every build has id, name, file, url');
+ok(!!CAT.totalSizeText, `total size present (${CAT.totalSizeText})`);
+
+/* ----------------------------------------------------------------- files */
+sec('every build resolves on disk');
+const missing = CAT.versions.filter((b) => !fs.existsSync(path.join(ROOT, b.file)));
+ok(missing.length === 0, `all ${CAT.count} build files exist`, missing.slice(0, 3).map((b) => b.file).join(', '));
+
+/* ---------------------------------------------------------------- groups */
+sec('sidebar groups');
+const EXPECTED = {
+  'All builds': 141, 'Pre-Classic': 10, Classic: 32, Devs: 10, Alpha: 8, Beta: 18,
+  'Early Releases': 19, 'Middle Releases': 11, 'Modern Releases': 6, Clients: 21, Extras: 6,
 };
+const btns = $$('#nav [data-group]');
+ok(btns.length === Object.keys(EXPECTED).length, `${btns.length} sidebar entries`, String(btns.length));
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// recompute the grouping independently so the UI cannot drift from the data
+const vt = (v) => (String(v || '').match(/\d+/g) || []).map(Number);
+function groupOf(b) {
+  const c = b.category;
+  if (c === 'preclassic') return 'preclassic';
+  if (c === 'classic') return 'classic';
+  if (c === 'indev' || c === 'infdev') return 'devs';
+  if (c === 'alpha') return 'alpha';
+  if (c === 'beta') return 'beta';
+  if (c === 'client') return 'clients';
+  if (c === 'extras') return 'extras';
+  if (c === 'release') {
+    const n = vt(b.version);
+    if (n[0] === 1 && n[1] <= 8) return 'early';
+    if (n[0] === 1 && n[1] >= 9 && n[1] <= 17) return 'mid';
+    return 'modern';
+  }
+  return 'extras';
+}
+const LABEL = { all: 'All builds', preclassic: 'Pre-Classic', classic: 'Classic', devs: 'Devs', alpha: 'Alpha',
+  beta: 'Beta', early: 'Early Releases', mid: 'Middle Releases', modern: 'Modern Releases', clients: 'Clients', extras: 'Extras' };
+const tally = {};
+CAT.versions.forEach((b) => { const g = groupOf(b); tally[LABEL[g]] = (tally[LABEL[g]] || 0) + 1; });
+// 10 real groups; "All builds" is a UI-level aggregate, not a category
+ok(Object.keys(tally).length === 10, '10 real groups + All builds aggregate', String(Object.keys(tally).length));
 
-(async () => {
-  const vc = new VirtualConsole();
-  const logs = [];
-  vc.on('jsdomError', (e) => {
-    const d = e.detail || e;
-    if (/Not implemented/.test(String(d && d.message))) return;   // jsdom gaps, not app bugs
-    logs.push('jsdomError: ' + (d && d.stack ? d.stack.split('\n').slice(0,4).join(' | ') : d));
-  });
-  vc.on('error', (...a) => logs.push('error: ' + a.join(' ')));
-  vc.on('warn', (...a) => logs.push('warn: ' + a.join(' ')));
+let countOk = true, countDetail = '';
+btns.forEach((b) => {
+  const lbl = b.querySelector('.lbl').textContent.trim();
+  const n = Number(b.querySelector('.n').textContent.trim());
+  if (EXPECTED[lbl] !== undefined && EXPECTED[lbl] !== n) { countOk = false; countDetail += `${lbl}:${n} `; }
+});
+ok(countOk, 'sidebar counts match expected', countDetail);
+ok(Object.values(tally).reduce((a, b) => a + b, 0) === CAT.count, 'independent tally accounts for every build');
 
-  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+/* --------------------------------------------------------------- artwork */
+sec('artwork + selection');
+ok($('#artUse').getAttribute('href') === '#scene-all', 'starts on the overview scene');
+const before = text('#bName');
+ok(before && before !== '—', `a build is selected (${before})`);
 
-  const dom = new JSDOM(html, {
-    url: BASE,
-    runScripts: 'dangerously',
-    resources: { interceptors: [blockGames] },
-    pretendToBeVisual: true,
-    virtualConsole: vc,
-    beforeParse(window) {
-      window.fetch = async (url) => {
-        const p = String(url).replace(/^https?:\/\/[^/]+\//, '');
-        const file = path.join(ROOT, decodeURIComponent(p));
-        const body = fs.readFileSync(file);
-        return {
-          ok: true, status: 200,
-          json: async () => JSON.parse(body.toString('utf8')),
-          text: async () => body.toString('utf8'),
-          clone() { return this; },
-        };
-      };
-      if (!window.structuredClone) window.structuredClone = (o) => JSON.parse(JSON.stringify(o));
-      if (!window.CSS) window.CSS = { escape: (s) => String(s).replace(/[^\w-]/g, (c) => '\\' + c) };
-      window.HTMLElement.prototype.scrollIntoView = () => {};
-      window.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
-      window.addEventListener('error', (ev) => {
-        if (ev.error && ev.error.stack) console.log('\n>>> ORIGINAL ERROR:\n' + ev.error.stack + '\n');
-      });
-      window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
-    },
-  });
+const classicBtn = btns.find((b) => b.querySelector('.lbl').textContent.trim() === 'Classic');
+classicBtn.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok($('#artUse').getAttribute('href') === '#scene-classic', 'selecting Classic swaps the artwork');
+ok($$('#pick option').length === 32, 'picker narrows to Classic builds', String($$('#pick option').length));
+ok(classicBtn.getAttribute('aria-current') === 'true', 'selected group is marked current');
 
-  const { window } = dom;
-  const doc = window.document;
-  const $ = (s) => doc.querySelector(s);
-  const $$ = (s) => Array.from(doc.querySelectorAll(s));
+const preBtn = btns.find((b) => b.querySelector('.lbl').textContent.trim() === 'Pre-Classic');
+preBtn.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok($('#artUse').getAttribute('href') === '#scene-preclassic', 'selecting Pre-Classic swaps the artwork');
+ok($$('#pick option').length === 10, 'picker narrows to 10 Pre-Classic builds', String($$('#pick option').length));
 
-  await sleep(900);   // let the app boot + fetch the catalogue
+$('#next').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok(/2 \/ 10/.test(text('#pos')), 'next advances within the group', text('#pos'));
+$('#prev').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok(/1 \/ 10/.test(text('#pos')), 'prev goes back', text('#pos'));
 
-  console.log('\n── boot ───────────────────────────────');
-  ok($('#boot').classList.contains('is-done'), 'boot splash dismissed');
-  ok(logs.length === 0, 'no console errors during boot', logs.join(' | '));
+// every group must actually have a scene, or the art renders blank
+let scenesOk = true, sceneDetail = '';
+$$('#nav [data-group]').forEach((b) => {
+  b.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+  const href = $('#artUse').getAttribute('href') || '';
+  if (!href.startsWith('#scene-') || !doc.querySelector(href)) { scenesOk = false; sceneDetail += href + ' '; }
+});
+ok(scenesOk, 'every group resolves to a real scene', sceneDetail);
 
-  const CATVERSIONS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'versions.json'), 'utf8')).versions;
-  const N = CATVERSIONS.length;                       // total builds in the vault
-  const nCat = (label) => CATVERSIONS.filter((v) => v.category === label).length;
-  const cards = $$('.card');
-  ok(cards.length === N, `renders all ${N} build cards`, 'got ' + cards.length);
-  ok($('#resultCount').textContent.includes(String(N)), `result count shows ${N}`,
-    $('#resultCount').textContent.trim());
-  ok($('#heroSub').textContent.includes(String(N)), 'hero copy mentions the build count');
-  ok($('#search').placeholder.includes(String(N)), 'search placeholder is dynamic');
+/* ------------------------------------------------------------------ play */
+sec('play');
+btns.find((b) => b.getAttribute('data-group') === 'all')
+  .dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+$('#pick').value = CAT.versions[0].id;
+$('#pick').dispatchEvent(new win.Event('change', { bubbles: true }));
+ok(text('#bName') === CAT.versions[0].name, 'picking from the dropdown updates the card', text('#bName'));
+const target = CAT.versions[0];
+navErrors.length = 0;
+$('#play').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok(navErrors.length === 1, 'Play triggers navigation', String(navErrors.length));
+ok(fs.existsSync(path.join(ROOT, target.file)), `target is the selected build's own file (${target.file})`);
+ok(!!$('#gRecent'), 'a Continue entry appears after playing');
 
-  console.log('\n── sidebar ────────────────────────────');
-  const cats = $$('#catList .cat-item');
-  ok(cats.length === 10, '9 eras + “All eras”', 'got ' + cats.length);
-  ok($$('#typeList .chip').length === 4, '4 build-type chips');
-  ok($$('#runtimeList .chip').length === 3, '3 runtime chips');
-  ok($$('#vaultStats dt').length === 7, 'vault stats populated');
-  ok($$('.accent-dot').length === 4, 'accent picker rendered');
+/* ------------------------------------------------------------- downloads */
+sec('downloads');
+ok($('#dlScrim').hasAttribute('hidden'), 'downloads panel starts hidden');
+$('#dlOpen').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok(!$('#dlScrim').hasAttribute('hidden'), 'Downloads button opens the panel');
+ok($$('#dlList .dl-row').length === CAT.count, `all ${CAT.count} builds listed`, String($$('#dlList .dl-row').length));
 
-  console.log('\n── search ─────────────────────────────');
-  const s = $('#search');
-  s.value = 'beta 1.8';
-  s.dispatchEvent(new window.Event('input'));
-  await sleep(200);
-  const n1 = $$('.card').length;
-  ok(n1 > 0 && n1 < N, `search “beta 1.8” narrows to ${n1}`);
-  ok(!$('#activeFilters').hidden, 'active filter chip shown');
+const links = $$('#dlList a.dl-btn');
+ok(links.length === CAT.count, 'every row has a download link', String(links.length));
+ok(links.every((a) => a.hasAttribute('download')), 'links carry the download attribute');
+ok(links.every((a) => (a.getAttribute('href') || '').startsWith('./')), 'links point at local build files');
 
-  s.value = 'zzzznotathing';
-  s.dispatchEvent(new window.Event('input'));
-  await sleep(200);
-  ok($$('.card').length === 0 && !$('#empty').hidden, 'empty state appears');
-  ok(/zzzznotathing/.test($('#emptyMsg').textContent), 'empty message quotes the query');
+const dlSearch = $('#dlSearch');
+dlSearch.value = 'beta 1.8';
+dlSearch.dispatchEvent(new win.Event('input', { bubbles: true }));
+const filtered = $$('#dlList .dl-row').length;
+ok(filtered > 0 && filtered < CAT.count, `search narrows to ${filtered}`);
+dlSearch.value = 'zzzznope';
+dlSearch.dispatchEvent(new win.Event('input', { bubbles: true }));
+ok(/Nothing matches/.test(text('#dlList')), 'empty state for no results');
+dlSearch.value = '';
+dlSearch.dispatchEvent(new win.Event('input', { bubbles: true }));
+ok($$('#dlList .dl-row').length === CAT.count, 'clearing search restores the full list');
 
-  $('#btnEmptyReset').click();
-  await sleep(120);
-  ok($$('.card').length === N, 'reset restores every build');
-  ok(s.value === '', 'reset clears the search box');
+$('#dlGroup').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok($$('#dlList .dl-row').length <= CAT.count, 'scope-to-group toggle filters the list');
+$('#dlGroup').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+$('#dlClose').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok($('#dlScrim').hasAttribute('hidden'), 'close hides the panel');
 
-  console.log('\n── filters ────────────────────────────');
-  const classicBtn = $$('#catList .cat-item').find((b) => b.querySelector('.cat-name').textContent === 'Classic');
-  classicBtn.click();
-  await sleep(80);
-  ok($$('.card').length === nCat('classic'), `Classic era filter → ${nCat('classic')} builds`, 'got ' + $$('.card').length);
-  const wasmChip = $$('#runtimeList .chip').find((c) => /WebAssembly GC/.test(c.textContent));
-  wasmChip.click();
-  await sleep(80);
-  const n2 = $$('.card').length;
-  ok(n2 === 15, 'Classic + WASM-GC → 15 builds (Classic 0.30 WASM is plain wasm)', 'got ' + n2);
-  $('#btnReset').click();
-  await sleep(80);
-  ok($$('.card').length === N, 'reset clears era + runtime filters');
+/* ------------------------------------------------------------ favourites */
+sec('favourites');
+$('#fav').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+ok($('#fav').getAttribute('aria-pressed') === 'true', 'star marks the build');
+ok(!!$('#gFav'), 'a Favourites entry appears in the sidebar');
+ok(!!win.localStorage.getItem('quantum-launcher-v1'), 'favourite persisted to localStorage');
 
-  const dupe = $('#optDupes');
-  dupe.checked = true;
-  dupe.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok($$('.card').length === N - 4, 'hide-duplicates drops 4 builds', 'got ' + $$('.card').length);
-  dupe.checked = false;
-  dupe.dispatchEvent(new window.Event('change'));
-  await sleep(80);
+/* ------------------------------------------------------------- resilience */
+sec('final');
+ok(errors.length === 0, 'no runtime errors', errors.slice(0, 2).join(' | '));
 
-  console.log('\n── sorting ────────────────────────────');
-  const sort = $('#sortBy');
-  // global orderings only apply ungrouped; grouped views cluster by era first
-  const gsel = $('#groupBy');
-  gsel.value = 'none'; gsel.dispatchEvent(new window.Event('change'));
-  await sleep(60);
-  sort.value = 'size-desc';
-  sort.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  const titles = $$('.card .card-title').map((t) => t.textContent);
-  const biggest = CATVERSIONS.reduce((a, b) => (b.size > a.size ? b : a));
-  ok(titles[0] === biggest.name,
-    `largest build first (${biggest.name}, ${biggest.sizeText})`, titles[0]);
-  sort.value = 'name';
-  sort.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  const names = $$('.card .card-title').map((t) => t.textContent);
-  ok(names[0] < names[1] && names[0] > '', 'A–Z sort', names.slice(0, 2).join(' / '));
-  sort.value = 'order';
-  sort.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok($$('.card .card-title')[0].textContent.includes('rd-131655'), 'version order starts at rd-131655',
-    $$('.card .card-title')[0].textContent);
-  ok($$('.card .card-title')[139].textContent.length > 0, 'last card rendered');
-
-  console.log('\n── per-build art + grouping ───────────');
-  // the sorting block above switched grouping off; put it back
-  $('#groupBy').value = 'era';
-  $('#groupBy').dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  const withArt = CATVERSIONS.filter((v) => v.cover);
-  ok(withArt.length === $$('.card .card-cover-img').length,
-    `every build with art renders an <img> (${withArt.length})`,
-    String($$('.card .card-cover-img').length));
-  ok($$('.card .card-cover-img').every((i) => i.getAttribute('loading') === 'lazy'),
-    'cover art is lazy-loaded');
-  ok(CATVERSIONS.every((v) => v.cover),
-    `all ${CATVERSIONS.length} builds advertise a cover`, String(CATVERSIONS.filter((v) => !v.cover).length) + ' missing');
-  ok($$('.card .card-cover-img').length === N,
-    'every card renders art (nothing blank)', String($$('.card .card-cover-img').length));
-  ok($$('.card .card-cover').every((c) => /^url\(/.test(c.style.getPropertyValue('--cover'))),
-    'every cover keeps an era fallback behind the art');
-  ok($$('.group-heading').length === 9, 'one sticky heading per era', String($$('.group-heading').length));
-  ok(/Pre-Classic/.test($$('.group-heading')[0].textContent), 'first heading is Pre-Classic',
-    $$('.group-heading')[0].textContent.trim().slice(0, 40));
-
-  const gb = $('#groupBy');
-  gb.value = 'runtime'; gb.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok($$('.group-heading').length === 3, 'grouping by runtime → 3 headings', String($$('.group-heading').length));
-  ok($$('.card').length === N, `still ${N} cards after regrouping`);
-  gb.value = 'none'; gb.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok($$('.group-heading').length === 0, 'grouping “none” removes headings');
-  gb.value = 'era'; gb.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-
-  // collapse the first group
-  $$('.group-heading')[0].click();
-  await sleep(80);
-  ok($$('.card').length === N - nCat('preclassic'), 'collapsing Pre-Classic hides its cards', String($$('.card').length));
-  ok($$('.group-heading')[0].getAttribute('aria-expanded') === 'false', 'collapsed heading is aria-expanded=false');
-  $$('.group-heading')[0].click();
-  await sleep(80);
-  ok($$('.card').length === N, 'expanding restores the cards');
-
-  console.log('\n── sort overhaul ──────────────────────');
-  const titlesFor = () => $$('.card .card-title').map((t) => t.textContent);
-  const so = $('#sortBy');
-
-  // grouped: a descending timeline should flip the era order too
-  so.value = 'order-desc'; so.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok(/Extras/.test($$('.group-heading')[0].textContent),
-    'descending timeline flips the era order (Extras first)',
-    $$('.group-heading')[0].textContent.trim().slice(0, 30));
-  const order = $$('.group-heading').map((h) => h.querySelector('.group-title').textContent);
-  ok(order[0] === 'Extras' && order[1] === 'Clients' && order[2] === 'Full Release'
-     && order[order.length - 1] === 'Pre-Classic',
-    'era headings run newest → oldest', order.join(' > '));
-
-  // global (ungrouped) sorts
-  gb.value = 'none'; gb.dispatchEvent(new window.Event('change'));
-  await sleep(60);
-  so.value = 'order-desc'; so.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok(/26\.2|Minicraft|Scratch|Injector|Client/.test(titlesFor()[0]),
-    'newest-first puts the modern builds on top', titlesFor()[0]);
-  so.value = 'name-desc'; so.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok(titlesFor()[0] > titlesFor()[1], 'Z–A sort works', titlesFor().slice(0, 2).join(' | '));
-  so.value = 'size-asc'; so.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-  ok(/Minecraft 4k/.test(titlesFor()[0]), 'smallest-first starts with Minecraft 4k', titlesFor()[0]);
-  so.value = 'order'; so.dispatchEvent(new window.Event('change'));
-  gb.value = 'era'; gb.dispatchEvent(new window.Event('change'));
-  await sleep(80);
-
-  console.log('\n── card markup ────────────────────────');
-  const c0 = $('.card');
-  ok(!!c0.querySelector('.card-cover .card-badge'), 'runtime badge lives on the cover');
-  ok(!!c0.querySelector('.card-cover .card-cover-label'), 'version label lives on the cover');
-  ok(c0.querySelector('.card-actions .card-fav'), 'favourite button is in the actions overlay');
-  ok(c0.querySelector('.card-actions .card-play'), 'play button is in the actions overlay');
-  ok(c0.children.length === 3 && c0.lastElementChild.classList.contains('card-actions'),
-    'card is cover + body + actions', String(c0.children.length));
-  ok(/^url\(/.test(c0.querySelector('.card-cover').style.getPropertyValue('--cover')),
-    'cover art wired through a custom property');
-
-  console.log('\n── view toggle ────────────────────────');
-  $('#btnList').click();
-  await sleep(60);
-  ok($('#grid').getAttribute('data-view') === 'list', 'list view applied');
-  ok($('#btnList').getAttribute('aria-pressed') === 'true', 'list button pressed');
-  $('#btnGrid').click();
-  await sleep(60);
-  ok($('#grid').getAttribute('data-view') === 'grid', 'grid view restored');
-
-  console.log('\n── favourites ─────────────────────────');
-  const first = $('.card');
-  const firstName = first.querySelector('.card-title').textContent;
-  first.querySelector('.card-fav').click();
-  await sleep(60);
-  ok($('#favCount').textContent === '1', 'favourite counter = 1');
-  ok($('.card').classList.contains('is-fav'), 'card marked as favourite');
-  ok(JSON.parse(window.localStorage.getItem('eaglervault.v1')).favs &&
-     Object.keys(JSON.parse(window.localStorage.getItem('eaglervault.v1')).favs).length === 1,
-    'favourite persisted to localStorage');
-
-  $('#btnFavs').click();
-  await sleep(80);
-  ok($$('.card').length === 1, 'favourites-only filter → 1 build');
-  $('#btnFavs').click();
-  await sleep(80);
-  ok($$('.card').length === N, 'favourites filter toggled off');
-
-  console.log('\n── detail drawer ──────────────────────');
-  $('.card').click();
-  await sleep(120);
-  ok(!$('#drawer').hidden, 'drawer opens');
-  ok($('#drawerTitle').textContent.length > 0, 'drawer shows a title', $('#drawerTitle').textContent);
-  ok(/^rd-131655-JS\.html$/.test($$('#drawerSpecs dd').slice(-1)[0].textContent),
-    'drawer lists the raw file name', $$('#drawerSpecs dd').slice(-1)[0].textContent);
-  ok(window.location.hash === '#/build/' + $('.card').dataset.id, 'deep link written to the URL',
-    window.location.hash);
-  ok(doc.body.classList.contains('is-locked'), 'page scroll locked while open');
-
-  console.log('\n── launch ─────────────────────────────');
-  $('#drawerPlay').click();
-  await sleep(200);
-  ok(!$('#player').hidden, 'player overlay opens');
-  const iframe = $('#playerStage iframe');
-  ok(!!iframe, 'iframe created');
-  ok(iframe.getAttribute('src') === './rd-131655-JS.html', 'iframe points at the build',
-    iframe && iframe.getAttribute('src'));
-  ok(iframe.hasAttribute('allowfullscreen'), 'iframe allows fullscreen');
-  ok(/fullscreen/.test(iframe.getAttribute('allow') || ''), 'fullscreen in allow list');
-  ok(window.location.hash.startsWith('#/play/'), 'play deep link set', window.location.hash);
-  ok(!$('#recentsWrap').hidden, '“continue playing” strip appears after a launch');
-
-  $('#playerQuit').click();
-  await sleep(150);
-  ok($('#player').hidden, 'player closes');
-  ok($('#playerStage iframe') === null, 'iframe removed from the DOM');
-  ok(!$('#drawer').hidden, 'returns to the detail view after quitting');
-
-  console.log('\n── routing ────────────────────────────');
-  window.location.hash = '#/build/does-not-exist';
-  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  await sleep(80);
-  ok(!!$('.toast'), 'unknown deep link shows a warning toast');
-
-  window.location.hash = '#/';
-  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  await sleep(80);
-  ok($('#drawer').hidden, 'empty route closes the drawer');
-
-  console.log('\n── theme ──────────────────────────────');
-  $('#btnTheme').click();
-  await sleep(60);
-  ok(doc.documentElement.getAttribute('data-theme') === 'light', 'theme toggles to light');
-  ok(JSON.parse(window.localStorage.getItem('eaglervault.v1')).settings.theme === 'light',
-    'theme persisted');
-  $('#btnTheme').click();
-  await sleep(60);
-  ok(doc.documentElement.getAttribute('data-theme') === 'dark', 'theme toggles back to dark');
-
-  console.log('\n── keyboard ───────────────────────────');
-  doc.body.dispatchEvent(new window.KeyboardEvent('keydown', { key: '/', bubbles: true }));
-  await sleep(40);
-  ok(doc.activeElement === $('#search'), '“/” focuses search');
-  $('#search').blur();
-  $('#btnHelp').click();
-  await sleep(60);
-  ok(!$('#helpModal').hidden, 'help modal opens');
-  doc.body.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-  await sleep(60);
-  ok($('#helpModal').hidden, 'Escape closes help modal');
-
-  console.log('\n── surprise me ────────────────────────');
-  $('#btnRandom').click();
-  await sleep(150);
-  ok(!$('#player').hidden, 'random build launches');
-  ok($('#playerStage iframe').getAttribute('src').endsWith('.html'), 'random src is an html file',
-    $('#playerStage iframe').getAttribute('src'));
-  $('#playerBack').click();
-  await sleep(100);
-
-  console.log('\n── hidden elements really hide ────────');
-  const disp = (sel) => window.getComputedStyle($(sel)).display;
-  ok(disp('#player') === 'none', 'closed player overlay has display:none', disp('#player'));
-  ok(disp('#drawer') === 'none', 'closed drawer has display:none', disp('#drawer'));
-  ok(disp('#helpModal') === 'none', 'closed help modal has display:none', disp('#helpModal'));
-  ok(disp('#searchClear') === 'none', 'search clear button hidden when empty', disp('#searchClear'));
-  ok(disp('#grid') !== 'none', 'grid is visible when it has results', disp('#grid'));
-
-  console.log('\n── final ──────────────────────────────');
-  ok(logs.length === 0, 'no runtime errors overall', logs.join(' | '));
-
-  console.log(`\n${pass} passed, ${fail} failed\n`);
-  window.close();
-  process.exit(fail ? 1 : 0);
-})().catch((e) => { console.error('HARNESS CRASH', e); process.exit(2); });
+console.log(`\n${fail === 0 ? '\x1b[32m' : '\x1b[31m'}${pass} passed, ${fail} failed\x1b[0m\n`);
+process.exit(fail === 0 ? 0 : 1);

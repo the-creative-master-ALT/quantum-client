@@ -1,315 +1,863 @@
-<!doctype html>
-<html lang="en" data-theme="dark" data-accent="emerald">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EaglerVault — Play 140 Eaglercraft builds in your browser</title>
-<meta name="description" content="EaglerVault is a free browser launcher for 140 Eaglercraft / Minecraft web builds — Pre-Classic rd-131655 through 26.2, plus 21 PvP and utility clients. No install, no Java, no downloads.">
-<meta name="theme-color" content="#0b100e">
 <meta name="color-scheme" content="dark light">
-<link rel="canonical" href="https://the-creative-masteralt.github.io/quantum-client/">
+<meta name="description" content="Quantum Launcher — every Eaglercraft build, one file.">
+<title>Quantum Launcher</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230d1420'/><path d='M6 21l10-12 10 12z' fill='%234ade80'/><path d='M6 21h20v5H6z' fill='%236b4a2f'/></svg>">
+<style>
+/* ============================== tokens ============================== */
+:root{
+  --bg:#080c14; --panel:#0e1420; --panel-2:#131b2a; --line:#1e2a3d;
+  --text:#e8eef8; --dim:#8b9bb4; --accent:#4ade80;
+  --shadow:0 18px 50px -12px rgba(0,0,0,.75);
+  --r:14px; --sidebar:264px;
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html[data-theme="light"]{
+  --bg:#eef2f8; --panel:#fff; --panel-2:#f4f7fc; --line:#d8e0ec;
+  --text:#111a2b; --dim:#5b6b85; --shadow:0 18px 44px -16px rgba(20,32,60,.28);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font);
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+  transition:background .25s,color .25s;
+}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="EaglerVault — Eaglercraft Launcher">
-<meta property="og:description" content="140 Eaglercraft builds in one browser launcher. Classic, Indev, Alpha, Beta, full releases and clients.">
-<meta property="og:image" content="./assets/img/hero.jpg">
-<meta name="twitter:card" content="summary_large_image">
+/* ============================== shell ============================== */
+.shell{
+  display:grid; height:100dvh;
+  grid-template-columns:var(--sidebar) 1fr;
+  grid-template-rows:1fr auto;
+  grid-template-areas:"side stage" "dock dock";
+}
 
-<link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/img/icon-192.png">
-<link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./assets/css/launcher.css">
+/* ============================== sidebar ============================== */
+.side{
+  grid-area:side; background:var(--panel); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; min-height:0;
+}
+.brand{padding:18px 16px 12px; border-bottom:1px solid var(--line)}
+.brand h1{
+  margin:0; font-size:15px; font-weight:800; letter-spacing:.2px;
+  display:flex; align-items:center; gap:9px;
+}
+.brand .dot{
+  width:9px;height:9px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 12px var(--accent); transition:background .25s,box-shadow .25s;
+}
+.brand p{margin:5px 0 0; font-size:11px; color:var(--dim); letter-spacing:.3px}
+
+.nav{flex:1; overflow-y:auto; padding:10px 10px 4px; min-height:0}
+.nav h2{
+  margin:12px 8px 6px; font-size:9.5px; letter-spacing:1.6px; text-transform:uppercase;
+  color:var(--dim); font-weight:700;
+}
+.g{
+  display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  padding:9px 10px; border-radius:10px; margin-bottom:2px;
+  color:var(--dim); transition:background .16s,color .16s;
+  position:relative;
+}
+.g:hover{background:var(--panel-2); color:var(--text)}
+.g[aria-current="true"]{background:var(--panel-2); color:var(--text); font-weight:600}
+.g[aria-current="true"]::before{
+  content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
+  width:3px; height:20px; border-radius:0 3px 3px 0; background:var(--g-accent,var(--accent));
+}
+.g .swatch{
+  width:22px;height:22px;border-radius:6px;flex:none;
+  background:var(--g-accent,var(--accent)); opacity:.85;
+  display:grid;place-items:center;
+}
+.g .swatch svg{width:13px;height:13px;fill:#08101c}
+.g .lbl{flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g .n{font-size:10.5px;color:var(--dim);font-family:var(--mono);flex:none}
+.g.tiny{padding:6px 10px;font-size:11.5px}
+.g[hidden]{display:none}
+
+/* ============================== stage ============================== */
+.stage{
+  grid-area:stage; min-width:0; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:26px 26px 18px; gap:18px; position:relative;
+}
+.stage::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(90% 70% at 50% 30%, color-mix(in srgb,var(--accent) 12%, transparent), transparent 70%);
+  transition:background .4s;
+}
+.art-wrap{
+  position:relative; width:min(100%,920px); aspect-ratio:16/9;
+  border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow);
+  border:1px solid var(--line); background:var(--panel-2); flex:none;
+  z-index:1;
+}
+.art{display:block;width:100%;height:100%}
+.art-wrap .picker{
+  position:absolute; top:12px; right:12px; display:flex; gap:6px;
+  opacity:0; transition:opacity .2s;
+}
+.art-wrap:hover .picker,.art-wrap:focus-within .picker{opacity:1}
+.pick{
+  width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(8,12,20,.72); color:#fff; backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.14); transition:background .15s,transform .15s;
+}
+.pick:hover{background:rgba(8,12,20,.92); transform:scale(1.08)}
+.pick svg{width:15px;height:15px;fill:currentColor}
+
+/* build card under the art */
+.picked{
+  width:min(100%,920px); background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--r); padding:14px 16px; display:flex; align-items:center;
+  gap:14px; flex-wrap:wrap; z-index:1;
+}
+.picked .who{flex:1;min-width:220px}
+.picked .name{margin:0;font-size:17px;font-weight:700;letter-spacing:.1px}
+.picked .sub{margin:4px 0 0;font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  font-size:10px; letter-spacing:.5px; text-transform:uppercase; font-weight:700;
+  padding:3px 8px; border-radius:999px; background:var(--panel-2);
+  border:1px solid var(--line); color:var(--dim);
+}
+.chip.on{color:var(--accent); border-color:color-mix(in srgb,var(--accent) 45%, transparent)}
+.play{
+  display:inline-flex;align-items:center;gap:9px; padding:12px 22px; border-radius:11px;
+  background:var(--accent); color:#06121f; font-weight:800; font-size:13.5px;
+  letter-spacing:.3px; transition:transform .14s,filter .14s,background .25s;
+  box-shadow:0 8px 24px -8px color-mix(in srgb,var(--accent) 70%, transparent);
+}
+.play:hover{transform:translateY(-1px); filter:brightness(1.08)}
+.play svg{width:15px;height:15px;fill:currentColor}
+.icon-btn{
+  width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  border:1px solid var(--line); background:var(--panel-2); color:var(--dim);
+  transition:color .15s,border-color .15s,background .15s;
+}
+.icon-btn:hover{color:var(--text); border-color:color-mix(in srgb,var(--accent) 40%, var(--line))}
+.icon-btn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent)}
+.icon-btn svg{width:17px;height:17px;fill:currentColor}
+
+/* ============================== dock ============================== */
+.dock{
+  grid-area:dock; background:var(--panel); border-top:1px solid var(--line);
+  padding:11px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.dock .sel-wrap{position:relative; flex:1; min-width:200px; max-width:520px}
+.dock select{
+  width:100%; appearance:none; padding:10px 34px 10px 13px; border-radius:10px;
+  background:var(--panel-2); border:1px solid var(--line); font-size:13px;
+  cursor:pointer; overflow:hidden; text-overflow:ellipsis;
+}
+.dock .caret{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  pointer-events:none; width:13px; height:13px; fill:var(--dim);
+}
+.step{display:flex;gap:4px}
+.count{font-size:11px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
+.spacer{flex:1}
+
+/* ============================== downloads ============================== */
+.scrim{
+  position:fixed; inset:0; background:rgba(4,8,14,.72); backdrop-filter:blur(3px);
+  z-index:40; display:grid; place-items:center; padding:22px;
+}
+.scrim[hidden]{display:none}
+.sheet{
+  width:min(900px,100%); max-height:min(82dvh,760px); display:flex; flex-direction:column;
+  background:var(--panel); border:1px solid var(--line); border-radius:16px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.sheet header{
+  padding:16px 18px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:12px;
+}
+.sheet header h2{margin:0;font-size:15px;font-weight:800}
+.sheet header p{margin:3px 0 0;font-size:11.5px;color:var(--dim)}
+.sheet .tools{padding:12px 18px; border-bottom:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap}
+.sheet .tools input{
+  flex:1; min-width:180px; padding:9px 12px; border-radius:9px;
+  background:var(--panel-2); border:1px solid var(--line); font-size:13px;
+}
+.dl-list{overflow-y:auto; padding:8px 10px 12px; flex:1; min-height:0}
+.dl-row{
+  display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:10px;
+  transition:background .14s;
+}
+.dl-row:hover{background:var(--panel-2)}
+.dl-row .who{flex:1;min-width:0}
+.dl-row .nm{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl-row .mt{font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:2px}
+.dl-row .sz{font-size:11px;color:var(--dim);font-family:var(--mono);flex:none}
+.dl-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;
+  background:var(--panel-2);border:1px solid var(--line);font-size:11.5px;font-weight:700;
+  text-decoration:none;color:var(--text);transition:border-color .15s,color .15s;flex:none;
+}
+.dl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.dl-btn svg{width:13px;height:13px;fill:currentColor}
+.empty{padding:36px 18px;text-align:center;color:var(--dim);font-size:13px}
+
+/* ============================== responsive ============================== */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr; grid-template-rows:auto 1fr auto;
+         grid-template-areas:"side" "stage" "dock"}
+  .side{border-right:0; border-bottom:1px solid var(--line); max-height:38dvh}
+  .stage{padding:16px 14px}
+  .picked{padding:12px}
+  .play{padding:11px 18px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
 
-<a class="skip-link" href="#main">Skip to the build list</a>
+<!-- ===================== inline artwork: one scene per group ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".78"/>
+    </linearGradient>
+    <linearGradient id="sky-pre" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16202e"/><stop offset="1" stop-color="#7d8f9c"/></linearGradient>
+    <linearGradient id="sky-cla" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f8fd8"/><stop offset="1" stop-color="#bfe0f5"/></linearGradient>
+    <linearGradient id="sky-dev" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#100c14"/><stop offset="1" stop-color="#3a2418"/></linearGradient>
+    <linearGradient id="sky-alp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1c3e"/><stop offset="1" stop-color="#e08a4a"/></linearGradient>
+    <linearGradient id="sky-bet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3a5c"/><stop offset="1" stop-color="#f0b46a"/></linearGradient>
+    <linearGradient id="sky-ear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2f4a"/><stop offset="1" stop-color="#7fa8c9"/></linearGradient>
+    <linearGradient id="sky-mid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0a16"/><stop offset="1" stop-color="#4b3163"/></linearGradient>
+    <linearGradient id="sky-mod" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1020"/><stop offset="1" stop-color="#2d5b7a"/></linearGradient>
+    <linearGradient id="sky-cli" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12061f"/><stop offset="1" stop-color="#4a1d5c"/></linearGradient>
+    <linearGradient id="sky-ext" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12202a"/><stop offset="1" stop-color="#2f6b63"/></linearGradient>
+    <linearGradient id="sky-all" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1220"/><stop offset=".55" stop-color="#1f3a55"/><stop offset="1" stop-color="#5b3f6b"/></linearGradient>
+  </defs>
 
-<!-- ───────────────────────── icon sprite ───────────────────────── -->
-<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-search" viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 0 3.47 10.9l4.31 4.32 1.42-1.42-4.32-4.31A6 6 0 0 0 10 4Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/></symbol>
-  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 12 12 5.7 5.7l1.4-1.4L12 10.6l6.3-6.3 1.4 1.4Z"/><path d="M6.4 17.6 17.6 6.4l1.4 1.4L7.8 19l-1.4-1.4Z"/></symbol>
-  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 17.3-5.2 3 1.4-5.9L3.6 10l6-.5L12 4l2.4 5.5 6 .5-4.6 4.4 1.4 5.9-5.2-3Z"/></symbol>
-  <symbol id="i-star-o" viewBox="0 0 24 24"><path d="m12 15.4-3.8 2.2.9-4.3-3.2-2.8 4.3-.4L12 6.3l1.8 3.8 4.3.4-3.2 2.8.9 4.3-3.8-2.2Zm0-2.5 1.9 1.1-.5-2.2 1.6-1.4-2.1-.2-.9-1.9-.9 1.9-2.1.2 1.6 1.4-.5 2.2 1.9-1.1ZM12 17.3l-4.4 2.5 1-4.9-3.5-3 5-.4L12 7l2 4.5 5 .4-3.5 3 1 4.9-4.4-2.5Z"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
-  <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20v-2Z"/></symbol>
-  <symbol id="i-reload" viewBox="0 0 24 24"><path d="M12 5V2L8 6l4 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></symbol>
-  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5v2H6v3H4Zm11-5h5v5h-2V6h-3V4ZM4 15h2v3h3v2H4v-5Zm14 0h2v5h-5v-2h3v-3Z"/></symbol>
-  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3v2h3.6l-8.3 8.3 1.4 1.4L19 6.4V10h2V3h-7ZM5 5h5V3H3v18h18v-7h-2v5H5V5Z"/></symbol>
-  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 1.4l-1.4 1.4a1 1 0 0 1-1.4 0Z" opacity="0"/><path d="M11 17H7a4 4 0 0 1 0-8h2V7H7a6 6 0 0 0 0 12h4v-2Zm6-10h-4v2h4a4 4 0 0 1 0 8h-2v2h2a6 6 0 0 0 0-12ZM8 11h8v2H8v-2Z"/></symbol>
-  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3Zm2 2v4h4V5H5Zm8-2h8v8h-8V3Zm2 2v4h4V5h-4ZM3 13h8v8H3v-8Zm2 2v4h4v-4H5Zm8-2h8v8h-8v-8Zm2 2v4h4v-4h-4Z"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h2v2H3V5Zm4 0h14v2H7V5ZM3 11h2v2H3v-2Zm4 0h14v2H7v-2ZM3 17h2v2H3v-2Zm4 0h14v2H7v-2Z"/></symbol>
-  <symbol id="i-sun" viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM11 1h2v4h-2V1Zm0 18h2v4h-2v-4ZM1 11h4v2H1v-2Zm18 0h4v2h-4v-2ZM3.5 4.9l1.4-1.4 2.9 2.9-1.4 1.4-2.9-2.9Zm12.7 12.7 1.4-1.4 2.9 2.9-1.4 1.4-2.9-2.9ZM18.5 4.9l-2.9 2.9-1.4-1.4 2.9-2.9 1.4 1.4ZM5.8 16.2l-2.9 2.9-1.4-1.4 2.9-2.9 1.4 1.4Z"/></symbol>
-  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Zm0 2a7 7 0 1 1-7 7 7 7 0 0 1 7-7Z"/></symbol>
-  <symbol id="i-dice" viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7l-10-5Zm0 2.3 7.5 3.7L12 11.7 4.5 8 12 4.3ZM4 9.9l7 3.5v6.9l-7-3.5V9.9Zm9 10.4v-6.9l7-3.5v6.9l-7 3.5Z"/><circle cx="8.5" cy="7" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></symbol>
-  <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm1 12h-2v-2h2v2Zm1.6-5.2-.7.7c-.6.6-.9 1.1-.9 2.5h-2c0-1.9.5-2.8 1.4-3.6l1-1a1.8 1.8 0 1 0-2.5-2.5L9.4 6a3.8 3.8 0 1 1 5.4 5.4"/></symbol>
-  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18v2.2l-7 6.3V21l-4-2.4v-5.1L3 7.2V5Z"/></symbol>
-  <symbol id="i-chip" viewBox="0 0 24 24"><path d="M9 2h2v2h2V2h2v2h1a3 3 0 0 1 3 3v1h2v2h-2v2h2v2h-2v1a3 3 0 0 1-3 3h-1v2h-2v-2h-2v2H9v-2H8a3 3 0 0 1-3-3v-1H3v-2h2v-2H3V9h2V8a3 3 0 0 1 3-3h1V2Zm-1 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H8Zm2 2h4v2H10V9Zm0 4h4v2H10v-2Z"/></symbol>
-  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2Zm0 4.6L19.5 19h-15L12 6.6ZM11 10h2v5h-2v-5Zm0 6h2v2h-2v-2Z"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm-1 3h2v5.4l3.5 2.1-1 1.7L11 13V7Z"/></symbol>
-  <symbol id="i-copy" viewBox="0 0 24 24"><path d="M8 2h10a2 2 0 0 1 2 2v12h-2V4H8V2ZM4 6h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm0 2v12h10V8H4Z"/></symbol>
+  <!-- ALL -->
+  <symbol id="scene-all" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-all)"/>
+    <g fill="#fff" opacity=".5"><circle cx="46" cy="30" r="1.4"/><circle cx="112" cy="52" r="1"/><circle cx="205" cy="24" r="1.2"/><circle cx="308" cy="46" r="1"/><circle cx="418" cy="30" r="1.4"/><circle cx="456" cy="72" r="1"/><circle cx="152" cy="18" r="1"/><circle cx="368" cy="20" r="1.2"/></g>
+    <circle cx="392" cy="58" r="17" fill="#f4d9a4" opacity=".9"/>
+    <path d="M0 196 L64 150 L118 186 L176 132 L246 190 L318 148 L388 196 L480 152 L480 270 L0 270Z" fill="#13202f"/>
+    <path d="M0 224 L58 196 L128 222 L198 188 L268 226 L338 198 L406 230 L480 204 L480 270 L0 270Z" fill="#1b2b3c"/>
+    <g opacity=".9">
+      <rect x="36" y="206" width="10" height="10" fill="#3f7d4f"/><rect x="46" y="200" width="10" height="10" fill="#4b8f5c"/>
+      <rect x="118" y="212" width="10" height="10" fill="#6b4a2f"/><rect x="128" y="206" width="10" height="10" fill="#7d5836"/>
+      <rect x="392" y="210" width="10" height="10" fill="#8a8f9c"/><rect x="402" y="202" width="10" height="10" fill="#a2a8b6"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">QUANTUM LAUNCHER</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#a8c6e2" letter-spacing="3">EVERY EAGLERCRAFT BUILD, ONE FILE</text>
+  </symbol>
+
+  <!-- PRE-CLASSIC -->
+  <symbol id="scene-preclassic" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-pre)"/>
+    <circle cx="382" cy="74" r="24" fill="#e9c98d" opacity=".85"/>
+    <path d="M0 186 L58 152 L104 178 L158 138 L214 180 L272 146 L330 184 L392 150 L480 182 L480 270 L0 270Z" fill="#3c4a42"/>
+    <path d="M0 212 L70 190 L140 214 L212 182 L286 216 L360 188 L430 218 L480 196 L480 270 L0 270Z" fill="#4a5a4c"/>
+    <g>
+      <rect x="60" y="196" width="22" height="22" fill="#5f7a58"/><rect x="60" y="196" width="22" height="6" fill="#7ba06e"/>
+      <rect x="86" y="208" width="22" height="22" fill="#566e52"/><rect x="86" y="208" width="22" height="6" fill="#6f9166"/>
+      <rect x="150" y="202" width="22" height="22" fill="#5f7a58"/><rect x="150" y="202" width="22" height="6" fill="#7ba06e"/>
+      <rect x="330" y="204" width="22" height="22" fill="#4e6450"/><rect x="330" y="204" width="22" height="6" fill="#688a61"/>
+      <rect x="356" y="216" width="22" height="22" fill="#586f54"/><rect x="356" y="216" width="22" height="6" fill="#719468"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">PRE-CLASSIC</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#b9cbb4" letter-spacing="2.6">RD-131655 → RD-161348 · THE FIRST FIVE DAYS</text>
+  </symbol>
+
+  <!-- CLASSIC -->
+  <symbol id="scene-classic" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-cla)"/>
+    <circle cx="404" cy="52" r="26" fill="#fff3c4"/>
+    <g fill="#fff" opacity=".92">
+      <rect x="40" y="46" width="46" height="16" rx="8"/><rect x="58" y="36" width="30" height="16" rx="8"/>
+      <rect x="190" y="66" width="52" height="15" rx="7.5"/><rect x="208" y="57" width="30" height="15" rx="7.5"/>
+      <rect x="316" y="40" width="40" height="14" rx="7"/><rect x="330" y="31" width="26" height="14" rx="7"/>
+    </g>
+    <path d="M0 178 L70 158 L150 176 L232 150 L312 174 L392 154 L480 176 L480 270 L0 270Z" fill="#5b9c4f"/>
+    <rect x="0" y="186" width="480" height="84" fill="#5b9c4f"/>
+    <rect x="0" y="186" width="480" height="12" fill="#6db35e"/>
+    <rect x="0" y="216" width="480" height="54" fill="#7a5a3a"/>
+    <g>
+      <rect x="74" y="164" width="12" height="24" fill="#6b4a2f"/><rect x="66" y="146" width="28" height="22" fill="#3f8f43"/>
+      <rect x="238" y="160" width="12" height="28" fill="#6b4a2f"/><rect x="228" y="138" width="32" height="26" fill="#46a04b"/>
+      <rect x="372" y="166" width="12" height="22" fill="#6b4a2f"/><rect x="364" y="150" width="28" height="20" fill="#3f8f43"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">CLASSIC</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#d6f0d0" letter-spacing="2.6">0.0.11A → 0.30 · CREATIVE &amp; SURVIVAL TEST</text>
+  </symbol>
+
+  <!-- DEVS (Indev + Infdev) -->
+  <symbol id="scene-devs" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-dev)"/>
+    <path d="M0 0 H480 V270 H0Z" fill="#1a1116"/>
+    <path d="M0 96 L64 74 L128 100 L196 70 L268 102 L340 76 L410 104 L480 82 L480 270 L0 270Z" fill="#2b1d18"/>
+    <path d="M0 148 L80 128 L160 154 L242 126 L322 156 L402 130 L480 152 L480 270 L0 270Z" fill="#3a281d"/>
+    <g>
+      <circle cx="92" cy="150" r="20" fill="#ffb547" opacity=".22"/><circle cx="92" cy="150" r="8" fill="#ffcf7a"/>
+      <circle cx="248" cy="140" r="20" fill="#ffb547" opacity=".22"/><circle cx="248" cy="140" r="8" fill="#ffcf7a"/>
+      <circle cx="392" cy="152" r="20" fill="#ffb547" opacity=".22"/><circle cx="392" cy="152" r="8" fill="#ffcf7a"/>
+    </g>
+    <g>
+      <rect x="164" y="176" width="86" height="56" fill="#6b4630"/>
+      <rect x="164" y="176" width="86" height="9" fill="#8a5c3e"/>
+      <rect x="196" y="196" width="26" height="36" fill="#241713"/>
+      <rect x="176" y="192" width="14" height="14" fill="#ffd98a" opacity=".85"/>
+      <rect x="226" y="192" width="14" height="14" fill="#ffd98a" opacity=".85"/>
+    </g>
+    <g opacity=".95">
+      <path d="M330 132 L392 132 L406 146 L316 146Z" fill="#4b3620"/>
+      <rect x="316" y="146" width="90" height="10" fill="#3b2a18"/>
+      <rect x="352" y="156" width="18" height="26" fill="#5d4126"/>
+      <rect x="336" y="112" width="10" height="20" fill="#6b4a2f"/><rect x="322" y="98" width="38" height="16" fill="#3f8f43"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">DEVS</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#e8c89a" letter-spacing="2.6">INDEV &amp; INFDEV · WHERE SURVIVAL BEGAN</text>
+  </symbol>
+
+  <!-- ALPHA -->
+  <symbol id="scene-alpha" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-alp)"/>
+    <circle cx="142" cy="168" r="30" fill="#ffd08a" opacity=".95"/>
+    <path d="M0 172 L76 140 L152 170 L228 134 L306 168 L382 138 L480 170 L480 270 L0 270Z" fill="#4a3a52"/>
+    <path d="M0 200 L88 178 L176 204 L266 174 L354 206 L440 180 L480 198 L480 270 L0 270Z" fill="#5c4a5e"/>
+    <rect x="0" y="216" width="480" height="54" fill="#3c5f72"/>
+    <rect x="0" y="216" width="480" height="7" fill="#4e7d92" opacity=".8"/>
+    <g>
+      <rect x="60" y="188" width="10" height="26" fill="#5c4630"/><circle cx="65" cy="184" r="7" fill="#ffb547" opacity=".3"/><circle cx="65" cy="184" r="3.2" fill="#ffd98a"/>
+      <rect x="398" y="190" width="10" height="24" fill="#5c4630"/><circle cx="403" cy="186" r="7" fill="#ffb547" opacity=".3"/><circle cx="403" cy="186" r="3.2" fill="#ffd98a"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">ALPHA</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#f0c9a8" letter-spacing="2.6">HALLOWEEN · BIOMES · THE NETHER ARRIVES</text>
+  </symbol>
+
+  <!-- BETA -->
+  <symbol id="scene-beta" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-bet)"/>
+    <circle cx="336" cy="150" r="34" fill="#ffdc9c"/>
+    <path d="M0 168 L68 138 L146 166 L226 130 L308 164 L392 134 L480 164 L480 270 L0 270Z" fill="#3f6b4a"/>
+    <path d="M0 198 L86 174 L172 202 L262 172 L350 204 L438 176 L480 196 L480 270 L0 270Z" fill="#4f8158"/>
+    <rect x="0" y="212" width="480" height="58" fill="#2f6f8f"/>
+    <rect x="0" y="212" width="480" height="6" fill="#4d9bc0" opacity=".85"/>
+    <g opacity=".55" fill="#a8dcf0"><rect x="120" y="228" width="60" height="3" rx="1.5"/><rect x="240" y="242" width="80" height="3" rx="1.5"/><rect x="330" y="232" width="46" height="3" rx="1.5"/></g>
+    <g>
+      <rect x="86" y="176" width="11" height="24" fill="#6b4a2f"/><rect x="76" y="156" width="31" height="22" fill="#4a9245"/>
+      <rect x="392" y="180" width="11" height="22" fill="#6b4a2f"/><rect x="383" y="162" width="29" height="20" fill="#4a9245"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">BETA</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#ffe3b8" letter-spacing="2.6">1.0 APPROACHES · BEDS, HUNGER, WEATHER</text>
+  </symbol>
+
+  <!-- EARLY RELEASES -->
+  <symbol id="scene-early" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-ear)"/>
+    <circle cx="78" cy="56" r="20" fill="#f6e3b0" opacity=".9"/>
+    <path d="M0 164 L72 136 L152 164 L232 130 L312 162 L392 134 L480 160 L480 270 L0 270Z" fill="#3c5a3f"/>
+    <path d="M0 196 L88 176 L176 200 L264 172 L352 202 L440 178 L480 194 L480 270 L0 270Z" fill="#4a6d4c"/>
+    <rect x="0" y="206" width="480" height="64" fill="#5d8a58"/>
+    <g>
+      <rect x="52" y="168" width="54" height="40" fill="#8a6a48"/><path d="M46 168 L79 148 L112 168Z" fill="#5c3f2a"/>
+      <rect x="66" y="186" width="14" height="22" fill="#4a3320"/><rect x="88" y="176" width="10" height="10" fill="#ffd98a" opacity=".8"/>
+      <rect x="150" y="176" width="46" height="34" fill="#9a7a56"/><path d="M145 176 L173 158 L201 176Z" fill="#6b4a30"/>
+      <rect x="162" y="190" width="12" height="20" fill="#4a3320"/><rect x="180" y="182" width="9" height="9" fill="#ffd98a" opacity=".8"/>
+    </g>
+    <g>
+      <rect x="336" y="150" width="16" height="58" fill="#2c1b3a"/><rect x="396" y="150" width="16" height="58" fill="#2c1b3a"/>
+      <rect x="336" y="150" width="76" height="16" fill="#2c1b3a"/>
+      <rect x="352" y="166" width="44" height="42" fill="#8c3fd6" opacity=".85"/>
+      <rect x="352" y="166" width="44" height="42" fill="#c77dff" opacity=".35"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">EARLY RELEASES</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#cfe6f5" letter-spacing="2.6">1.0.0 → 1.8.8 · VILLAGES, THE END, THE NETHER</text>
+  </symbol>
+
+  <!-- MIDDLE RELEASES -->
+  <symbol id="scene-mid" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-mid)"/>
+    <g fill="#e6d9ff" opacity=".55"><circle cx="60" cy="34" r="1.3"/><circle cx="150" cy="20" r="1"/><circle cx="268" cy="40" r="1.2"/><circle cx="380" cy="26" r="1"/><circle cx="440" cy="52" r="1.3"/><circle cx="210" cy="58" r="1"/></g>
+    <circle cx="410" cy="46" r="16" fill="#c9a6f0" opacity=".55"/>
+    <path d="M0 190 L480 190 L480 270 L0 270Z" fill="#241a30"/>
+    <path d="M0 190 L60 170 L120 190 L180 166 L240 190 L300 168 L360 190 L420 172 L480 190Z" fill="#2e2239"/>
+    <g fill="#4a3a5c">
+      <rect x="96" y="118" width="26" height="72"/><rect x="96" y="118" width="26" height="7" fill="#6b5580"/>
+      <rect x="150" y="96" width="30" height="94"/><rect x="150" y="96" width="30" height="7" fill="#6b5580"/>
+      <rect x="300" y="104" width="28" height="86"/><rect x="300" y="104" width="28" height="7" fill="#6b5580"/>
+      <rect x="352" y="130" width="24" height="60"/><rect x="352" y="130" width="24" height="7" fill="#6b5580"/>
+    </g>
+    <g fill="#d9c7f5" opacity=".9">
+      <rect x="104" y="132" width="10" height="10"/><rect x="158" y="112" width="10" height="10"/>
+      <rect x="308" y="120" width="10" height="10"/><rect x="358" y="146" width="10" height="10"/>
+    </g>
+    <g><path d="M214 150 L238 138 L262 150 L238 158Z" fill="#8c5bb5"/><path d="M238 158 L238 190 L214 176Z" fill="#6d458f"/><path d="M238 158 L238 190 L262 176Z" fill="#7d51a3"/></g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">MIDDLE RELEASES</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#d9c7f5" letter-spacing="2.6">1.9 → 1.17 · COMBAT, ELYTRA, CAVES &amp; CLIFFS</text>
+  </symbol>
+
+  <!-- MODERN RELEASES -->
+  <symbol id="scene-modern" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-mod)"/>
+    <g opacity=".55">
+      <path d="M0 60 C90 22 180 70 270 40 C350 14 420 56 480 34 L480 90 C410 108 340 74 262 96 C176 120 88 78 0 108Z" fill="#4fd6a8" opacity=".35"/>
+      <path d="M0 84 C96 48 186 96 276 66 C356 40 424 82 480 60 L480 108 C412 124 342 92 266 114 C182 138 92 98 0 126Z" fill="#7ce0ff" opacity=".3"/>
+    </g>
+    <g fill="#fff" opacity=".6"><circle cx="52" cy="26" r="1.4"/><circle cx="146" cy="16" r="1"/><circle cx="238" cy="30" r="1.2"/><circle cx="330" cy="18" r="1"/><circle cx="424" cy="34" r="1.3"/></g>
+    <path d="M0 200 L74 128 L120 168 L188 96 L246 156 L300 118 L360 176 L420 132 L480 186 L480 270 L0 270Z" fill="#1d3a4e"/>
+    <path d="M120 168 L188 96 L246 156 Z" fill="#e8f4ff" opacity=".9"/>
+    <path d="M188 96 L214 126 L188 132 L166 124Z" fill="#f6fbff"/>
+    <path d="M300 118 L360 176 L272 172Z" fill="#dcecf7" opacity=".75"/>
+    <path d="M0 208 L96 190 L200 208 L300 186 L400 210 L480 192 L480 270 L0 270Z" fill="#24485c"/>
+    <rect x="0" y="228" width="480" height="42" fill="#14232e"/>
+    <g opacity=".8">
+      <rect x="60" y="238" width="9" height="9" fill="#2ee6b0"/><rect x="150" y="246" width="9" height="9" fill="#2ee6b0"/>
+      <rect x="286" y="240" width="9" height="9" fill="#2ee6b0"/><rect x="398" y="248" width="9" height="9" fill="#2ee6b0"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">MODERN RELEASES</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#a8e8dd" letter-spacing="2.6">1.18+ · HUGE CAVES, THE DEEP DARK, 26.3</text>
+  </symbol>
+
+  <!-- CLIENTS -->
+  <symbol id="scene-clients" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-cli)"/>
+    <g stroke="#ff4fd8" stroke-width="1" opacity=".3">
+      <path d="M0 196 H480"/><path d="M0 214 H480"/><path d="M0 236 H480"/><path d="M0 262 H480"/>
+      <path d="M240 196 L60 270"/><path d="M240 196 L200 270"/><path d="M240 196 L300 270"/><path d="M240 196 L420 270"/>
+      <path d="M240 196 L120 270"/><path d="M240 196 L370 270"/>
+    </g>
+    <circle cx="240" cy="150" r="52" fill="#ff4fd8" opacity=".16"/>
+    <circle cx="240" cy="150" r="34" fill="#ff4fd8" opacity=".22"/>
+    <g fill="#1a0d28">
+      <rect x="52" y="118" width="30" height="78"/><rect x="96" y="140" width="26" height="56"/>
+      <rect x="330" y="128" width="28" height="68"/><rect x="372" y="106" width="32" height="90"/>
+      <rect x="416" y="144" width="24" height="52"/><rect x="146" y="152" width="22" height="44"/>
+      <rect x="286" y="146" width="26" height="50"/>
+    </g>
+    <g fill="#3dffd0" opacity=".85">
+      <rect x="58" y="126" width="7" height="7"/><rect x="72" y="142" width="7" height="7"/><rect x="58" y="158" width="7" height="7"/>
+      <rect x="102" y="150" width="7" height="7"/><rect x="112" y="170" width="7" height="7"/>
+      <rect x="338" y="138" width="7" height="7"/><rect x="346" y="160" width="7" height="7"/>
+      <rect x="380" y="118" width="7" height="7"/><rect x="394" y="140" width="7" height="7"/><rect x="380" y="166" width="7" height="7"/>
+      <rect x="424" y="156" width="7" height="7"/><rect x="292" y="158" width="7" height="7"/>
+    </g>
+    <g opacity=".9">
+      <rect x="196" y="60" width="88" height="5" rx="2.5" fill="#3dffd0"/>
+      <rect x="196" y="60" width="52" height="5" rx="2.5" fill="#ff4fd8"/>
+      <rect x="196" y="74" width="66" height="4" rx="2" fill="#3dffd0" opacity=".6"/>
+      <rect x="196" y="86" width="44" height="4" rx="2" fill="#3dffd0" opacity=".4"/>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">CLIENTS</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#ffb3f0" letter-spacing="2.6">MODDED BUILDS · PVP PACKS · SIGNATURE FORKS</text>
+  </symbol>
+
+  <!-- EXTRAS -->
+  <symbol id="scene-extras" viewBox="0 0 480 270">
+    <rect width="480" height="270" fill="url(#sky-ext)"/>
+    <circle cx="404" cy="60" r="22" fill="#e8f0c8" opacity=".75"/>
+    <path d="M0 186 L80 160 L160 188 L240 156 L320 190 L400 162 L480 184 L480 270 L0 270Z" fill="#2f5a52"/>
+    <rect x="0" y="200" width="480" height="70" fill="#3a6b60"/>
+    <g>
+      <rect x="56" y="112" width="42" height="42" fill="#8b6f47"/><rect x="56" y="112" width="42" height="9" fill="#a98a5c"/>
+      <rect x="112" y="142" width="34" height="34" fill="#4b8f7a"/><rect x="112" y="142" width="34" height="8" fill="#61ab93"/>
+      <rect x="316" y="132" width="38" height="38" fill="#b07a4a"/><rect x="316" y="132" width="38" height="9" fill="#cf9459"/>
+      <rect x="368" y="156" width="30" height="30" fill="#43706b"/><rect x="368" y="156" width="30" height="8" fill="#578c86"/>
+    </g>
+    <g fill="#e8f0c8">
+      <path d="M232 108 l7 15 16 2 -12 11 3 16 -14-8 -14 8 3-16 -12-11 16-2z" opacity=".95"/>
+    </g>
+    <g transform="translate(196 168)" fill="none" stroke="#e8f0c8" stroke-width="7" opacity=".9">
+      <circle cx="0" cy="0" r="17"/>
+      <g stroke-width="6"><path d="M0 -25 V-21"/><path d="M0 25 V21"/><path d="M-25 0 H-21"/><path d="M25 0 H21"/></g>
+    </g>
+    <rect x="0" y="150" width="480" height="120" fill="url(#scrim)"/>
+    <text x="26" y="230" font-family="system-ui,sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="1">EXTRAS</text>
+    <text x="27" y="250" font-family="system-ui,sans-serif" font-size="10.5" fill="#bfe6dc" letter-spacing="2.6">MINICRAFT · 4K · SCRATCH · TOOLS</text>
+  </symbol>
 </svg>
 
-<!-- ───────────────────────── boot splash ───────────────────────── -->
-<div class="boot" id="boot" role="status" aria-live="polite">
-  <div class="boot-inner">
-    <div class="boot-cube" aria-hidden="true"><span></span><span></span><span></span></div>
-    <p class="boot-text">Loading build catalogue…</p>
-  </div>
-</div>
+<!-- ============================== app ============================== -->
+<div class="shell">
 
-<!-- ───────────────────────── top bar ───────────────────────── -->
-<header class="topbar">
-  <button class="icon-btn only-mobile" id="btnMenu" aria-label="Open filters" aria-expanded="false" aria-controls="sidebar">
-    <svg class="ico"><use href="#i-menu"/></svg>
-  </button>
-
-  <a class="brand" href="./" aria-label="EaglerVault home">
-    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-    <span class="brand-text">EAGLER<b>VAULT</b></span>
-  </a>
-
-  <div class="search">
-    <svg class="ico search-ico" aria-hidden="true"><use href="#i-search"/></svg>
-    <input id="search" type="search" placeholder="Search builds…" autocomplete="off" spellcheck="false"
-           aria-label="Search builds" aria-describedby="searchHint">
-    <kbd class="search-kbd" id="searchHint" aria-hidden="true">/</kbd>
-    <button class="icon-btn search-clear" id="searchClear" aria-label="Clear search" hidden>
-      <svg class="ico"><use href="#i-close"/></svg>
-    </button>
-  </div>
-
-  <div class="topbar-actions">
-    <button class="btn btn-ghost hide-sm" id="btnRandom" title="Launch a random build">
-      <svg class="ico"><use href="#i-dice"/></svg><span class="hide-md">Surprise me</span>
-    </button>
-    <button class="btn btn-ghost" id="btnFavs" aria-pressed="false" title="Show only favourites">
-      <svg class="ico"><use href="#i-star"/></svg><span class="hide-md">Favourites</span>
-      <span class="pill" id="favCount">0</span>
-    </button>
-    <button class="icon-btn" id="btnTheme" aria-label="Switch to light theme" title="Toggle theme">
-      <svg class="ico ico-sun"><use href="#i-sun"/></svg>
-      <svg class="ico ico-moon"><use href="#i-moon"/></svg>
-    </button>
-    <button class="icon-btn" id="btnHelp" aria-label="Keyboard shortcuts and help" title="Help">
-      <svg class="ico"><use href="#i-help"/></svg>
-    </button>
-  </div>
-</header>
-
-<!-- ───────────────────────── layout ───────────────────────── -->
-<div class="layout">
-  <div class="scrim" id="scrim" hidden></div>
-
-  <aside class="sidebar" id="sidebar" aria-label="Filters">
-    <div class="sidebar-head only-mobile">
-      <h2>Filters</h2>
-      <button class="icon-btn" id="btnCloseSidebar" aria-label="Close filters">
-        <svg class="ico"><use href="#i-close"/></svg>
-      </button>
+  <aside class="side">
+    <div class="brand">
+      <h1><span class="dot"></span>Quantum Launcher</h1>
+      <p id="brandSub">loading…</p>
     </div>
-
-    <section class="side-block">
-      <h2 class="side-title">Era</h2>
-      <nav class="cat-list" id="catList" aria-label="Era"></nav>
-    </section>
-
-    <section class="side-block">
-      <h2 class="side-title">Build type</h2>
-      <div class="chip-row" id="typeList" role="group" aria-label="Build type"></div>
-    </section>
-
-    <section class="side-block">
-      <h2 class="side-title">Runtime</h2>
-      <div class="chip-row" id="runtimeList" role="group" aria-label="Runtime"></div>
-    </section>
-
-    <section class="side-block">
-      <h2 class="side-title">Options</h2>
-      <label class="switch">
-        <input type="checkbox" id="optDupes">
-        <span>Hide duplicate builds</span>
-      </label>
-      <label class="switch">
-        <input type="checkbox" id="optLight">
-        <span>Under 25&nbsp;MB (data saver)</span>
-      </label>
-    </section>
-
-    <section class="side-block side-stats">
-      <h2 class="side-title">Vault stats</h2>
-      <dl id="vaultStats" class="stat-list"></dl>
-    </section>
-
-    <button class="btn btn-block" id="btnReset">Reset all filters</button>
-
-    <p class="side-foot">
-      Self-contained single-file builds — the first load downloads the whole game,
-      then your browser caches it.
-    </p>
+    <nav class="nav" id="nav" aria-label="Build groups"></nav>
   </aside>
 
-  <main class="main" id="main" tabindex="-1">
-
-    <!-- hero -->
-    <section class="hero" id="hero">
-      <img class="hero-img" src="./assets/img/hero.jpg" alt="" aria-hidden="true" decoding="async">
-      <div class="hero-body">
-        <p class="hero-kicker" id="heroKicker">Free · No install · No Java</p>
-        <h1 class="hero-title">Every Eaglercraft build,<br>one launcher.</h1>
-        <p class="hero-sub" id="heroSub">Loading…</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" id="btnPlayTop"><svg class="ico"><use href="#i-play"/></svg> Continue playing</button>
-          <button class="btn" id="btnRandomHero"><svg class="ico"><use href="#i-dice"/></svg> Surprise me</button>
-        </div>
-        <dl class="hero-stats" id="heroStats"></dl>
-      </div>
-    </section>
-
-    <!-- continue playing -->
-    <section class="recents" id="recentsWrap" hidden>
-      <h2 class="section-title"><svg class="ico"><use href="#i-clock"/></svg> Continue playing</h2>
-      <div class="recent-row" id="recentRow"></div>
-    </section>
-
-    <!-- toolbar -->
-    <div class="toolbar">
-      <p class="result-count" id="resultCount" aria-live="polite"></p>
-      <div class="toolbar-right">
-        <label class="select-wrap">
-          <span class="sr-only">Sort builds</span>
-          <select id="sortBy" aria-label="Sort builds">
-            <option value="order">Sort: Timeline, oldest first</option>
-            <option value="order-desc">Sort: Timeline, newest first</option>
-            <option value="name">Sort: Name (A–Z)</option>
-            <option value="name-desc">Sort: Name (Z–A)</option>
-            <option value="size-desc">Sort: Size (largest first)</option>
-            <option value="size-asc">Sort: Size (smallest first)</option>
-            <option value="plays">Sort: Most played</option>
-            <option value="recent">Sort: Recently played</option>
-          </select>
-        </label>
-        <label class="select-wrap">
-          <span class="sr-only">Group builds</span>
-          <select id="groupBy" aria-label="Group builds">
-            <option value="era">Group: Era</option>
-            <option value="type">Group: Build type</option>
-            <option value="runtime">Group: Runtime</option>
-            <option value="none">Group: None</option>
-          </select>
-        </label>
-        <div class="viewtoggle" role="group" aria-label="View style">
-          <button class="icon-btn is-active" id="btnGrid" aria-label="Grid view" aria-pressed="true"><svg class="ico"><use href="#i-grid"/></svg></button>
-          <button class="icon-btn" id="btnList" aria-label="List view" aria-pressed="false"><svg class="ico"><use href="#i-list"/></svg></button>
-        </div>
+  <main class="stage" id="stage">
+    <div class="art-wrap">
+      <svg class="art" id="art" viewBox="0 0 480 270" role="img" aria-labelledby="artTitle">
+        <title id="artTitle">Group artwork</title>
+        <use id="artUse" href="#scene-all"></use>
+      </svg>
+      <div class="picker">
+        <button class="pick" id="shuffle" title="Random build" aria-label="Random build">
+          <svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4V8h-2.2c-.9 0-1.7.4-2.2 1.2l-1.3 2-1.5-2.2 1-1.5C11.4 6.4 12.6 6 13.8 6H17V3zM3 7h3.2c1.2 0 2.4.4 3.4 1.5l4.8 6.1c.5.8 1.3 1.2 2.2 1.2H17v-3l4 4-4 4v-3h-2.2c-1.2 0-2.4-.4-3.4-1.5L6.6 10C6.1 9.2 5.3 8.8 4.4 8.8H3V7z"/></svg>
+        </button>
       </div>
     </div>
 
-    <div class="active-filters" id="activeFilters" hidden></div>
-
-    <!-- grid -->
-    <div class="grid" id="grid" role="list" aria-label="Builds"></div>
-
-    <div class="empty" id="empty" hidden>
-      <svg class="ico empty-ico"><use href="#i-search"/></svg>
-      <h2>No builds match</h2>
-      <p id="emptyMsg">Try a different search term or clear your filters.</p>
-      <button class="btn" id="btnEmptyReset">Reset filters</button>
-    </div>
-
-    <footer class="footer">
-      <p>
-        <strong>EaglerVault</strong> — a static launcher for the
-        <a href="https://github.com/the-creative-masterALT/quantum-client" target="_blank" rel="noopener">Eaglercraft Versions List</a> archive.
-        Every build runs locally in your browser; nothing is uploaded.
-      </p>
-      <p class="footer-meta" id="footerMeta"></p>
-    </footer>
+    <section class="picked" aria-live="polite">
+      <div class="who">
+        <h2 class="name" id="bName">—</h2>
+        <p class="sub" id="bSub">—</p>
+        <div class="chips" id="bChips"></div>
+      </div>
+      <button class="icon-btn" id="fav" aria-pressed="false" aria-label="Favourite">
+        <svg viewBox="0 0 24 24"><path d="M12 17.3l-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z"/></svg>
+      </button>
+      <button class="play" id="play">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <span>Play</span>
+      </button>
+    </section>
   </main>
+
+  <footer class="dock">
+    <div class="sel-wrap">
+      <label class="sr" for="pick">Choose a build</label>
+      <select id="pick"></select>
+      <svg class="caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="step">
+      <button class="icon-btn" id="prev" aria-label="Previous build"><svg viewBox="0 0 24 24"><path d="M15.4 7.4L14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
+      <button class="icon-btn" id="next" aria-label="Next build"><svg viewBox="0 0 24 24"><path d="M8.6 16.6L10 18l6-6-6-6-1.4 1.4L13.2 12z"/></svg></button>
+    </div>
+    <span class="count" id="pos">—</span>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 109 9 7 7 0 01-9-9z"/></svg></button>
+    <button class="play" id="dlOpen">
+      <svg viewBox="0 0 24 24"><path d="M12 16l-5-5 1.4-1.4L11 12.2V4h2v8.2l2.6-2.6L17 11zM5 18h14v2H5z"/></svg>
+      <span>Downloads</span>
+    </button>
+  </footer>
 </div>
 
-<!-- ───────────────────────── detail drawer ───────────────────────── -->
-<div class="drawer" id="drawer" hidden>
-  <div class="drawer-scrim" data-close></div>
-  <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
-    <button class="icon-btn drawer-close" data-close aria-label="Close details"><svg class="ico"><use href="#i-close"/></svg></button>
-    <div class="drawer-cover" id="drawerCover">
-      <span class="drawer-cover-label" id="drawerCoverLabel"></span>
-    </div>
-    <div class="drawer-body">
-      <p class="drawer-eyebrow" id="drawerEyebrow"></p>
-      <h2 class="drawer-title" id="drawerTitle"></h2>
-      <p class="drawer-note" id="drawerNote" hidden></p>
-      <dl class="drawer-specs" id="drawerSpecs"></dl>
-      <div class="drawer-actions">
-        <button class="btn btn-primary btn-lg" id="drawerPlay"><svg class="ico"><use href="#i-play"/></svg> Play</button>
-        <button class="btn" id="drawerFav"><svg class="ico"><use href="#i-star-o"/></svg> Favourite</button>
+<!-- ============================== downloads ============================== -->
+<div class="scrim" id="dlScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dlTitle">
+    <header>
+      <div style="flex:1">
+        <h2 id="dlTitle">Downloads</h2>
+        <p id="dlSub">Every build in the vault, straight from the source files.</p>
       </div>
-      <div class="drawer-links">
-        <button class="linkbtn" id="drawerNewTab"><svg class="ico"><use href="#i-external"/></svg> Open in new tab</button>
-        <button class="linkbtn" id="drawerCopy"><svg class="ico"><use href="#i-link"/></svg> Copy link</button>
-      </div>
+      <button class="icon-btn" id="dlClose" aria-label="Close downloads"><svg viewBox="0 0 24 24"><path d="M18.3 5.7L12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg></button>
+    </header>
+    <div class="tools">
+      <input id="dlSearch" type="search" placeholder="Search builds…" aria-label="Search builds">
+      <button class="icon-btn" id="dlGroup" title="Limit to current group"><svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zm3 6h12v2H6zm3 6h6v2H9z"/></svg></button>
     </div>
+    <div class="dl-list" id="dlList"></div>
   </div>
 </div>
 
-<!-- ───────────────────────── player ───────────────────────── -->
-<div class="player" id="player" hidden>
-  <div class="player-bar">
-    <button class="btn btn-ghost" id="playerBack"><svg class="ico"><use href="#i-back"/></svg> <span class="hide-sm">Back to vault</span></button>
-    <p class="player-title" id="playerTitle"></p>
-    <div class="player-tools">
-      <button class="icon-btn" id="playerReload" title="Reload game"><svg class="ico"><use href="#i-reload"/></svg></button>
-      <button class="icon-btn" id="playerFull" title="Fullscreen"><svg class="ico"><use href="#i-expand"/></svg></button>
-      <button class="icon-btn" id="playerTab" title="Open in new tab"><svg class="ico"><use href="#i-external"/></svg></button>
-      <button class="icon-btn player-quit" id="playerQuit" title="Quit (Ctrl+Shift+Q)"><svg class="ico"><use href="#i-close"/></svg></button>
-    </div>
-  </div>
-  <div class="player-stage" id="playerStage">
-    <div class="player-loading" id="playerLoading">
-      <div class="boot-cube"><span></span><span></span><span></span></div>
-      <p class="boot-text" id="playerLoadingText">Loading…</p>
-      <p class="player-hint" id="playerHint"></p>
-    </div>
-  </div>
-</div>
+<!-- ============================== data ============================== -->
+<script id="vault" type="application/json">
+{"count":141,"totalSizeText":"2.76 GB","versions":[{"id":"rd-131655-be20d0","name":"rd-131655","file":"rd-131655-JS.html","url":"./rd-131655-JS.html","category":"preclassic","type":"vanilla","runtime":"js","version":"rd-131655","size":972747,"sizeText":"949.9 KB","tags":[]},{"id":"rd-131655-0bd629","name":"rd-131655","file":"rd-131655-WASM.html","url":"./rd-131655-WASM.html","category":"preclassic","type":"vanilla","runtime":"wasm-gc","version":"rd-131655","size":938203,"sizeText":"916.2 KB","tags":[]},{"id":"rd-132211-b5f143","name":"rd-132211","file":"rd-132211-JS.html","url":"./rd-132211-JS.html","category":"preclassic","type":"vanilla","runtime":"js","version":"rd-132211","size":985805,"sizeText":"962.7 KB","tags":[]},{"id":"rd-132211-d0dd36","name":"rd-132211","file":"rd-132211-WASM.html","url":"./rd-132211-WASM.html","category":"preclassic","type":"vanilla","runtime":"wasm-gc","version":"rd-132211","size":942631,"sizeText":"920.5 KB","tags":[]},{"id":"rd-132328-49cad6","name":"rd-132328","file":"rd-132328-JS.html","url":"./rd-132328-JS.html","category":"preclassic","type":"vanilla","runtime":"js","version":"rd-132328","size":996069,"sizeText":"972.7 KB","tags":[]},{"id":"rd-132328-16b776","name":"rd-132328","file":"rd-132328-WASM.html","url":"./rd-132328-WASM.html","category":"preclassic","type":"vanilla","runtime":"wasm-gc","version":"rd-132328","size":949671,"sizeText":"927.4 KB","tags":[]},{"id":"rd-160052-d99611","name":"rd-160052","file":"rd-160052-JS.html","url":"./rd-160052-JS.html","category":"preclassic","type":"vanilla","runtime":"js","version":"rd-160052","size":996443,"sizeText":"973.1 KB","tags":[]},{"id":"rd-161348-112ab7","name":"rd-161348","file":"rd-161348-JS.html","url":"./rd-161348-JS.html","category":"preclassic","type":"vanilla","runtime":"js","version":"rd-161348","size":1002491,"sizeText":"979.0 KB","tags":[]},{"id":"rd-161348-b5e70a","name":"rd-161348","file":"rd-161348-WASM.html","url":"./rd-161348-WASM.html","category":"preclassic","type":"vanilla","runtime":"wasm-gc","version":"rd-161348","size":961499,"sizeText":"939.0 KB","tags":[]},{"id":"rd-160052-pre-release-b1a180","name":"rd-160052 Pre-release","file":"pre-release-160052.html","url":"./pre-release-160052.html","category":"preclassic","type":"vanilla","runtime":"wasm-gc","version":"rd-160052","size":957174,"sizeText":"934.7 KB","tags":[]},{"id":"classic-0-0-11a-c491ea","name":"Classic 0.0.11a","file":"Classic 0.0.11a-JS.html","url":"./Classic%200.0.11a-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.11a","size":1009113,"sizeText":"985.5 KB","tags":[]},{"id":"classic-0-0-11a-0a5f66","name":"Classic 0.0.11a","file":"Classic 0.0.11a-WASM.html","url":"./Classic%200.0.11a-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.11a","size":967367,"sizeText":"944.7 KB","tags":[]},{"id":"classic-0-0-12a-3-32f4bd","name":"Classic 0.0.12a_3","file":"Classic 0.0.12a_3-JS.html","url":"./Classic%200.0.12a_3-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.12a_3","size":1034194,"sizeText":"1010.0 KB","tags":[]},{"id":"classic-0-0-12a-3-fdc262","name":"Classic 0.0.12a_3","file":"Classic 0.0.12a_3-WASM.html","url":"./Classic%200.0.12a_3-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.12a_3","size":980312,"sizeText":"957.3 KB","tags":[]},{"id":"classic-0-0-13a-3-f7cfcf","name":"Classic 0.0.13a_3","file":"Classic 0.0.13a_3-JS.html","url":"./Classic%200.0.13a_3-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.13a_3","size":1054929,"sizeText":"1.01 MB","tags":[]},{"id":"classic-0-0-13a-3-7e82ae","name":"Classic 0.0.13a_3","file":"Classic 0.0.13a_3-WASM.html","url":"./Classic%200.0.13a_3-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.13a_3","size":992297,"sizeText":"969.0 KB","tags":[]},{"id":"classic-0-0-14a-8-495ee7","name":"Classic 0.0.14a_8","file":"Classic 0.0.14a_8-JS.html","url":"./Classic%200.0.14a_8-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.14a_8","size":1088857,"sizeText":"1.04 MB","tags":[]},{"id":"classic-0-0-14a-8-bdb70c","name":"Classic 0.0.14a_8","file":"Classic 0.0.14a_8-WASM.html","url":"./Classic%200.0.14a_8-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.14a_8","size":1026008,"sizeText":"1002.0 KB","tags":[]},{"id":"classic-0-0-15a-136978","name":"Classic 0.0.15a","file":"Classic 0.0.15a-JS.html","url":"./Classic%200.0.15a-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.15a","size":1127116,"sizeText":"1.07 MB","tags":[]},{"id":"classic-0-0-15a-d63d10","name":"Classic 0.0.15a","file":"Classic 0.0.15a-WASM.html","url":"./Classic%200.0.15a-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.15a","size":1047866,"sizeText":"1023.3 KB","tags":[]},{"id":"classic-0-0-16a-2-042b6a","name":"Classic 0.0.16a_2","file":"Classic 0.0.16a_2-JS.html","url":"./Classic%200.0.16a_2-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.16a_2","size":1143477,"sizeText":"1.09 MB","tags":[]},{"id":"classic-0-0-16a-2-3cbc5b","name":"Classic 0.0.16a_2","file":"Classic 0.0.16a_2-WASM.html","url":"./Classic%200.0.16a_2-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.16a_2","size":1053131,"sizeText":"1.00 MB","tags":[]},{"id":"classic-0-0-17a-fab2ce","name":"Classic 0.0.17a","file":"Classic 0.0.17a-JS.html","url":"./Classic%200.0.17a-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.17a","size":1148158,"sizeText":"1.09 MB","tags":[]},{"id":"classic-0-0-17a-57fde3","name":"Classic 0.0.17a","file":"Classic 0.0.17a-WASM.html","url":"./Classic%200.0.17a-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.17a","size":1057909,"sizeText":"1.01 MB","tags":[]},{"id":"classic-0-0-18a-2-1b4b31","name":"Classic 0.0.18a_2","file":"Classic 0.0.18a_2-JS.html","url":"./Classic%200.0.18a_2-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.18a_2","size":1152419,"sizeText":"1.10 MB","tags":[]},{"id":"classic-0-0-18a-2-37d8b9","name":"Classic 0.0.18a_2","file":"Classic 0.0.18a_2-WASM.html","url":"./Classic%200.0.18a_2-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.18a_2","size":1063295,"sizeText":"1.01 MB","tags":[]},{"id":"classic-0-0-19a-6-4f4f5b","name":"Classic 0.0.19a_6","file":"Classic 0.0.19a_6-JS.html","url":"./Classic%200.0.19a_6-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.19a_6","size":1169966,"sizeText":"1.12 MB","tags":[]},{"id":"classic-0-0-19a-6-96ef71","name":"Classic 0.0.19a_6","file":"Classic 0.0.19a_6-WASM.html","url":"./Classic%200.0.19a_6-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.19a_6","size":1075327,"sizeText":"1.03 MB","tags":[]},{"id":"classic-0-0-20-2-fd5ff7","name":"Classic 0.0.20_2","file":"Classic 0.0.20_2-JS.html","url":"./Classic%200.0.20_2-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.20_2","size":1186258,"sizeText":"1.13 MB","tags":[]},{"id":"classic-0-0-20-2-f3ea11","name":"Classic 0.0.20_2","file":"Classic 0.0.20_2-WASM.html","url":"./Classic%200.0.20_2-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.20_2","size":1087766,"sizeText":"1.04 MB","tags":[]},{"id":"classic-0-0-21a-f626bd","name":"Classic 0.0.21a","file":"Classic 0.0.21a-JS.html","url":"./Classic%200.0.21a-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.21a","size":1191846,"sizeText":"1.14 MB","tags":[]},{"id":"classic-0-0-21a-4ffee7","name":"Classic 0.0.21a","file":"Classic 0.0.21a-WASM.html","url":"./Classic%200.0.21a-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.21a","size":1088137,"sizeText":"1.04 MB","tags":[]},{"id":"classic-0-0-22a-5-a93612","name":"Classic 0.0.22a_5","file":"Classic 0.0.22a_5-JS.html","url":"./Classic%200.0.22a_5-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.22a_5","size":10235638,"sizeText":"9.76 MB","tags":[]},{"id":"classic-0-0-22a-5-bc8900","name":"Classic 0.0.22a_5","file":"Classic 0.0.22a_5-WASM.html","url":"./Classic%200.0.22a_5-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.22a_5","size":9987959,"sizeText":"9.53 MB","tags":[]},{"id":"classic-0-0-23a-01-ab291c","name":"Classic 0.0.23a_01","file":"Classic 0.0.23a_01-JS.html","url":"./Classic%200.0.23a_01-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.0.23a_01","size":10258146,"sizeText":"9.78 MB","tags":[]},{"id":"classic-0-0-23a-01-7ecdfd","name":"Classic 0.0.23a_01","file":"Classic 0.0.23a_01-WASM.html","url":"./Classic%200.0.23a_01-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.0.23a_01","size":10009360,"sizeText":"9.55 MB","tags":[]},{"id":"classic-0-24-3-a6221c","name":"Classic 0.24_3","file":"Classic 0.24_3-JS.html","url":"./Classic%200.24_3-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.24_3","size":10324653,"sizeText":"9.85 MB","tags":[]},{"id":"classic-0-24-3-d305d6","name":"Classic 0.24_3","file":"Classic 0.24_3-WASM.html","url":"./Classic%200.24_3-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.24_3","size":10034960,"sizeText":"9.57 MB","tags":[]},{"id":"classic-0-25-5-3914bb","name":"Classic 0.25_5","file":"Classic 0.25_5-JS.html","url":"./Classic%200.25_5-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.25_5","size":10334503,"sizeText":"9.86 MB","tags":[]},{"id":"classic-0-25-5-72d1a1","name":"Classic 0.25_5","file":"Classic 0.25_5-WASM.html","url":"./Classic%200.25_5-WASM.html","category":"classic","type":"vanilla","runtime":"wasm-gc","version":"0.25_5","size":10041852,"sizeText":"9.58 MB","tags":[]},{"id":"classic-0-30-f578a8","name":"Classic 0.30","file":"Classic 0.30-JS.html","url":"./Classic%200.30-JS.html","category":"classic","type":"vanilla","runtime":"js","version":"0.30","size":10492390,"sizeText":"10.0 MB","tags":[]},{"id":"classic-0-30-4d6e5f","name":"Classic 0.30","file":"classic-0.30_WASM.html","url":"./classic-0.30_WASM.html","category":"classic","type":"vanilla","runtime":"wasm","version":"0.30","size":1153570,"sizeText":"1.10 MB","tags":["multiplayer"]},{"id":"eaglercraft-indev-ce106f","name":"Eaglercraft Indev","file":"eagler-indev.html","url":"./eagler-indev.html","category":"indev","type":"vanilla","runtime":"js","version":null,"size":1150936,"sizeText":"1.10 MB","tags":[]},{"id":"indev-20100214-2e6fd2","name":"Indev 20100214","file":"Indev_20100214_JS.html","url":"./Indev_20100214_JS.html","category":"indev","type":"vanilla","runtime":"js","version":"20100214","size":21879887,"sizeText":"20.9 MB","tags":[]},{"id":"indev-20100214-2f1533","name":"Indev 20100214","file":"Indev_20100214_WASM-GC.html","url":"./Indev_20100214_WASM-GC.html","category":"indev","type":"vanilla","runtime":"wasm-gc","version":"20100214","size":21244724,"sizeText":"20.3 MB","tags":[]},{"id":"indev-20100219-0b5817","name":"Indev 20100219","file":"Eaglercraft Indev 20100219-JS.html","url":"./Eaglercraft%20Indev%2020100219-JS.html","category":"indev","type":"vanilla","runtime":"js","version":"20100219","size":21879101,"sizeText":"20.9 MB","tags":[]},{"id":"indev-20100219-121689","name":"Indev 20100219","file":"Eaglercraft Indev 20100219-WASM.html","url":"./Eaglercraft%20Indev%2020100219-WASM.html","category":"indev","type":"vanilla","runtime":"wasm-gc","version":"20100219","size":21188093,"sizeText":"20.2 MB","tags":[]},{"id":"indev-20100223-d18be8","name":"Indev 20100223","file":"Eaglercraft_indev 20100223_JS.html","url":"./Eaglercraft_indev%2020100223_JS.html","category":"indev","type":"vanilla","runtime":"js","version":"20100223","size":21953049,"sizeText":"20.9 MB","tags":[]},{"id":"indev-20100223-639326","name":"Indev 20100223","file":"Eaglercraft_indev 20100223_WASM.html","url":"./Eaglercraft_indev%2020100223_WASM.html","category":"indev","type":"vanilla","runtime":"wasm-gc","version":"20100223","size":21254554,"sizeText":"20.3 MB","tags":[]},{"id":"indev-20100233-639326","name":"Indev 20100233","file":"Eaglercraft_indev_20100233-wasm.html","url":"./Eaglercraft_indev_20100233-wasm.html","category":"indev","type":"vanilla","runtime":"wasm-gc","version":"20100233","size":21254554,"sizeText":"20.3 MB","tags":["duplicate"]},{"id":"indev-20100233-d18be8","name":"Indev 20100233","file":"Eaglercraft_indev_20100233.html","url":"./Eaglercraft_indev_20100233.html","category":"indev","type":"vanilla","runtime":"js","version":"20100233","size":21953049,"sizeText":"20.9 MB","tags":["duplicate"]},{"id":"infdev-298b75","name":"Infdev","file":"infdev-wasm-gc.html","url":"./infdev-wasm-gc.html","category":"infdev","type":"vanilla","runtime":"wasm-gc","version":null,"size":1422446,"sizeText":"1.36 MB","tags":[]},{"id":"alpha-1-0-1-01-186f98","name":"Alpha 1.0.1_01","file":"Alpha 1.0.1_01-JS.html","url":"./Alpha%201.0.1_01-JS.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.0.1_01","size":2309190,"sizeText":"2.20 MB","tags":[]},{"id":"alpha-1-0-4-69564a","name":"Alpha 1.0.4","file":"Alpha 1.0.4-JS.html","url":"./Alpha%201.0.4-JS.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.0.4","size":2316607,"sizeText":"2.21 MB","tags":[]},{"id":"alpha-1-0-6-03-b7da4d","name":"Alpha 1.0.6_03","file":"Eaglercraft Alpha 1.0.6_03.html","url":"./Eaglercraft%20Alpha%201.0.6_03.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.0.6_03","size":43841205,"sizeText":"41.8 MB","tags":[]},{"id":"alpha-1-0-16-02-fa0257","name":"Alpha 1.0.16_02","file":"Eaglercraft alpha 1.0.16_02-JS.html","url":"./Eaglercraft%20alpha%201.0.16_02-JS.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.0.16_02","size":21434166,"sizeText":"20.4 MB","tags":[]},{"id":"alpha-1-0-16-02-119278","name":"Alpha 1.0.16_02","file":"Eaglercraft alpha 1.0.16_02-WASM.html","url":"./Eaglercraft%20alpha%201.0.16_02-WASM.html","category":"alpha","type":"vanilla","runtime":"wasm-gc","version":"1.0.16_02","size":20396386,"sizeText":"19.5 MB","tags":[]},{"id":"alpha-1-1-2-01-ac573b","name":"Alpha 1.1.2_01","file":"Eaglercraft_Alpha_1.1.2_01.html","url":"./Eaglercraft_Alpha_1.1.2_01.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.1.2_01","size":34428387,"sizeText":"32.8 MB","tags":[]},{"id":"alpha-1-2-6-14756d","name":"Alpha 1.2.6","file":"eaglercraft-alpha-1.2.6-WASM.html","url":"./eaglercraft-alpha-1.2.6-WASM.html","category":"alpha","type":"vanilla","runtime":"wasm-gc","version":"1.2.6","size":21852218,"sizeText":"20.8 MB","tags":[]},{"id":"alpha-1-2-6-1e6bc7","name":"Alpha 1.2.6","file":"eaglercraft-alpha-1.2.6.html","url":"./eaglercraft-alpha-1.2.6.html","category":"alpha","type":"vanilla","runtime":"js","version":"1.2.6","size":8622045,"sizeText":"8.22 MB","tags":[]},{"id":"beta-1-0-2-eb3e83","name":"Beta 1.0.2","file":"Eaglercraft_Beta_1.0.2.html","url":"./Eaglercraft_Beta_1.0.2.html","category":"beta","type":"vanilla","runtime":"js","version":"1.0.2","size":21861417,"sizeText":"20.8 MB","tags":[]},{"id":"eaglercraft-beta-1-1-c66286","name":"Eaglercraft Beta 1.1","file":"Eaglercraft_b1.1.html","url":"./Eaglercraft_b1.1.html","category":"beta","type":"vanilla","runtime":"js","version":"1.1","size":24414617,"sizeText":"23.3 MB","tags":[]},{"id":"eaglercraft-beta-1-1-02-7885a7","name":"Eaglercraft Beta 1.1_02","file":"Eaglercraft_Beta_1.1_02-JAVS.html","url":"./Eaglercraft_Beta_1.1_02-JAVS.html","category":"beta","type":"vanilla","runtime":"js","version":"1.1_02","size":24413663,"sizeText":"23.3 MB","tags":[]},{"id":"beta-1-2-02-ae7d06","name":"Beta 1.2_02","file":"Eaglercraft_Beta-1.2_02.html","url":"./Eaglercraft_Beta-1.2_02.html","category":"beta","type":"vanilla","runtime":"js","version":"1.2_02","size":37099287,"sizeText":"35.4 MB","tags":[]},{"id":"beta-1-3-f206c3","name":"Beta 1.3","file":"Eaglercraft-Beta-1.3-JS.html","url":"./Eaglercraft-Beta-1.3-JS.html","category":"beta","type":"vanilla","runtime":"js","version":"1.3","size":22139153,"sizeText":"21.1 MB","tags":[]},{"id":"beta-1-3-7a9189","name":"Beta 1.3","file":"Eaglercraft-Beta-1.3-WASM.html","url":"./Eaglercraft-Beta-1.3-WASM.html","category":"beta","type":"vanilla","runtime":"wasm-gc","version":"1.3","size":20813642,"sizeText":"19.8 MB","tags":[]},{"id":"beta-1-3-local-build-ae4e74","name":"Beta 1.3 (local build)","file":"eaglercraft-beta-1.3.html","url":"./eaglercraft-beta-1.3.html","category":"beta","type":"vanilla","runtime":"js","version":"1.3","size":4564603,"sizeText":"4.35 MB","tags":[]},{"id":"beta-1-4-877afe","name":"Beta 1.4","file":"Eaglercraft Beta 1.4.html","url":"./Eaglercraft%20Beta%201.4.html","category":"beta","type":"vanilla","runtime":"js","version":"1.4","size":35454548,"sizeText":"33.8 MB","tags":[]},{"id":"beta-1-4-01-a1bcb4","name":"Beta 1.4_01","file":"Eaglercraft_Beta_1.4_01.html","url":"./Eaglercraft_Beta_1.4_01.html","category":"beta","type":"vanilla","runtime":"js","version":"1.4_01","size":35453495,"sizeText":"33.8 MB","tags":[]},{"id":"beta-1-5-01-22748c","name":"Beta 1.5_01","file":"Eaglercraft Beta 1.5_01.html","url":"./Eaglercraft%20Beta%201.5_01.html","category":"beta","type":"vanilla","runtime":"js","version":"1.5_01","size":37267711,"sizeText":"35.5 MB","tags":[]},{"id":"beta-1-6-test-build-3-d73be5","name":"Beta 1.6 Test Build 3","file":"Eaglercraft beta 1.6-tb3-wasm.html","url":"./Eaglercraft%20beta%201.6-tb3-wasm.html","category":"beta","type":"vanilla","runtime":"wasm-gc","version":"1.6","size":20969006,"sizeText":"20.0 MB","tags":["test-build"]},{"id":"beta-1-6-test-build-3-c9dfa6","name":"Beta 1.6 Test Build 3","file":"Eaglercraft beta 1.6-tb3.html","url":"./Eaglercraft%20beta%201.6-tb3.html","category":"beta","type":"vanilla","runtime":"js","version":"1.6","size":23769367,"sizeText":"22.7 MB","tags":["test-build"]},{"id":"beta-1-6-4-63ccb9","name":"Beta 1.6.4","file":"Beta-1.6.4.html","url":"./Beta-1.6.4.html","category":"beta","type":"vanilla","runtime":"js","version":"1.6.4","size":37925455,"sizeText":"36.2 MB","tags":[]},{"id":"beta-1-7-3-f309d0","name":"Beta 1.7.3","file":"Beta_1.7.3.html","url":"./Beta_1.7.3.html","category":"beta","type":"vanilla","runtime":"js","version":"1.7.3","size":16376832,"sizeText":"15.6 MB","tags":[]},{"id":"beta-1-8-1-652255","name":"Beta 1.8.1","file":"Eaglercraft beta 1.8.1.html","url":"./Eaglercraft%20beta%201.8.1.html","category":"beta","type":"vanilla","runtime":"js","version":"1.8.1","size":23130688,"sizeText":"22.1 MB","tags":[]},{"id":"beta-1-8-1-c9fcbb","name":"Beta 1.8.1","file":"Eaglercraft_beta 1.8.1_WASM.html","url":"./Eaglercraft_beta%201.8.1_WASM.html","category":"beta","type":"vanilla","runtime":"wasm-gc","version":"1.8.1","size":21715774,"sizeText":"20.7 MB","tags":[]},{"id":"beta-1-9-pre-release-5-a9a267","name":"Beta 1.9 Pre-release 5","file":"Eaglercraft_Beta_1.9_pre_5.html","url":"./Eaglercraft_Beta_1.9_pre_5.html","category":"beta","type":"vanilla","runtime":"js","version":"1.9","size":25799331,"sizeText":"24.6 MB","tags":["pre-release"]},{"id":"beta-1-9-pre-release-5-545747","name":"Beta 1.9 Pre-release 5","file":"Eaglercraft_Beta_1.9_pre_5_WASM.html","url":"./Eaglercraft_Beta_1.9_pre_5_WASM.html","category":"beta","type":"vanilla","runtime":"wasm-gc","version":"1.9","size":23696110,"sizeText":"22.6 MB","tags":["pre-release"]},{"id":"eaglercraft-1-0-0-05cee7","name":"Eaglercraft 1.0.0","file":"Eaglercraft_1_0_0.html","url":"./Eaglercraft_1_0_0.html","category":"release","type":"vanilla","runtime":"js","version":"1.0.0","size":25273320,"sizeText":"24.1 MB","tags":[]},{"id":"eaglercraft-1-1-4d4a5e","name":"Eaglercraft 1.1","file":"Eaglercraft_1.1.html","url":"./Eaglercraft_1.1.html","category":"release","type":"vanilla","runtime":"js","version":"1.1","size":8158025,"sizeText":"7.78 MB","tags":[]},{"id":"eaglercraft-1-2-3-210966","name":"Eaglercraft 1.2.3","file":"Eaglercraft_1.2.3_JS.html","url":"./Eaglercraft_1.2.3_JS.html","category":"release","type":"vanilla","runtime":"js","version":"1.2.3","size":27989140,"sizeText":"26.7 MB","tags":[]},{"id":"eaglercraft-1-2-3-6cf2d9","name":"Eaglercraft 1.2.3","file":"Eaglercraft_1.2.3_WASM-GC.html","url":"./Eaglercraft_1.2.3_WASM-GC.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.2.3","size":23859783,"sizeText":"22.8 MB","tags":[]},{"id":"eaglercraft-1-2-5-23bb04","name":"Eaglercraft 1.2.5","file":"Eaglercraft_1.2.5_JS.html","url":"./Eaglercraft_1.2.5_JS.html","category":"release","type":"vanilla","runtime":"js","version":"1.2.5","size":27932756,"sizeText":"26.6 MB","tags":[]},{"id":"eaglercraft-1-2-5-138bb6","name":"Eaglercraft 1.2.5","file":"Eaglercraft_1.2.5_wasm.html","url":"./Eaglercraft_1.2.5_wasm.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.2.5","size":23891362,"sizeText":"22.8 MB","tags":[]},{"id":"eaglercraft-1-3-2-862047","name":"Eaglercraft 1.3.2","file":"Eaglercraft_1_3_2.html","url":"./Eaglercraft_1_3_2.html","category":"release","type":"vanilla","runtime":"js","version":"1.3.2","size":28948501,"sizeText":"27.6 MB","tags":[]},{"id":"eaglercraft-1-4-7-9ffa65","name":"Eaglercraft 1.4.7","file":"Eaglercraft_1.4.7-JS.html","url":"./Eaglercraft_1.4.7-JS.html","category":"release","type":"vanilla","runtime":"js","version":"1.4.7","size":67567085,"sizeText":"64.4 MB","tags":[]},{"id":"eaglercraft-1-4-7-67f444","name":"Eaglercraft 1.4.7","file":"Eaglercraft_1.4.7-WASM.html","url":"./Eaglercraft_1.4.7-WASM.html","category":"release","type":"vanilla","runtime":"wasm","version":"1.4.7","size":39499282,"sizeText":"37.7 MB","tags":[]},{"id":"eaglercraft-1-5-2-eb1ce5","name":"Eaglercraft 1.5.2","file":"1.5.2.html","url":"./1.5.2.html","category":"release","type":"vanilla","runtime":"js","version":"1.5.2","size":23535795,"sizeText":"22.4 MB","tags":[]},{"id":"eaglercraft-1-5-2-2b9b0f","name":"Eaglercraft 1.5.2","file":"Eaglercraft-1.5.2.html","url":"./Eaglercraft-1.5.2.html","category":"release","type":"vanilla","runtime":"js","version":"1.5.2","size":16523010,"sizeText":"15.8 MB","tags":[]},{"id":"eaglercraft-1-6-4-358523","name":"Eaglercraft 1.6.4","file":"Eaglercraft 1.6.4.html","url":"./Eaglercraft%201.6.4.html","category":"release","type":"vanilla","runtime":"js","version":"1.6.4","size":27066713,"sizeText":"25.8 MB","tags":[]},{"id":"eaglercraft-1-6-4-forge-262a56","name":"Eaglercraft 1.6.4 Forge","file":"Eaglercraft-1.6.4-Forge-WASM.html","url":"./Eaglercraft-1.6.4-Forge-WASM.html","category":"release","type":"vanilla","runtime":"wasm","version":"1.6.4","size":12350486,"sizeText":"11.8 MB","tags":["forge"]},{"id":"eaglercraft-1-6-4-forge-a6246b","name":"Eaglercraft 1.6.4 Forge","file":"Eaglercraft-1.6.4-Forge.html","url":"./Eaglercraft-1.6.4-Forge.html","category":"release","type":"vanilla","runtime":"js","version":"1.6.4","size":14855152,"sizeText":"14.2 MB","tags":["forge"]},{"id":"eaglercraft-1-7-618291","name":"Eaglercraft 1.7","file":"Eaglercraft-1.7-wasm.html","url":"./Eaglercraft-1.7-wasm.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.7","size":12158342,"sizeText":"11.6 MB","tags":[]},{"id":"eaglercraft-1-7-10-6f1986","name":"Eaglercraft 1.7.10","file":"Eaglercraft 1.7.10-Javascript.html","url":"./Eaglercraft%201.7.10-Javascript.html","category":"release","type":"vanilla","runtime":"js","version":"1.7.10","size":18463253,"sizeText":"17.6 MB","tags":[]},{"id":"eaglercraft-1-8-6d31c7","name":"Eaglercraft 1.8","file":"EaglercraftX_1.8_WASM-GC.html","url":"./EaglercraftX_1.8_WASM-GC.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.8","size":15135451,"sizeText":"14.4 MB","tags":[]},{"id":"eaglercraftx-1-8-mobile-8c4368","name":"EaglercraftX 1.8 (Mobile)","file":"Eaglercraft Mobile.html","url":"./Eaglercraft%20Mobile.html","category":"release","type":"vanilla","runtime":"js","version":"1.8","size":15419198,"sizeText":"14.7 MB","tags":["mobile"]},{"id":"eaglercraftx-1-8-8-c0a9ac","name":"EaglercraftX 1.8.8","file":"Eaglercraft 1.8.8 .html","url":"./Eaglercraft%201.8.8%20.html","category":"release","type":"vanilla","runtime":"js","version":"1.8.8","size":27147422,"sizeText":"25.9 MB","tags":[]},{"id":"eaglercraftx-1-9-b194-2a04a6","name":"EaglercraftX 1.9 (b194)","file":"eaglercraftx-194.html","url":"./eaglercraftx-194.html","category":"release","type":"vanilla","runtime":"js","version":"1.9","size":17838810,"sizeText":"17.0 MB","tags":[]},{"id":"eaglercraft-1-11-2-e83dfd","name":"Eaglercraft 1.11.2","file":"Eaglercraft-1.11.2.html","url":"./Eaglercraft-1.11.2.html","category":"release","type":"vanilla","runtime":"js","version":"1.11.2","size":28584406,"sizeText":"27.3 MB","tags":[]},{"id":"eaglercraft-1-12-f70b83","name":"Eaglercraft 1.12","file":"Eaglercraft_1.12_Javascript.html","url":"./Eaglercraft_1.12_Javascript.html","category":"release","type":"vanilla","runtime":"js","version":"1.12","size":83353768,"sizeText":"79.5 MB","tags":[]},{"id":"eaglercraft-1-12-2-f1cdd1","name":"Eaglercraft 1.12.2","file":"Eaglercraft_1.12.2-WASM-GC.html","url":"./Eaglercraft_1.12.2-WASM-GC.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.12.2","size":25066316,"sizeText":"23.9 MB","tags":[]},{"id":"eaglercraftx-1-12-2-f1cdd1","name":"EaglercraftX 1.12.2","file":"Eaglercraft-1.12.html","url":"./Eaglercraft-1.12.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.12.2","size":25066316,"sizeText":"23.9 MB","tags":["duplicate"]},{"id":"eaglercraft-1-13-2-609874","name":"Eaglercraft 1.13.2","file":"Eaglercraft 1.13.2-WASM.html","url":"./Eaglercraft%201.13.2-WASM.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.13.2","size":54245148,"sizeText":"51.7 MB","tags":[]},{"id":"eaglercraft-1-13-2-767e17","name":"Eaglercraft 1.13.2","file":"Eaglercraft-1.13.2-JS.html","url":"./Eaglercraft-1.13.2-JS.html","category":"release","type":"vanilla","runtime":"js","version":"1.13.2","size":68568173,"sizeText":"65.4 MB","tags":[]},{"id":"eaglercraftx-1-14-4-c69478","name":"EaglercraftX 1.14.4","file":"Eaglercraft_1.14.4_WASM-GC.html","url":"./Eaglercraft_1.14.4_WASM-GC.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.14.4","size":35208712,"sizeText":"33.6 MB","tags":[]},{"id":"eaglercraftx-1-14-4-u1-4482b3","name":"EaglercraftX 1.14.4 (U1)","file":"Eaglercraft_1.14.4_WASM-GC_U1.html","url":"./Eaglercraft_1.14.4_WASM-GC_U1.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.14.4","size":36009903,"sizeText":"34.3 MB","tags":[]},{"id":"eaglercraft-1-16-5-f0e21a","name":"Eaglercraft 1.16.5","file":"Eaglercraft 1.16.5 WASM.html","url":"./Eaglercraft%201.16.5%20WASM.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.16.5","size":53138540,"sizeText":"50.7 MB","tags":[]},{"id":"eaglercraft-1-17-8847f9","name":"Eaglercraft 1.17","file":"eaglercraft-1.17-wasm_gc.html","url":"./eaglercraft-1.17-wasm_gc.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.17","size":50168187,"sizeText":"47.8 MB","tags":[]},{"id":"eaglercraft-1-20-6-b1ea49","name":"Eaglercraft 1.20.6","file":"Eaglercraft_1.20.6_WASM-GC.html","url":"./Eaglercraft_1.20.6_WASM-GC.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.20.6","size":55585813,"sizeText":"53.0 MB","tags":[]},{"id":"eaglercraft-1-21-11-7ff8ab","name":"Eaglercraft 1.21.11","file":"Eaglercraft-1-21-11_wasm.html","url":"./Eaglercraft-1-21-11_wasm.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.21.11","size":48844682,"sizeText":"46.6 MB","tags":[]},{"id":"eaglercraftx-1-21-11-1882ed","name":"EaglercraftX 1.21.11","file":"Eaglercraft 1.21.11 WASM.html","url":"./Eaglercraft%201.21.11%20WASM.html","category":"release","type":"vanilla","runtime":"wasm-gc","version":"1.21.11","size":48776304,"sizeText":"46.5 MB","tags":[]},{"id":"eaglercraft-26-1-2-3752f8","name":"Eaglercraft 26.1.2","file":"eaglercraft-26.1.2-WASM_Novix.html","url":"./eaglercraft-26.1.2-WASM_Novix.html","category":"release","type":"vanilla","runtime":"wasm","version":"26.1.2","size":65694777,"sizeText":"62.7 MB","tags":[]},{"id":"eaglercraft-26-2-a849c3","name":"Eaglercraft 26.2","file":"eaglercraft-26.2.html","url":"./eaglercraft-26.2.html","category":"release","type":"vanilla","runtime":"js","version":"26.2","size":75182635,"sizeText":"71.7 MB","tags":[]},{"id":"eaglercraft-26-3-19092c","name":"Eaglercraft 26.3","file":"Eaglercraft 26.3-WASM.html","url":"./Eaglercraft%2026.3-WASM.html","category":"release","type":"vanilla","runtime":"wasm","version":"26.3","size":90804846,"sizeText":"86.6 MB","tags":[]},{"id":"precision-client-429f98","name":"Precision Client","file":"Precision.html","url":"./Precision.html","category":"client","type":"client","runtime":"js","version":"1.5.2","size":19287529,"sizeText":"18.4 MB","tags":[]},{"id":"eaglymc-ac3660","name":"EaglyMC","file":"EaglyMC.html","url":"./EaglyMC.html","category":"client","type":"client","runtime":"js","version":"1.8","size":25322043,"sizeText":"24.1 MB","tags":[]},{"id":"huzzium-client-dca854","name":"Huzzium Client","file":"Huzzium-Client.html","url":"./Huzzium-Client.html","category":"client","type":"client","runtime":"js","version":"1.8","size":15285870,"sizeText":"14.6 MB","tags":[]},{"id":"myven-client-9f2146","name":"Myven Client","file":"Myven-Client-WASM.html","url":"./Myven-Client-WASM.html","category":"client","type":"client","runtime":"wasm-gc","version":"1.8","size":84032731,"sizeText":"80.1 MB","tags":[]},{"id":"prism-client-6c9e1f","name":"Prism Client","file":"Prism-Client.html","url":"./Prism-Client.html","category":"client","type":"client","runtime":"js","version":"1.8","size":40225633,"sizeText":"38.4 MB","tags":[]},{"id":"wispcraft-eaglercraftx-1-8-b14e9f","name":"Wispcraft EaglercraftX 1.8","file":"wispcraft-EaglercraftX_1.8_WASM-GC.html","url":"./wispcraft-EaglercraftX_1.8_WASM-GC.html","category":"client","type":"client","runtime":"wasm-gc","version":"1.8","size":16950451,"sizeText":"16.2 MB","tags":[]},{"id":"wurstx-fd42aa","name":"WurstX","file":"WurstX.html","url":"./WurstX.html","category":"client","type":"client","runtime":"js","version":"1.8","size":27847113,"sizeText":"26.6 MB","tags":[]},{"id":"eclipse-client-03a669","name":"Eclipse Client","file":"Eclipse Client.html","url":"./Eclipse%20Client.html","category":"client","type":"client","runtime":"js","version":"1.8.8","size":46774588,"sizeText":"44.6 MB","tags":[]},{"id":"kone-client-513241","name":"Kone Client","file":"Koneclient-1.8.8.html","url":"./Koneclient-1.8.8.html","category":"client","type":"client","runtime":"js","version":"1.8.8","size":9611227,"sizeText":"9.17 MB","tags":[]},{"id":"pixelclient-872721","name":"PixelClient","file":"PixelClient 1.8.8 JS.html","url":"./PixelClient%201.8.8%20JS.html","category":"client","type":"client","runtime":"js","version":"1.8.8","size":17522039,"sizeText":"16.7 MB","tags":[]},{"id":"wispcraft-eaglercraft-1-8-8-091eb7","name":"Wispcraft Eaglercraft 1.8.8","file":"wispcraft-Eaglercraft 1.8.8 .html","url":"./wispcraft-Eaglercraft%201.8.8%20.html","category":"client","type":"client","runtime":"js","version":"1.8.8","size":28962409,"sizeText":"27.6 MB","tags":[]},{"id":"tuff-client-299ee4","name":"Tuff Client","file":"Tuff_Client_WASM.html","url":"./Tuff_Client_WASM.html","category":"client","type":"client","runtime":"wasm-gc","version":"1.12","size":30871933,"sizeText":"29.4 MB","tags":[]},{"id":"wispcraft-eaglercraft-1-12-c53829","name":"Wispcraft Eaglercraft 1.12","file":"wispcraft-Eaglercraft-1.12.html","url":"./wispcraft-Eaglercraft-1.12.html","category":"client","type":"client","runtime":"wasm","version":"1.12","size":26881562,"sizeText":"25.6 MB","tags":[]},{"id":"aero-client-19ebce","name":"Aero Client","file":"Aero Client JS.html","url":"./Aero%20Client%20JS.html","category":"client","type":"client","runtime":"js","version":"1.12.2","size":41608092,"sizeText":"39.7 MB","tags":[]},{"id":"wispcraft-eaglercraft-1-12-2-c53829","name":"Wispcraft Eaglercraft 1.12.2","file":"wispcraft-Eaglercraft_1.12.2-WASM-GC.html","url":"./wispcraft-Eaglercraft_1.12.2-WASM-GC.html","category":"client","type":"client","runtime":"wasm-gc","version":"1.12.2","size":26881562,"sizeText":"25.6 MB","tags":["duplicate"]},{"id":"eaglercraftz-07a333","name":"EaglercraftZ","file":"EaglercraftZ.html","url":"./EaglercraftZ.html","category":"client","type":"client","runtime":"js","version":"1.20","size":51974743,"sizeText":"49.6 MB","tags":[]},{"id":"novix-26-1-2-3a8a70","name":"Novix 26.1.2","file":"Novix_26.1.2.html","url":"./Novix_26.1.2.html","category":"client","type":"client","runtime":"js","version":"26.1.2","size":18178021,"sizeText":"17.3 MB","tags":[]},{"id":"eb-client-nextgen-cu4-7cacd2","name":"EB Client Nextgen CU4","file":"EB Client Nextgen CU4.html","url":"./EB%20Client%20Nextgen%20CU4.html","category":"client","type":"client","runtime":"wasm","version":null,"size":21390589,"sizeText":"20.4 MB","tags":[]},{"id":"mega-client-b9daef","name":"Mega Client","file":"Mega Client-JS.html","url":"./Mega%20Client-JS.html","category":"client","type":"client","runtime":"js","version":null,"size":16339833,"sizeText":"15.6 MB","tags":[]},{"id":"n0va-client-366db7","name":"N0VA Client","file":"N0VA CLIENT.html","url":"./N0VA%20CLIENT.html","category":"client","type":"client","runtime":"js","version":null,"size":16880201,"sizeText":"16.1 MB","tags":[]},{"id":"water-client-f07e42","name":"Water Client","file":"Water Client.html","url":"./Water%20Client.html","category":"client","type":"client","runtime":"js","version":null,"size":27635603,"sizeText":"26.4 MB","tags":[]},{"id":"eaglercraft-scratch-c349fb","name":"Eaglercraft Scratch","file":"Eaglercraft Scratch.html","url":"./Eaglercraft%20Scratch.html","category":"extras","type":"extra","runtime":"js","version":null,"size":69414300,"sizeText":"66.2 MB","tags":["scratch"]},{"id":"eaglercraft-scratch-b000f4","name":"Eaglercraft Scratch","file":"Eaglercraft-Scratch.html","url":"./Eaglercraft-Scratch.html","category":"extras","type":"extra","runtime":"js","version":null,"size":54066675,"sizeText":"51.6 MB","tags":["scratch"]},{"id":"minecraft-4k-59646a","name":"Minecraft 4k","file":"Eaglercraft-4k-JS.html","url":"./Eaglercraft-4k-JS.html","category":"extras","type":"extra","runtime":"js","version":null,"size":66325,"sizeText":"64.8 KB","tags":[]},{"id":"minecraft-4k-516ac9","name":"Minecraft 4k","file":"mc4k.html","url":"./mc4k.html","category":"extras","type":"extra","runtime":"js","version":null,"size":59916,"sizeText":"58.5 KB","tags":[]},{"id":"minicraft-12b94d","name":"Minicraft","file":"Minicraft.html","url":"./Minicraft.html","category":"extras","type":"extra","runtime":"js","version":null,"size":133457,"sizeText":"130.3 KB","tags":[]},{"id":"wispcraft-injector-d40678","name":"Wispcraft Injector","file":"injector.html","url":"./injector.html","category":"extras","type":"tool","runtime":"js","version":null,"size":2483303,"sizeText":"2.37 MB","tags":[]}]}
+</script>
 
-<!-- ───────────────────────── help modal ───────────────────────── -->
-<div class="modal" id="helpModal" hidden>
-  <div class="modal-scrim" data-close></div>
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1">
-    <button class="icon-btn modal-close" data-close aria-label="Close help"><svg class="ico"><use href="#i-close"/></svg></button>
-    <h2 id="helpTitle" class="modal-title">EaglerVault help</h2>
+<script>
+(function () {
+  "use strict";
 
-    <h3 class="modal-h3">Keyboard shortcuts</h3>
-    <ul class="keys">
-      <li><kbd>/</kbd><span>Focus search</span></li>
-      <li><kbd>Esc</kbd><span>Close details / dialogs</span></li>
-      <li><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd><span>Move between builds</span></li>
-      <li><kbd>Enter</kbd><span>Open details</span></li>
-      <li><kbd>Space</kbd><span>Launch focused build</span></li>
-      <li><kbd>F</kbd><span>Favourite focused build</span></li>
-      <li><kbd>R</kbd><span>Random build</span></li>
-      <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd><span>Quit the running game</span></li>
-      <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd><span>Toggle fullscreen</span></li>
-    </ul>
+  var VAULT = JSON.parse(document.getElementById("vault").textContent);
+  /* the embedded catalogue is already in timeline order; sort by name so the
+     picker reads alphabetically within each group */
+  var BUILDS = VAULT.versions.slice().sort(function (a, b) {
+    return String(a.name || "").localeCompare(String(b.name || ""), undefined, { numeric: true });
+  });
 
-    <h3 class="modal-h3">Before you play</h3>
-    <ul class="tips">
-      <li>Every build is one self-contained <code>.html</code> file — the first launch downloads the whole game (some are 80&nbsp;MB), then your browser caches it.</li>
-      <li>Click inside the game to capture your mouse. Press <kbd>Esc</kbd> inside the game to release it.</li>
-      <li>WASM-GC builds are smaller and start faster, but need a browser from 2023 or newer.</li>
-      <li>Touch controls: the mobile-oriented builds (tagged <em>mobile</em>) work best on phones.</li>
-      <li>Saves and settings live in that browser's local storage — clearing site data wipes your worlds.</li>
-    </ul>
+  /* ---------------- groups ---------------- */
+  var GROUPS = [
+    { id: "all",         label: "All builds",      scene: "scene-all",        accent: "#7cc7ff" },
+    { id: "preclassic",  label: "Pre-Classic",     scene: "scene-preclassic", accent: "#8fae7f" },
+    { id: "classic",     label: "Classic",         scene: "scene-classic",    accent: "#5cc95c" },
+    { id: "devs",        label: "Devs",            scene: "scene-devs",       accent: "#d99a4e" },
+    { id: "alpha",       label: "Alpha",           scene: "scene-alpha",      accent: "#e0873f" },
+    { id: "beta",        label: "Beta",            scene: "scene-beta",       accent: "#f0c05a" },
+    { id: "early",       label: "Early Releases",  scene: "scene-early",      accent: "#6fb4e8" },
+    { id: "mid",         label: "Middle Releases", scene: "scene-mid",        accent: "#a884dd" },
+    { id: "modern",      label: "Modern Releases", scene: "scene-modern",     accent: "#3fd8b0" },
+    { id: "clients",     label: "Clients",         scene: "scene-clients",    accent: "#ff5fd2" },
+    { id: "extras",      label: "Extras",          scene: "scene-extras",     accent: "#5fbfae" }
+  ];
+  var GMAP = {};
+  GROUPS.forEach(function (g) { GMAP[g.id] = g; });
 
-    <p class="modal-foot">Built with vanilla HTML, CSS and JS. No trackers, no telemetry, no build step.</p>
-  </div>
-</div>
+  function groupOf(b) {
+    var c = b.category;
+    if (c === "preclassic") return "preclassic";
+    if (c === "classic") return "classic";
+    if (c === "indev" || c === "infdev") return "devs";
+    if (c === "alpha") return "alpha";
+    if (c === "beta") return "beta";
+    if (c === "client") return "clients";
+    if (c === "extras") return "extras";
+    if (c === "release") {
+      var m = String(b.version || "").match(/^(\d+)\.(\d+)/);
+      if (m) {
+        var maj = +m[1], min = +m[2];
+        if (maj === 1 && min <= 8) return "early";
+        if (maj === 1 && min >= 9 && min <= 17) return "mid";
+        return "modern";
+      }
+      return "modern";
+    }
+    return "extras";
+  }
 
-<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  var BY = { all: BUILDS.slice() };
+  GROUPS.forEach(function (g) { if (g.id !== "all") BY[g.id] = []; });
+  BUILDS.forEach(function (b) { BY[groupOf(b)].push(b); });
 
-<script src="./assets/js/app.js"></script>
+  /* ---------------- state ---------------- */
+  var LS = "quantum-launcher-v1";
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { saved = {}; }
+  var favs = new Set(saved.favs || []);
+  var recent = saved.recent || [];
+  var state = { group: "all", id: null, dlScope: false, q: "" };
+
+  function persist() {
+    try {
+      localStorage.setItem(LS, JSON.stringify({ favs: Array.from(favs), recent: recent.slice(0, 12) }));
+    } catch (e) {}
+  }
+
+  /* ---------------- elements ---------------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var nav = $("nav"), pick = $("pick"), artUse = $("artUse"), artTitle = $("artTitle");
+
+  /* ---------------- sidebar ---------------- */
+  function buildNav() {
+    var html = '<h2>Library</h2>';
+    GROUPS.forEach(function (g) {
+      if (g.id !== "all" && !BY[g.id].length) return;
+      html += '<button class="g" data-group="' + g.id + '" style="--g-accent:' + g.accent + '" aria-current="false">' +
+              '<span class="swatch"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg></span>' +
+              '<span class="lbl">' + g.label + '</span>' +
+              '<span class="n">' + BY[g.id].length + '</span></button>';
+    });
+
+    if (favs.size) {
+      html += '<h2>Favourites</h2><button class="g tiny" id="gFav" data-group="__fav" style="--g-accent:#f0c05a" aria-current="false">' +
+              '<span class="swatch"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z"/></svg></span>' +
+              '<span class="lbl">Starred</span><span class="n">' + favs.size + '</span></button>';
+    }
+    if (recent.length) {
+      html += '<h2>Continue</h2><button class="g tiny" id="gRecent" data-group="__recent" style="--g-accent:#7cc7ff" aria-current="false">' +
+              '<span class="swatch"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v5.6l4 2.3-1 1.7-5-2.9V7z"/></svg></span>' +
+              '<span class="lbl">Played recently</span><span class="n">' + recent.length + '</span></button>';
+    }
+    nav.innerHTML = html;
+    nav.querySelectorAll("[data-group]").forEach(function (el) {
+      el.addEventListener("click", function () { setGroup(el.getAttribute("data-group")); });
+    });
+  }
+
+  function listFor(gid) {
+    if (gid === "__fav") return BUILDS.filter(function (b) { return favs.has(b.id); });
+    if (gid === "__recent") return recent.map(function (id) {
+      return BUILDS.filter(function (b) { return b.id === id; })[0];
+    }).filter(Boolean);
+    return BY[gid] || [];
+  }
+
+  /* ---------------- render ---------------- */
+  function setGroup(gid, keepBuild) {
+    state.group = gid;
+    var g = GMAP[gid] || { id: gid, label: gid === "__fav" ? "Starred" : "Played recently", scene: "scene-all", accent: "#7cc7ff" };
+    document.documentElement.style.setProperty("--accent", g.accent);
+    artUse.setAttribute("href", "#" + g.scene);
+    artTitle.textContent = g.label + " artwork";
+
+    nav.querySelectorAll("[data-group]").forEach(function (el) {
+      el.setAttribute("aria-current", String(el.getAttribute("data-group") === gid));
+    });
+
+    fillPicker(listFor(gid), keepBuild);
+  }
+
+  function fillPicker(list, keepBuild) {
+    if (!list.length) {
+      pick.innerHTML = '<option value="">Nothing here yet</option>';
+      $("pos").textContent = "0 / 0";
+      showBuild(null);
+      return;
+    }
+    if (keepBuild && list.some(function (b) { return b.id === state.id; })) {
+      /* keep selection */
+    } else {
+      state.id = list[0].id;
+    }
+    pick.innerHTML = list.map(function (b) {
+      return '<option value="' + b.id + '">' + esc(b.name) + " — " + b.sizeText + "</option>";
+    }).join("");
+    pick.value = state.id;
+    showBuild(byId(state.id));
+  }
+
+  function byId(id) {
+    for (var i = 0; i < BUILDS.length; i++) if (BUILDS[i].id === id) return BUILDS[i];
+    return null;
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function showBuild(b) {
+    if (!b) {
+      $("bName").textContent = "Nothing selected";
+      $("bSub").textContent = "Pick a group on the left";
+      $("bChips").innerHTML = "";
+      $("pos").textContent = "—";
+      return;
+    }
+    $("bName").textContent = b.name;
+    var bits = [];
+    if (b.version) bits.push("v" + b.version);
+    if (b.runtime) bits.push(b.runtime);
+    if (b.type) bits.push(b.type);
+    bits.push(b.sizeText);
+    $("bSub").textContent = bits.join("  ·  ");
+
+    var chips = ['<span class="chip on">' + esc(GMAP[groupOf(b)] ? GMAP[groupOf(b)].label : b.category) + "</span>"];
+    (b.tags || []).forEach(function (t) { chips.push('<span class="chip">' + esc(t) + "</span>"); });
+    $("bChips").innerHTML = chips.join("");
+
+    var f = favs.has(b.id);
+    var favBtn = $("fav");
+    favBtn.setAttribute("aria-pressed", String(f));
+    favBtn.style.color = f ? "var(--accent)" : "";
+    favBtn.style.borderColor = f ? "var(--accent)" : "";
+
+    var list = listFor(state.group);
+    var i = list.findIndex(function (x) { return x.id === b.id; });
+    $("pos").textContent = i >= 0 ? (i + 1) + " / " + list.length : list.length + " builds";
+  }
+
+  /* ---------------- actions ---------------- */
+  function launch(b) {
+    if (!b) return;
+    recent = [b.id].concat(recent.filter(function (x) { return x !== b.id; })).slice(0, 12);
+    persist();
+    buildNav();
+    setGroup(state.group, true);
+    window.location.href = b.url;
+  }
+
+  $("play").addEventListener("click", function () { launch(byId(state.id)); });
+  pick.addEventListener("change", function () { state.id = pick.value; showBuild(byId(state.id)); });
+  $("prev").addEventListener("click", function () { step(-1); });
+  $("next").addEventListener("click", function () { step(1); });
+  $("shuffle").addEventListener("click", function () {
+    var list = listFor(state.group);
+    if (!list.length) return;
+    state.id = list[Math.floor(Math.random() * list.length)].id;
+    pick.value = state.id; showBuild(byId(state.id));
+  });
+
+  function step(d) {
+    var list = listFor(state.group);
+    if (!list.length) return;
+    var i = list.findIndex(function (b) { return b.id === state.id; });
+    i = (i + d + list.length) % list.length;
+    state.id = list[i].id; pick.value = state.id; showBuild(list[i]);
+  }
+
+  $("fav").addEventListener("click", function () {
+    var b = byId(state.id); if (!b) return;
+    if (favs.has(b.id)) favs.delete(b.id); else favs.add(b.id);
+    persist(); buildNav(); setGroup(state.group, true);
+  });
+
+  $("theme").addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem(LS + "-theme", next); } catch (e) {}
+  });
+  try {
+    var t = localStorage.getItem(LS + "-theme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+
+  /* ---------------- downloads ---------------- */
+  var dlScrim = $("dlScrim"), dlList = $("dlList"), dlSearch = $("dlSearch");
+
+  function renderDl() {
+    var q = state.q.trim().toLowerCase();
+    var src = state.dlScope ? listFor(state.group) : BUILDS;
+    var rows = src.filter(function (b) { return !q || b.name.toLowerCase().indexOf(q) >= 0 || (b.file || "").toLowerCase().indexOf(q) >= 0; });
+    $("dlSub").textContent = rows.length + " of " + BUILDS.length + " builds · " + VAULT.totalSizeText + " total";
+    if (!rows.length) { dlList.innerHTML = '<div class="empty">Nothing matches “' + esc(state.q) + '”.</div>'; return; }
+    dlList.innerHTML = rows.map(function (b) {
+      return '<div class="dl-row"><div class="who"><div class="nm">' + esc(b.name) + '</div>' +
+             '<div class="mt">' + esc(b.file) + '</div></div>' +
+             '<span class="sz">' + b.sizeText + "</span>" +
+             '<a class="dl-btn" href="' + b.url + '" download="' + esc(b.file) + '">' +
+             '<svg viewBox="0 0 24 24"><path d="M12 16l-5-5 1.4-1.4L11 12.2V4h2v8.2l2.6-2.6L17 11zM5 18h14v2H5z"/></svg>Download</a></div>';
+    }).join("");
+  }
+
+  $("dlOpen").addEventListener("click", function () { dlScrim.hidden = false; renderDl(); dlSearch.focus(); });
+  $("dlClose").addEventListener("click", function () { dlScrim.hidden = true; });
+  dlScrim.addEventListener("click", function (e) { if (e.target === dlScrim) dlScrim.hidden = true; });
+  dlSearch.addEventListener("input", function () { state.q = dlSearch.value; renderDl(); });
+  $("dlGroup").addEventListener("click", function () {
+    state.dlScope = !state.dlScope;
+    this.style.borderColor = state.dlScope ? "var(--accent)" : "";
+    this.style.color = state.dlScope ? "var(--accent)" : "";
+    renderDl();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !dlScrim.hidden) { dlScrim.hidden = true; return; }
+    if (!dlScrim.hidden) return;
+    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); step(1); }
+    if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+    if (e.key === "Enter") { e.preventDefault(); launch(byId(state.id)); }
+    if (e.key === "/") { e.preventDefault(); $("dlOpen").click(); }
+  });
+
+  /* ---------------- boot ---------------- */
+  $("brandSub").textContent = VAULT.count + " builds · " + VAULT.totalSizeText;
+  dlSearch.placeholder = "Search " + VAULT.count + " builds…";
+  buildNav();
+
+  var hash = (location.hash || "").replace(/^#\/?/, "");
+  var start = hash && byId(hash);
+  if (start) {
+    setGroup(groupOf(start));
+    state.id = start.id; pick.value = start.id; showBuild(start);
+  } else {
+    setGroup("all");
+    if (recent.length && byId(recent[0])) { state.id = recent[0]; pick.value = state.id; showBuild(byId(state.id)); }
+  }
+})();
+</script>
 </body>
 </html>

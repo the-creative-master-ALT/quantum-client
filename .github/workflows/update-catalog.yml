@@ -1,15 +1,16 @@
 name: Update build catalogue
 
-# data/versions.json is generated from the *.html builds in the repo root.
-# Whenever a build is added/removed (or the generator changes) this refreshes
-# the catalogue and commits it back so the launcher always matches the files.
+# The launcher is a single self-contained index.html, and the build catalogue
+# is embedded inside it. Whenever a build is added/removed (or the generator
+# changes) this rescans the *.html files and rewrites that embedded block, so
+# the launcher always matches the files on disk.
 on:
   push:
     branches: [main]
     paths:
       - '*.html'
       - 'tools/**'
-      - 'data/**'
+      - 'index.html'
       - '.github/workflows/update-catalog.yml'
   workflow_dispatch:
 
@@ -38,14 +39,16 @@ jobs:
       # the game builds are ~2.7 GB in total, so a shallow checkout of the
       # whole tree is unavoidable -- the catalogue needs each file's size and
       # a sniff of its payload. It only runs when a build actually changes.
-      - name: Generate catalogue
-        run: python3 tools/generate_catalog.py
+      # embed_catalog.py runs generate_catalog.py itself, folds the result into
+      # index.html, then removes the intermediate data/versions.json
+      - name: Regenerate and embed catalogue
+        run: python3 tools/embed_catalog.py --regen
 
       - name: Commit changes
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/versions.json
+          git add index.html
           if git diff --cached --quiet; then
             echo "catalogue already up to date"
           else
