@@ -65,7 +65,7 @@ ok($$('symbol[id^="scene-"]').length === 11, '11 inline artwork scenes', String(
 
 /* --------------------------------------------------------------- catalog */
 sec('embedded catalogue');
-ok(CAT.count === 141, `${CAT.count} builds embedded`, String(CAT.count));
+ok(CAT.count === 137, `${CAT.count} builds embedded`, String(CAT.count));
 ok(CAT.versions.length === CAT.count, 'count matches array length');
 ok(CAT.versions.every((b) => b.id && b.name && b.file && b.url), 'every build has id, name, file, url');
 ok(!!CAT.totalSizeText, `total size present (${CAT.totalSizeText})`);
@@ -78,8 +78,8 @@ ok(missing.length === 0, `all ${CAT.count} build files exist`, missing.slice(0, 
 /* ---------------------------------------------------------------- groups */
 sec('sidebar groups');
 const EXPECTED = {
-  'All builds': 141, 'Pre-Classic': 10, Classic: 32, Devs: 10, Alpha: 8, Beta: 18,
-  'Early Releases': 19, 'Middle Releases': 11, 'Modern Releases': 6, Clients: 21, Extras: 6,
+  'All builds': 137, 'Pre-Classic': 10, Classic: 32, Devs: 8, Alpha: 8, Beta: 18,
+  'Early Releases': 19, 'Middle Releases': 10, 'Modern Releases': 6, Clients: 20, Extras: 6,
 };
 const btns = $$('#nav [data-group]');
 ok(btns.length === Object.keys(EXPECTED).length, `${btns.length} sidebar entries`, String(btns.length));
@@ -118,6 +118,42 @@ btns.forEach((b) => {
 });
 ok(countOk, 'sidebar counts match expected', countDetail);
 ok(Object.values(tally).reduce((a, b) => a + b, 0) === CAT.count, 'independent tally accounts for every build');
+
+/* ------------------------------------------------------------ duplicates */
+sec('duplicates removed');
+const stillDup = CAT.versions.filter((b) => (b.tags || []).includes('duplicate'));
+ok(stillDup.length === 0, 'no build carries the duplicate tag', String(stillDup.length));
+const gone = ['Eaglercraft_indev_20100233.html', 'Eaglercraft_indev_20100233-wasm.html',
+  'Eaglercraft-1.12.html', 'wispcraft-Eaglercraft_1.12.2-WASM-GC.html'];
+ok(gone.every((f) => !fs.existsSync(path.join(ROOT, f))), 'the 4 duplicate files are gone from disk');
+// the survivors must still be there, or we deleted the wrong half of a pair
+const kept = ['Eaglercraft_indev 20100223_JS.html', 'Eaglercraft_indev 20100223_WASM.html',
+  'Eaglercraft_1.12.2-WASM-GC.html', 'wispcraft-Eaglercraft-1.12.html'];
+ok(kept.every((f) => fs.existsSync(path.join(ROOT, f))), 'the originals were kept, not the duplicates');
+
+/* ------------------------------------------------------------- responsive */
+sec('responsive: scales, never reflows');
+const css = $('style').textContent;
+ok(!/grid-template-areas\s*:\s*["']?side["']?\s*["']?stage["']?/.test(css) ||
+   !/@media[^{]*max-width[^{]*\{[^{]*grid-template-areas/.test(css),
+   'no breakpoint moves the sidebar into a topbar');
+ok(/transform-origin\s*:\s*0 0/.test(css), 'shell scales from the top-left corner');
+ok(/width\s*:\s*calc\(100vw \/ var\(--s\)\)/.test(css), 'shell is drawn 1/--s oversized so it lands exactly on the viewport');
+
+// jsdom reports a 1024x768 viewport, so --s should be min(1, 1024/1400, 768/860)
+const shell = $('.shell');
+const sVal = parseFloat(shell.style.getPropertyValue('--s'));
+const expectedS = Math.min(1, 1024 / 1400, 768 / 860);
+ok(Math.abs(sVal - expectedS) < 0.001,
+   `--s scales the layout to ${sVal} in a 1024px viewport`, String(sVal));
+ok(sVal < 1, 'a narrow window is scaled down rather than reflowed', String(sVal));
+
+/* ------------------------------------------------------------- downloads */
+sec('downloads lives in the sidebar');
+ok(!!$('aside.side #dlOpen'), 'the Downloads button is inside the sidebar');
+ok(!$('.dock #dlOpen'), 'Downloads is gone from the bottom dock');
+ok($('#dlCount').textContent === String(CAT.count),
+   `sidebar shows the build count (${$('#dlCount').textContent})`);
 
 /* --------------------------------------------------------------- artwork */
 sec('artwork + selection');

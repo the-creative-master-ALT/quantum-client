@@ -44,6 +44,21 @@ OUT_FILE = os.path.join(ROOT, "data", "versions.json")
 EXCLUDE = {
     "index.html",
     "404.html",
+
+    # Byte-identical duplicates, removed 2026-10-17. Each is bit-for-bit the
+    # same file as one listed below it -- verified by MD5 -- and the file we
+    # kept is the one with the correct name:
+    #
+    #   Eaglercraft_indev_20100233.html        == Eaglercraft_indev 20100223_JS.html
+    #   Eaglercraft_indev_20100233-wasm.html   == Eaglercraft_indev 20100223_WASM.html
+    #   Eaglercraft-1.12.html                  == Eaglercraft_1.12.2-WASM-GC.html
+    #   wispcraft-Eaglercraft_1.12.2-WASM-GC.html == wispcraft-Eaglercraft-1.12.html
+    #
+    # (the "20100233" files carry a typo'd date -- Indev 20100223 is the real one)
+    "Eaglercraft_indev_20100233.html",
+    "Eaglercraft_indev_20100233-wasm.html",
+    "Eaglercraft-1.12.html",
+    "wispcraft-Eaglercraft_1.12.2-WASM-GC.html",
 }
 
 # --------------------------------------------------------------------------
