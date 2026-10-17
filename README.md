@@ -136,6 +136,34 @@ python3 -m http.server 8000
 Heads-up: launching a build will genuinely download that whole `.html`, so
 expect 10–80 MB per game on the first hit.
 
+### Recovering after a sandbox recycle
+
+A recycle hands you back a clean clone at the base commit: `index.html`, the
+catalogue, the cover art and the 90 MB `26.3` build are all gone, the
+remote-tracking ref is gone, and `jsdom` is gone from `/tmp`.
+
+If you are working in a sandbox, one command puts all of it back:
+
+```bash
+~/resume.sh --test      # repair, serve, then run the smoke suite
+~/resume.sh --check     # verify only, change nothing
+~/resume.sh --force     # allow a reset despite uncommitted edits
+```
+
+`~/resume.sh` is a bootstrap that lives **outside** the repository so a wipe
+does not take it with it; it pulls `tools/resume.sh` back from the branch and
+runs it. Every step is idempotent, so it is safe to run on a healthy
+checkout — it repairs only what is missing.
+
+Without the bootstrap, the same recovery by hand:
+
+```bash
+git fetch origin <branch> && git reset --hard FETCH_HEAD
+git branch --set-upstream-to=origin/<branch>
+mkdir -p /tmp/testenv && cd /tmp/testenv && npm install jsdom
+python3 -m http.server 8080 --bind 0.0.0.0
+```
+
 ---
 
 ## Project layout
