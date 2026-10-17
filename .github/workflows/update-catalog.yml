@@ -1,0 +1,50 @@
+name: Update build catalogue
+
+# data/versions.json is generated from the *.html builds in the repo root.
+# Whenever a build is added/removed (or the generator changes) this refreshes
+# the catalogue and commits it back so the launcher always matches the files.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - 'tools/**'
+      - 'data/**'
+      - '.github/workflows/update-catalog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-catalog
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate catalogue
+        run: python3 tools/generate_catalog.py
+
+      - name: Commit changes
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/versions.json
+          if git diff --cached --quiet; then
+            echo "catalogue already up to date"
+          else
+            git commit -m "chore: refresh build catalogue [skip ci]"
+            git push
+          fi

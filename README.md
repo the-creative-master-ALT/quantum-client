@@ -1,3 +1,145 @@
-<h1> Write Here.... </h1>
- <p>Press ctrl + a to highlight text, and press backspace to remove.</p>
- <body>make sure it is 4-6 sentences MAX!</body>
+# 🟩 EaglerVault — the Eaglercraft launcher
+
+**140 self-contained Eaglercraft / Minecraft web builds, one browser launcher.**
+
+This repo started as a pile of 140 loose `.html` game files (2.68 GB of them).
+It is now a static launcher site that indexes every build, lets you search and
+filter them, remembers what you played, and boots any of them in a full-screen
+iframe — no install, no Java, no downloads, no server-side anything.
+
+Live at **<https://the-creative-masteralt.github.io/Eaglercraft-Versions-List-with-github-pages-website-/>**
+
+---
+
+## What you get
+
+| | |
+|---|---|
+| **140 builds** | `rd-131655` (May 2009) → `26.2`, plus 21 clients and a few bonus games |
+| **9 eras** | Pre-Classic, Classic, Indev, Infdev, Alpha, Beta, Full Release, Clients, Extras |
+| **3 runtimes** | 86 JavaScript · 40 WebAssembly · 14 WebAssembly-GC |
+| **Zero dependencies** | Hand-written HTML + CSS + JS. No framework, no build step, no CDN, no npm |
+
+### Launcher features
+
+- **Search** — instant, multi-word, matches names, file names, versions and tags (`/` to focus)
+- **Filters** — era, build type (vanilla / client / bonus / tool), runtime, "hide duplicates", "under 25 MB" data-saver mode
+- **Sorting** — chronological version order (default), A–Z, file size, most played, recently played
+- **Grid + list views** with era-themed cover art
+- **Favourites** and a **Continue playing** strip, both saved to `localStorage`
+- **Deep links** — `#/build/<id>` opens a build's details, `#/play/<id>` launches it straight away. Every build is shareable.
+- **In-game overlay** with reload, fullscreen, "open in new tab", and an elapsed-time loader for the big builds
+- **Keyboard first** — arrows to move, <kbd>Enter</kbd> for details, <kbd>Space</kbd> to launch, <kbd>F</kbd> to favourite, <kbd>R</kbd> for random, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> to quit. Press <kbd>?</kbd> for the full list.
+- **Dark + light themes**, four accent colours, persisted
+- **PWA** — installable, and a service worker caches the launcher shell (deliberately *not* the multi-MB game files)
+- **Accessible** — skip link, ARIA labels and states, visible focus rings, `prefers-reduced-motion` and `prefers-contrast` support
+- **Responsive** — sidebar becomes a drawer on phones, cards reflow down to 140 px
+
+### Build list at a glance
+
+| Era | Count | Highlights |
+|---|---:|---|
+| Pre-Classic | 10 | rd-131655, rd-132211, rd-132328, rd-160052, rd-161348 (JS + WASM-GC) |
+| Classic | 32 | every version 0.0.11a → 0.30, twice (JS + WASM-GC) |
+| Indev / Infdev | 10 | 20100214, 20100219, 20100223 + Infdev WASM-GC |
+| Alpha | 8 | 1.0.1_01 → 1.2.6 |
+| Beta | 18 | 1.0.2 → 1.9 Pre-release 5, including 1.6 Test Build 3 |
+| Full Release | 35 | 1.0.0 → 1.21.11, 26.1.2 and 26.2, plus 1.6.4 Forge |
+| Clients | 21 | Aero, Eclipse, EaglyMC, EaglercraftZ, Huzzium, Kone, Myven, N0VA, Novix, Pixel, Precision, Prism, Tuff, Water, Wispcraft ×4, WurstX, EB, Mega |
+| Extras | 6 | Minicraft, Minecraft 4k ×2, Eaglercraft Scratch ×2, Wispcraft Injector |
+
+---
+
+## Adding a build
+
+1. Drop the single-file `.html` into the **repository root** (that is where the
+   launcher looks, and where GitHub Pages serves from).
+2. Run the catalogue generator:
+
+   ```bash
+   python3 tools/generate_catalog.py
+   ```
+
+   It rewrites `data/versions.json` — size, runtime, era, version, sort order
+   and duplicate detection are all derived automatically. Hashes are cached, so
+   re-running after adding one file is fast.
+3. Commit both files. (Or skip step 2: `.github/workflows/update-catalog.yml`
+   regenerates and commits the catalogue on every push to `main`.)
+
+### Fixing a mis-detected build
+
+Heuristics are only right most of the time — a surprising number of these files
+claim to be "EaglercraftX 1.8" in their `<title>` while actually being something
+else. Curated facts live in the `OVERRIDES` table at the top of
+`tools/generate_catalog.py`, keyed by file name without the `.html`:
+
+```python
+"Eaglercraft 1.7.10-Javascript": dict(
+    name="Eaglercraft 1.7.10", category="release",
+    type="vanilla", version="1.7.10", runtime="js"),
+```
+
+Everything in `OVERRIDES` wins over the automatic guess.
+
+---
+
+## Running locally
+
+Any static server works; opening `index.html` from `file://` does **not**
+(browsers block `fetch` on local files).
+
+```bash
+python3 -m http.server 8000
+# → http://localhost:8000
+```
+
+Heads-up: launching a build will genuinely download that whole `.html`, so
+expect 10–80 MB per game on the first hit.
+
+---
+
+## Project layout
+
+```
+index.html                     the whole launcher markup + inline SVG icon sprite
+404.html                       bounces unknown paths back to the launcher
+manifest.webmanifest           PWA metadata
+sw.js                          caches the app shell only (never the games)
+.nojekyll                      tells GitHub Pages to serve files as-is
+assets/css/launcher.css        design tokens, components, views, responsive rules
+assets/js/app.js               catalogue loading, filtering, routing, player
+assets/img/                    hero, 9 era covers, PWA icons
+data/versions.json             generated catalogue — the launcher's only data source
+tools/generate_catalog.py      scans *.html and writes data/versions.json
+.github/workflows/
+  update-catalog.yml           regenerates the catalogue on push
+```
+
+The 140 game files stay in the root, untouched and still directly linkable.
+
+---
+
+## Notes and caveats
+
+- **Repo size.** The game files total ~2.7 GB, which is over GitHub Pages' 1 GB
+  guidance. Everything still serves today (Pages is configured for the legacy
+  branch build with no compilation step), but if Pages ever complains, the
+  options are: move the games behind Git LFS, serve only the launcher from a
+  `/docs` folder, or host the big files on a CDN and point `file` at it.
+- **Duplicate builds.** Four files are byte-identical to another build
+  (`Eaglercraft_indev_20100233*`, `Eaglercraft-1.12.html`,
+  `Eaglercraft_1.12.2-WASM-GC.html`, `wispcraft-…1.12.2-WASM-GC.html`). The
+  generator detects these with an MD5 pass and tags them; the sidebar has a
+  "hide duplicates" toggle.
+- **Saves are local.** Each build keeps its worlds in your browser's own
+  storage. Clearing site data wipes them.
+- **Nothing is uploaded.** Static site, no analytics, no telemetry.
+
+---
+
+## Credits
+
+Builds collected in this archive by [@UserArham](https://github.com/UserArham)
+and contributors. Eaglercraft itself is by ayunami2000 and the Eaglercraft
+community; Minecraft is © Mojang Studios. This launcher is an unaffiliated
+index + player for those files.

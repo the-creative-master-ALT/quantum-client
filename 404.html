@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redirecting to EaglerVault…</title>
+<meta http-equiv="refresh" content="0; url=./">
+<style>
+  body { margin:0; min-height:100vh; display:grid; place-items:center;
+         background:#0a0f0d; color:#e8f2ec;
+         font:15px/1.6 ui-sans-serif, system-ui, sans-serif; text-align:center; }
+  a { color:#4ade80; }
+  code { font-family: ui-monospace, monospace; background:#1a251f; padding:2px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+  <main>
+    <h1>Nothing here</h1>
+    <p>Sending you back to the <a href="./">EaglerVault launcher</a>…</p>
+    <p><small>If nothing happens, <code>window.location = './'</code></small></p>
+  </main>
+<script>
+  // Keep any #/build/... deep link intact when bouncing back to the launcher.
+  location.replace(new URL('./', location.href).href + (location.hash || ''));
+</script>
+</body>
+</html>

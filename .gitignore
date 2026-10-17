@@ -1,0 +1,17 @@
+# dependencies / tooling
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# editors & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# local scratch
+*.log
+.env
+.env.local

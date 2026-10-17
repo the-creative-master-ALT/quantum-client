@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-accent="emerald">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EaglerVault — Play 140 Eaglercraft builds in your browser</title>
+<meta name="description" content="EaglerVault is a free browser launcher for 140 Eaglercraft / Minecraft web builds — Pre-Classic rd-131655 through 26.2, plus 21 PvP and utility clients. No install, no Java, no downloads.">
+<meta name="theme-color" content="#0b100e">
+<meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://the-creative-masteralt.github.io/Eaglercraft-Versions-List-with-github-pages-website-/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="EaglerVault — Eaglercraft Launcher">
+<meta property="og:description" content="140 Eaglercraft builds in one browser launcher. Classic, Indev, Alpha, Beta, full releases and clients.">
+<meta property="og:image" content="./assets/img/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/img/icon-192.png">
+<link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./assets/css/launcher.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to the build list</a>
+
+<!-- ───────────────────────── icon sprite ───────────────────────── -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-search" viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 0 3.47 10.9l4.31 4.32 1.42-1.42-4.32-4.31A6 6 0 0 0 10 4Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 12 12 5.7 5.7l1.4-1.4L12 10.6l6.3-6.3 1.4 1.4Z"/><path d="M6.4 17.6 17.6 6.4l1.4 1.4L7.8 19l-1.4-1.4Z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 17.3-5.2 3 1.4-5.9L3.6 10l6-.5L12 4l2.4 5.5 6 .5-4.6 4.4 1.4 5.9-5.2-3Z"/></symbol>
+  <symbol id="i-star-o" viewBox="0 0 24 24"><path d="m12 15.4-3.8 2.2.9-4.3-3.2-2.8 4.3-.4L12 6.3l1.8 3.8 4.3.4-3.2 2.8.9 4.3-3.8-2.2Zm0-2.5 1.9 1.1-.5-2.2 1.6-1.4-2.1-.2-.9-1.9-.9 1.9-2.1.2 1.6 1.4-.5 2.2 1.9-1.1ZM12 17.3l-4.4 2.5 1-4.9-3.5-3 5-.4L12 7l2 4.5 5 .4-3.5 3 1 4.9-4.4-2.5Z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20v-2Z"/></symbol>
+  <symbol id="i-reload" viewBox="0 0 24 24"><path d="M12 5V2L8 6l4 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5v2H6v3H4Zm11-5h5v5h-2V6h-3V4ZM4 15h2v3h3v2H4v-5Zm14 0h2v5h-5v-2h3v-3Z"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3v2h3.6l-8.3 8.3 1.4 1.4L19 6.4V10h2V3h-7ZM5 5h5V3H3v18h18v-7h-2v5H5V5Z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 1.4l-1.4 1.4a1 1 0 0 1-1.4 0Z" opacity="0"/><path d="M11 17H7a4 4 0 0 1 0-8h2V7H7a6 6 0 0 0 0 12h4v-2Zm6-10h-4v2h4a4 4 0 0 1 0 8h-2v2h2a6 6 0 0 0 0-12ZM8 11h8v2H8v-2Z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3Zm2 2v4h4V5H5Zm8-2h8v8h-8V3Zm2 2v4h4V5h-4ZM3 13h8v8H3v-8Zm2 2v4h4v-4H5Zm8-2h8v8h-8v-8Zm2 2v4h4v-4h-4Z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h2v2H3V5Zm4 0h14v2H7V5ZM3 11h2v2H3v-2Zm4 0h14v2H7v-2ZM3 17h2v2H3v-2Zm4 0h14v2H7v-2Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM11 1h2v4h-2V1Zm0 18h2v4h-2v-4ZM1 11h4v2H1v-2Zm18 0h4v2h-4v-2ZM3.5 4.9l1.4-1.4 2.9 2.9-1.4 1.4-2.9-2.9Zm12.7 12.7 1.4-1.4 2.9 2.9-1.4 1.4-2.9-2.9ZM18.5 4.9l-2.9 2.9-1.4-1.4 2.9-2.9 1.4 1.4ZM5.8 16.2l-2.9 2.9-1.4-1.4 2.9-2.9 1.4 1.4Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Zm0 2a7 7 0 1 1-7 7 7 7 0 0 1 7-7Z"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7l-10-5Zm0 2.3 7.5 3.7L12 11.7 4.5 8 12 4.3ZM4 9.9l7 3.5v6.9l-7-3.5V9.9Zm9 10.4v-6.9l7-3.5v6.9l-7 3.5Z"/><circle cx="8.5" cy="7" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm1 12h-2v-2h2v2Zm1.6-5.2-.7.7c-.6.6-.9 1.1-.9 2.5h-2c0-1.9.5-2.8 1.4-3.6l1-1a1.8 1.8 0 1 0-2.5-2.5L9.4 6a3.8 3.8 0 1 1 5.4 5.4"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18v2.2l-7 6.3V21l-4-2.4v-5.1L3 7.2V5Z"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><path d="M9 2h2v2h2V2h2v2h1a3 3 0 0 1 3 3v1h2v2h-2v2h2v2h-2v1a3 3 0 0 1-3 3h-1v2h-2v-2h-2v2H9v-2H8a3 3 0 0 1-3-3v-1H3v-2h2v-2H3V9h2V8a3 3 0 0 1 3-3h1V2Zm-1 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H8Zm2 2h4v2H10V9Zm0 4h4v2H10v-2Z"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2Zm0 4.6L19.5 19h-15L12 6.6ZM11 10h2v5h-2v-5Zm0 6h2v2h-2v-2Z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm-1 3h2v5.4l3.5 2.1-1 1.7L11 13V7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path d="M8 2h10a2 2 0 0 1 2 2v12h-2V4H8V2ZM4 6h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm0 2v12h10V8H4Z"/></symbol>
+</svg>
+
+<!-- ───────────────────────── boot splash ───────────────────────── -->
+<div class="boot" id="boot" role="status" aria-live="polite">
+  <div class="boot-inner">
+    <div class="boot-cube" aria-hidden="true"><span></span><span></span><span></span></div>
+    <p class="boot-text">Loading build catalogue…</p>
+  </div>
+</div>
+
+<!-- ───────────────────────── top bar ───────────────────────── -->
+<header class="topbar">
+  <button class="icon-btn only-mobile" id="btnMenu" aria-label="Open filters" aria-expanded="false" aria-controls="sidebar">
+    <svg class="ico"><use href="#i-menu"/></svg>
+  </button>
+
+  <a class="brand" href="./" aria-label="EaglerVault home">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="brand-text">EAGLER<b>VAULT</b></span>
+  </a>
+
+  <div class="search">
+    <svg class="ico search-ico" aria-hidden="true"><use href="#i-search"/></svg>
+    <input id="search" type="search" placeholder="Search builds…" autocomplete="off" spellcheck="false"
+           aria-label="Search builds" aria-describedby="searchHint">
+    <kbd class="search-kbd" id="searchHint" aria-hidden="true">/</kbd>
+    <button class="icon-btn search-clear" id="searchClear" aria-label="Clear search" hidden>
+      <svg class="ico"><use href="#i-close"/></svg>
+    </button>
+  </div>
+
+  <div class="topbar-actions">
+    <button class="btn btn-ghost hide-sm" id="btnRandom" title="Launch a random build">
+      <svg class="ico"><use href="#i-dice"/></svg><span class="hide-md">Surprise me</span>
+    </button>
+    <button class="btn btn-ghost" id="btnFavs" aria-pressed="false" title="Show only favourites">
+      <svg class="ico"><use href="#i-star"/></svg><span class="hide-md">Favourites</span>
+      <span class="pill" id="favCount">0</span>
+    </button>
+    <button class="icon-btn" id="btnTheme" aria-label="Switch to light theme" title="Toggle theme">
+      <svg class="ico ico-sun"><use href="#i-sun"/></svg>
+      <svg class="ico ico-moon"><use href="#i-moon"/></svg>
+    </button>
+    <button class="icon-btn" id="btnHelp" aria-label="Keyboard shortcuts and help" title="Help">
+      <svg class="ico"><use href="#i-help"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ───────────────────────── layout ───────────────────────── -->
+<div class="layout">
+  <div class="scrim" id="scrim" hidden></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Filters">
+    <div class="sidebar-head only-mobile">
+      <h2>Filters</h2>
+      <button class="icon-btn" id="btnCloseSidebar" aria-label="Close filters">
+        <svg class="ico"><use href="#i-close"/></svg>
+      </button>
+    </div>
+
+    <section class="side-block">
+      <h2 class="side-title">Era</h2>
+      <nav class="cat-list" id="catList" aria-label="Era"></nav>
+    </section>
+
+    <section class="side-block">
+      <h2 class="side-title">Build type</h2>
+      <div class="chip-row" id="typeList" role="group" aria-label="Build type"></div>
+    </section>
+
+    <section class="side-block">
+      <h2 class="side-title">Runtime</h2>
+      <div class="chip-row" id="runtimeList" role="group" aria-label="Runtime"></div>
+    </section>
+
+    <section class="side-block">
+      <h2 class="side-title">Options</h2>
+      <label class="switch">
+        <input type="checkbox" id="optDupes">
+        <span>Hide duplicate builds</span>
+      </label>
+      <label class="switch">
+        <input type="checkbox" id="optLight">
+        <span>Under 25&nbsp;MB (data saver)</span>
+      </label>
+    </section>
+
+    <section class="side-block side-stats">
+      <h2 class="side-title">Vault stats</h2>
+      <dl id="vaultStats" class="stat-list"></dl>
+    </section>
+
+    <button class="btn btn-block" id="btnReset">Reset all filters</button>
+
+    <p class="side-foot">
+      Self-contained single-file builds — the first load downloads the whole game,
+      then your browser caches it.
+    </p>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1">
+
+    <!-- hero -->
+    <section class="hero" id="hero">
+      <img class="hero-img" src="./assets/img/hero.jpg" alt="" aria-hidden="true" decoding="async">
+      <div class="hero-body">
+        <p class="hero-kicker" id="heroKicker">Free · No install · No Java</p>
+        <h1 class="hero-title">Every Eaglercraft build,<br>one launcher.</h1>
+        <p class="hero-sub" id="heroSub">Loading…</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="btnPlayTop"><svg class="ico"><use href="#i-play"/></svg> Continue playing</button>
+          <button class="btn" id="btnRandomHero"><svg class="ico"><use href="#i-dice"/></svg> Surprise me</button>
+        </div>
+        <dl class="hero-stats" id="heroStats"></dl>
+      </div>
+    </section>
+
+    <!-- continue playing -->
+    <section class="recents" id="recentsWrap" hidden>
+      <h2 class="section-title"><svg class="ico"><use href="#i-clock"/></svg> Continue playing</h2>
+      <div class="recent-row" id="recentRow"></div>
+    </section>
+
+    <!-- toolbar -->
+    <div class="toolbar">
+      <p class="result-count" id="resultCount" aria-live="polite"></p>
+      <div class="toolbar-right">
+        <label class="select-wrap">
+          <span class="sr-only">Sort builds</span>
+          <select id="sortBy" aria-label="Sort builds">
+            <option value="order">Sort: Version order</option>
+            <option value="name">Sort: Name (A–Z)</option>
+            <option value="size-desc">Sort: Size (largest)</option>
+            <option value="size-asc">Sort: Size (smallest)</option>
+            <option value="plays">Sort: Most played</option>
+            <option value="recent">Sort: Recently played</option>
+          </select>
+        </label>
+        <div class="viewtoggle" role="group" aria-label="View style">
+          <button class="icon-btn is-active" id="btnGrid" aria-label="Grid view" aria-pressed="true"><svg class="ico"><use href="#i-grid"/></svg></button>
+          <button class="icon-btn" id="btnList" aria-label="List view" aria-pressed="false"><svg class="ico"><use href="#i-list"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="active-filters" id="activeFilters" hidden></div>
+
+    <!-- grid -->
+    <div class="grid" id="grid" role="list" aria-label="Builds"></div>
+
+    <div class="empty" id="empty" hidden>
+      <svg class="ico empty-ico"><use href="#i-search"/></svg>
+      <h2>No builds match</h2>
+      <p id="emptyMsg">Try a different search term or clear your filters.</p>
+      <button class="btn" id="btnEmptyReset">Reset filters</button>
+    </div>
+
+    <footer class="footer">
+      <p>
+        <strong>EaglerVault</strong> — a static launcher for the
+        <a href="https://github.com/the-creative-masterALT/Eaglercraft-Versions-List-with-github-pages-website-" target="_blank" rel="noopener">Eaglercraft Versions List</a> archive.
+        Every build runs locally in your browser; nothing is uploaded.
+      </p>
+      <p class="footer-meta" id="footerMeta"></p>
+    </footer>
+  </main>
+</div>
+
+<!-- ───────────────────────── detail drawer ───────────────────────── -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-scrim" data-close></div>
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
+    <button class="icon-btn drawer-close" data-close aria-label="Close details"><svg class="ico"><use href="#i-close"/></svg></button>
+    <div class="drawer-cover" id="drawerCover">
+      <span class="drawer-cover-label" id="drawerCoverLabel"></span>
+    </div>
+    <div class="drawer-body">
+      <p class="drawer-eyebrow" id="drawerEyebrow"></p>
+      <h2 class="drawer-title" id="drawerTitle"></h2>
+      <p class="drawer-note" id="drawerNote" hidden></p>
+      <dl class="drawer-specs" id="drawerSpecs"></dl>
+      <div class="drawer-actions">
+        <button class="btn btn-primary btn-lg" id="drawerPlay"><svg class="ico"><use href="#i-play"/></svg> Play</button>
+        <button class="btn" id="drawerFav"><svg class="ico"><use href="#i-star-o"/></svg> Favourite</button>
+      </div>
+      <div class="drawer-links">
+        <button class="linkbtn" id="drawerNewTab"><svg class="ico"><use href="#i-external"/></svg> Open in new tab</button>
+        <button class="linkbtn" id="drawerCopy"><svg class="ico"><use href="#i-link"/></svg> Copy link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ───────────────────────── player ───────────────────────── -->
+<div class="player" id="player" hidden>
+  <div class="player-bar">
+    <button class="btn btn-ghost" id="playerBack"><svg class="ico"><use href="#i-back"/></svg> <span class="hide-sm">Back to vault</span></button>
+    <p class="player-title" id="playerTitle"></p>
+    <div class="player-tools">
+      <button class="icon-btn" id="playerReload" title="Reload game"><svg class="ico"><use href="#i-reload"/></svg></button>
+      <button class="icon-btn" id="playerFull" title="Fullscreen"><svg class="ico"><use href="#i-expand"/></svg></button>
+      <button class="icon-btn" id="playerTab" title="Open in new tab"><svg class="ico"><use href="#i-external"/></svg></button>
+      <button class="icon-btn player-quit" id="playerQuit" title="Quit (Ctrl+Shift+Q)"><svg class="ico"><use href="#i-close"/></svg></button>
+    </div>
+  </div>
+  <div class="player-stage" id="playerStage">
+    <div class="player-loading" id="playerLoading">
+      <div class="boot-cube"><span></span><span></span><span></span></div>
+      <p class="boot-text" id="playerLoadingText">Loading…</p>
+      <p class="player-hint" id="playerHint"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ───────────────────────── help modal ───────────────────────── -->
+<div class="modal" id="helpModal" hidden>
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1">
+    <button class="icon-btn modal-close" data-close aria-label="Close help"><svg class="ico"><use href="#i-close"/></svg></button>
+    <h2 id="helpTitle" class="modal-title">EaglerVault help</h2>
+
+    <h3 class="modal-h3">Keyboard shortcuts</h3>
+    <ul class="keys">
+      <li><kbd>/</kbd><span>Focus search</span></li>
+      <li><kbd>Esc</kbd><span>Close details / dialogs</span></li>
+      <li><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd><span>Move between builds</span></li>
+      <li><kbd>Enter</kbd><span>Open details</span></li>
+      <li><kbd>Space</kbd><span>Launch focused build</span></li>
+      <li><kbd>F</kbd><span>Favourite focused build</span></li>
+      <li><kbd>R</kbd><span>Random build</span></li>
+      <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd><span>Quit the running game</span></li>
+      <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd><span>Toggle fullscreen</span></li>
+    </ul>
+
+    <h3 class="modal-h3">Before you play</h3>
+    <ul class="tips">
+      <li>Every build is one self-contained <code>.html</code> file — the first launch downloads the whole game (some are 80&nbsp;MB), then your browser caches it.</li>
+      <li>Click inside the game to capture your mouse. Press <kbd>Esc</kbd> inside the game to release it.</li>
+      <li>WASM-GC builds are smaller and start faster, but need a browser from 2023 or newer.</li>
+      <li>Touch controls: the mobile-oriented builds (tagged <em>mobile</em>) work best on phones.</li>
+      <li>Saves and settings live in that browser's local storage — clearing site data wipes your worlds.</li>
+    </ul>
+
+    <p class="modal-foot">Built with vanilla HTML, CSS and JS. No trackers, no telemetry, no build step.</p>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<script src="./assets/js/app.js"></script>
+</body>
+</html>
