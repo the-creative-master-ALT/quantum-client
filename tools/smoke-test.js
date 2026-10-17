@@ -132,21 +132,35 @@ const kept = ['Eaglercraft_indev 20100223_JS.html', 'Eaglercraft_indev 20100223_
 ok(kept.every((f) => fs.existsSync(path.join(ROOT, f))), 'the originals were kept, not the duplicates');
 
 /* ------------------------------------------------------------- responsive */
-sec('responsive: scales, never reflows');
+sec('responsive: one layout, scaled');
 const css = $('style').textContent;
-ok(!/grid-template-areas\s*:\s*["']?side["']?\s*["']?stage["']?/.test(css) ||
-   !/@media[^{]*max-width[^{]*\{[^{]*grid-template-areas/.test(css),
-   'no breakpoint moves the sidebar into a topbar');
-ok(/transform-origin\s*:\s*0 0/.test(css), 'shell scales from the top-left corner');
-ok(/width\s*:\s*calc\(100vw \/ var\(--s\)\)/.test(css), 'shell is drawn 1/--s oversized so it lands exactly on the viewport');
 
-// jsdom reports a 1024x768 viewport, so --s should be min(1, 1024/1400, 768/860)
-const shell = $('.shell');
-const sVal = parseFloat(shell.style.getPropertyValue('--s'));
-const expectedS = Math.min(1, 1024 / 1400, 768 / 860);
-ok(Math.abs(sVal - expectedS) < 0.001,
-   `--s scales the layout to ${sVal} in a 1024px viewport`, String(sVal));
-ok(sVal < 1, 'a narrow window is scaled down rather than reflowed', String(sVal));
+// a breakpoint is precisely what used to turn the sidebar into a topbar
+const mq = css.match(/@media[^{]*max-width[^{]*\{/g) || [];
+ok(mq.length === 0, 'no max-width breakpoint exists at all', mq.join(' '));
+
+ok(/html\{font-size:clamp\(8px, min\(1\.143vw, 1\.86vh\), 16px\)\}/.test(css),
+   'root font-size is fluid: clamp(8px, min(1.143vw, 1.86vh), 16px)');
+ok(!/\.shell\{[^}]*transform:\s*scale/.test(css),
+   'shell does not depend on a JS-driven transform');
+ok(!/var\(--s\)/.test(css), 'no leftover --s scaling variable');
+
+// everything measurable must be in rem, or it will not scale with the root
+// strip the clamp() anchors (they *are* the scale) and every comment, so we
+// are only judging real declarations
+const cssCode = css
+  .replace('html{font-size:clamp(8px, min(1.143vw, 1.86vh), 16px)}', '')
+  .replace(/\/\*[\s\S]*?\*\//g, '');
+const pxLeft = (cssCode.match(/-?\d*\.?\d+px/g) || [])
+  .filter((v) => Math.abs(parseFloat(v)) >= 2);
+ok(pxLeft.length === 0, 'no layout dimension is left in px', pxLeft.slice(0, 6).join(' '));
+ok(/--sidebar:\s*[\d.]+rem/.test(css), 'sidebar width is in rem');
+
+// the grid must still put the sidebar beside the stage, never above it
+const areas = (css.match(/grid-template-areas:\s*"([^"]+)"/) || [])[1] || '';
+ok(/side\s+stage/.test(areas), 'sidebar sits beside the stage', areas);
+ok(!/dock\s+side|side\s+dock/.test(css.replace(/\s+/g, ' ')),
+   'sidebar is never stacked above the dock');
 
 /* ------------------------------------------------------------- downloads */
 sec('downloads lives in the sidebar');

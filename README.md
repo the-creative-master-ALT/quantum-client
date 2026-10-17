@@ -92,23 +92,30 @@ builds, <kbd>Enter</kbd> to play, <kbd>/</kbd> to open Downloads,
 
 ### How the scaling works
 
-There are deliberately **no layout breakpoints**. Instead `--s` is computed as
+There are deliberately **no layout breakpoints** — a breakpoint is exactly what
+turns a sidebar into a topbar. Instead every dimension in the stylesheet is in
+`rem`, and one fluid value on `<html>` scales the whole thing as a single
+piece:
 
+```css
+html { font-size: clamp(8px, min(1.143vw, 1.86vh), 16px); }
 ```
---s = clamp(0.4, min(1, width / 1400, height / 860), 1)
-```
 
-and the shell is drawn `1 / --s` times too big, then `transform: scale(--s)`ed
-back down from the top-left corner — so it lands exactly on the viewport with
-the identical layout, just smaller. 1400×860 is the size the design is drawn
-for; anything larger renders 1:1.
+`1.143vw` is 16 px at 1400 wide and `1.86vh` is 16 px at 860 tall, so whichever
+is smaller wins and the layout shrinks on a narrow *or* a short window. 1400×860
+is the size the design is drawn for; anything larger renders 1:1, and 8 px is
+the floor.
 
-| Viewport | Scale | Sidebar |
-|---|---:|---:|
-| 1920×1080 | 1.00 | 264 px |
-| 1366×768 | 0.89 | 235 px |
-| 1280×720 | 0.84 | 221 px |
-| 1024×768 | 0.73 | 193 px |
+This is pure CSS — no JavaScript, no `transform: scale()`, nothing that can fall
+out of sync with the viewport.
+
+| Viewport | Root | Scale | Sidebar |
+|---|---:|---:|---:|
+| 1920×1080 | 16.0 px | 1.00 | 264 px |
+| 1366×768 | 14.3 px | 0.89 | 236 px |
+| 1280×720 | 13.4 px | 0.84 | 221 px |
+| 1024×768 | 11.7 px | 0.73 | 193 px |
+| 768×1024 | 8.8 px | 0.55 | 145 px |
 
 ---
 
@@ -243,7 +250,7 @@ tools/
   embed_catalog.py             folds that catalogue into index.html
   add_build.py                 one-command import for a new build
   join_build_parts.py          reassembles chunked uploads, verifies SHA-256
-  smoke-test.js                54 assertions against the real page (jsdom)
+  smoke-test.js                57 assertions against the real page (jsdom)
   resume.sh                    recovery after a sandbox recycle
 ```
 
