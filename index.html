@@ -180,12 +180,23 @@
         <label class="select-wrap">
           <span class="sr-only">Sort builds</span>
           <select id="sortBy" aria-label="Sort builds">
-            <option value="order">Sort: Version order</option>
+            <option value="order">Sort: Timeline, oldest first</option>
+            <option value="order-desc">Sort: Timeline, newest first</option>
             <option value="name">Sort: Name (A–Z)</option>
-            <option value="size-desc">Sort: Size (largest)</option>
-            <option value="size-asc">Sort: Size (smallest)</option>
+            <option value="name-desc">Sort: Name (Z–A)</option>
+            <option value="size-desc">Sort: Size (largest first)</option>
+            <option value="size-asc">Sort: Size (smallest first)</option>
             <option value="plays">Sort: Most played</option>
             <option value="recent">Sort: Recently played</option>
+          </select>
+        </label>
+        <label class="select-wrap">
+          <span class="sr-only">Group builds</span>
+          <select id="groupBy" aria-label="Group builds">
+            <option value="era">Group: Era</option>
+            <option value="type">Group: Build type</option>
+            <option value="runtime">Group: Runtime</option>
+            <option value="none">Group: None</option>
           </select>
         </label>
         <div class="viewtoggle" role="group" aria-label="View style">

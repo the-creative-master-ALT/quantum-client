@@ -545,6 +545,12 @@ def main() -> int:
             "title": title,
             "order": sort_key(category, version or "", stem),
         }
+        entry["eraCover"] = "./assets/img/cat-%s.jpg" % category
+        # per-build art lives in assets/img/builds/<id>.jpg; only advertise it
+        # once the file actually exists so the launcher never requests a 404
+        cover_rel = "./assets/img/builds/%s.jpg" % entry["id"]
+        entry["cover"] = cover_rel if os.path.exists(
+            os.path.join(ROOT, cover_rel[2:])) else None
         entries.append(entry)
 
     entries.sort(key=lambda e: (e["order"], e["name"].lower()))

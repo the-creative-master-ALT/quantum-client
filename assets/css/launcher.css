@@ -445,6 +445,40 @@ kbd {
 .viewtoggle { display: flex; gap: 2px; padding: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm); }
 .viewtoggle .icon-btn { width: 32px; height: 32px; }
 
+.group-heading {
+  grid-column: 1 / -1;
+  position: sticky; top: var(--topbar-h); z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; margin: 14px 0 2px; padding: 9px 12px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  color: var(--text); cursor: pointer; text-align: left;
+  transition: border-color .14s var(--ease), background .14s var(--ease);
+}
+.group-heading:first-child { margin-top: 0; }
+.group-heading:hover { border-color: var(--border-2); background: var(--surface-2); }
+.group-heading.is-collapsed { border-left-color: var(--border-2); color: var(--text-2); }
+.group-caret { font-size: 11px; color: var(--muted); width: 10px; flex: none; }
+.group-dot { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+.group-title {
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; flex: none;
+}
+.group-blurb {
+  flex: 1; min-width: 0; font-size: 12px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.group-count {
+  flex: none; padding: 1px 8px; border-radius: 999px;
+  background: var(--surface-3); color: var(--text-2);
+  font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+@media (max-width: 720px) { .group-blurb { display: none; } }
+
 .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .active-chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -484,21 +518,29 @@ kbd {
   background-size: cover; background-position: center;
   background-color: var(--surface-3);
 }
+.card-cover-img,
+.drawer-cover-img {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block; border: 0;
+  background: transparent;
+}
 .card-cover::after {
-  content: ""; position: absolute; inset: 0;
+  content: ""; position: absolute; inset: 0; z-index: 2;
   background:
     linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.05) 100%),
     linear-gradient(115deg, rgba(0,0,0,.28), transparent 60%);
 }
 .card-cover-label {
-  position: absolute; left: 10px; bottom: 8px; z-index: 2;
+  position: absolute; left: 10px; bottom: 8px; z-index: 3;
   font-family: var(--mono); font-size: 15px; font-weight: 700; color: #fff;
   letter-spacing: .01em; text-shadow: 0 2px 6px rgba(0,0,0,.9);
   max-width: calc(100% - 52px);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .card-badge {
-  position: absolute; left: 10px; top: 9px; z-index: 2;
+  position: absolute; left: 10px; top: 9px; z-index: 3;
   padding: 3px 7px; border-radius: 4px;
   font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .06em;
   background: rgba(0,0,0,.62); color: #d7f5e3;
@@ -512,7 +554,7 @@ kbd {
 /* overlay that exactly matches the cover box (same width, same 16:10 ratio),
    so the buttons sit on the artwork in grid view and inline in list view */
 .card-actions {
-  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 4;
   aspect-ratio: 16 / 10;
   padding: 6px;
   display: flex; align-items: flex-start; justify-content: flex-end;

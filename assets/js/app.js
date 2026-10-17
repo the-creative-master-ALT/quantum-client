@@ -43,7 +43,8 @@
     return s;
   }
 
-  const coverFor = (e) => `./assets/img/cat-${e.category}.jpg`;
+  const eraCover = (e) => e.eraCover || `./assets/img/cat-${e.category}.jpg`;
+  const coverFor = (e) => e.cover || eraCover(e);
 
   const CAT_COLORS = {
     preclassic: '#8b7355', classic: '#5bbf7a', indev: '#7fa8c9', infdev: '#9b8ec4',
@@ -64,7 +65,11 @@
   /* ------------------------------------------------------------- storage -- */
   const defaults = {
     favs: {}, plays: {}, recents: [],
-    settings: { theme: 'dark', accent: 'emerald', view: 'grid', sort: 'order', hideDupes: false, lightOnly: false },
+    settings: {
+      theme: 'dark', accent: 'emerald', view: 'grid',
+      sort: 'order', groupBy: 'era', hideDupes: false, lightOnly: false,
+      collapsed: {},
+    },
   };
 
   const store = {
@@ -186,22 +191,91 @@
     return q.split(/\s+/).every((tok) => haystack(e).includes(tok));
   }
 
+  const lastPlayed = (id) => {
+    const r = store.data.recents.find((x) => x.id === id);
+    return r ? r.ts : 0;
+  };
+  const num = (a, b) => a.name.localeCompare(b.name);
+
+  const SORTS = {
+    order:       (a, b) => (a.order - b.order) || num(a, b),
+    'order-desc': (a, b) => (b.order - a.order) || num(a, b),
+    name:        (a, b) => num(a, b) || a.size - b.size,
+    'name-desc': (a, b) => num(b, a) || a.size - b.size,
+    'size-desc': (a, b) => b.size - a.size || num(a, b),
+    'size-asc':  (a, b) => a.size - b.size || num(a, b),
+    plays:       (a, b) => (store.data.plays[b.id] || 0) - (store.data.plays[a.id] || 0) || num(a, b),
+    recent:      (a, b) => lastPlayed(b.id) - lastPlayed(a.id) || num(a, b),
+  };
+
+  const GROUPS = {
+    era: {
+      label: 'Era', key: (e) => e.category,
+      ordering: () => CAT.categories.map((c) => c.id),
+      title: (k) => (CAT.categories.find((c) => c.id === k) || {}).label || k,
+      color: (k) => CAT_COLORS[k],
+      blurb: (k) => (CAT.categories.find((c) => c.id === k) || {}).blurb || '',
+    },
+    type: {
+      label: 'Build type', key: (e) => e.type,
+      ordering: () => CAT.types.map((t) => t.id),
+      title: (k) => (CAT.types.find((t) => t.id === k) || {}).label || k,
+    },
+    runtime: {
+      label: 'Runtime', key: (e) => e.runtime,
+      ordering: () => CAT.runtimes.map((r) => r.id),
+      title: (k) => (CAT.runtimes.find((r) => r.id === k) || {}).label || k,
+    },
+    none: { label: 'No grouping', key: null },
+  };
+
+  function groupIndex(gdef, key) {
+    const arr = gdef.ordering ? gdef.ordering() : null;
+    if (arr) {
+      const i = arr.indexOf(key);
+      if (i >= 0) return i;
+    }
+    return 999;
+  }
+
+  // sorts that read as "descending" also flip the order of the groups
+  const DESC_SORTS = { 'order-desc': 1, 'name-desc': 1, 'size-desc': 1 };
+
   function sortEntries(list) {
-    const s = store.data.settings.sort;
-    const plays = store.data.plays;
-    const lastPlayed = (id) => {
-      const r = store.data.recents.find((x) => x.id === id);
-      return r ? r.ts : 0;
-    };
-    const cmp = {
-      order: (a, b) => (a.order - b.order) || a.name.localeCompare(b.name),
-      name: (a, b) => a.name.localeCompare(b.name) || a.size - b.size,
-      'size-desc': (a, b) => b.size - a.size,
-      'size-asc': (a, b) => a.size - b.size,
-      plays: (a, b) => (plays[b.id] || 0) - (plays[a.id] || 0) || a.name.localeCompare(b.name),
-      recent: (a, b) => lastPlayed(b.id) - lastPlayed(a.id) || a.name.localeCompare(b.name),
-    }[s] || ((a, b) => a.order - b.order);
-    return list.slice().sort(cmp);
+    const gdef = GROUPS[store.data.settings.groupBy];
+    const cmp = SORTS[store.data.settings.sort] || SORTS.order;
+    // grouped views must be contiguous: cluster by group key first, then
+    // apply the user's sort inside each group
+    if (!gdef || !gdef.key) return list.slice().sort(cmp);
+    const dir = DESC_SORTS[store.data.settings.sort] ? -1 : 1;
+    return list.slice().sort((a, b) => {
+      const ga = groupIndex(gdef, gdef.key(a));
+      const gb = groupIndex(gdef, gdef.key(b));
+      return ((ga - gb) * dir) || cmp(a, b);
+    });
+  }
+
+  function makeGroupHeading(gid, gdef, key, count) {
+    const collapsed = !!store.data.settings.collapsed[gid];
+    return el('button', {
+      class: 'group-heading' + (collapsed ? ' is-collapsed' : ''),
+      type: 'button',
+      'aria-expanded': collapsed ? 'false' : 'true',
+      title: collapsed ? 'Expand this group' : 'Collapse this group',
+      onclick: () => {
+        const c = store.data.settings.collapsed;
+        if (c[gid]) delete c[gid]; else c[gid] = true;
+        store.save();
+        renderGrid();
+      },
+    }, [
+      el('span', { class: 'group-caret', 'aria-hidden': 'true', text: collapsed ? '\u25b8' : '\u25be' }),
+      gdef.color && gdef.color(key)
+        ? el('span', { class: 'group-dot', style: `background:${gdef.color(key)}` }) : null,
+      el('span', { class: 'group-title', text: gdef.title(key) }),
+      el('span', { class: 'group-blurb', text: gdef.blurb ? gdef.blurb(key) : '' }),
+      el('span', { class: 'group-count', text: count }),
+    ]);
   }
 
   function applyFilters() {
@@ -243,8 +317,21 @@
 
     const cover = el('div', {
       class: 'card-cover',
-      style: `--cover:url('${coverFor(e)}')`,
+      style: `--cover:url('${eraCover(e)}')`,
     });
+
+    // per-build art sits on top of the era fallback; if it fails to load we
+    // drop the <img> and the era artwork shows through -- never a blank box
+    if (e.cover) {
+      const art = el('img', {
+        class: 'card-cover-img', src: e.cover, alt: '',
+        loading: 'lazy', decoding: 'async', draggable: 'false',
+      });
+      art.addEventListener('error', () => { art.remove(); cover.classList.add('no-art'); });
+      cover.appendChild(art);
+    } else {
+      cover.classList.add('no-art');
+    }
 
     cover.appendChild(el('span', { class: 'card-badge', 'data-rt': e.runtime, text: RT_LABEL[e.runtime] || '?' }));
 
@@ -297,7 +384,27 @@
     dom.grid.setAttribute('data-view', store.data.settings.view);
     dom.grid.textContent = '';
     const frag = document.createDocumentFragment();
-    VIEW.forEach((e, i) => frag.appendChild(makeCard(e, i)));
+    const gname = store.data.settings.groupBy;
+    const gdef = GROUPS[gname] || GROUPS.none;
+
+    if (!gdef.key) {
+      VIEW.forEach((e, i) => frag.appendChild(makeCard(e, i)));
+    } else {
+      let current;
+      let hidden = 0;
+      VIEW.forEach((e, i) => {
+        const key = gdef.key(e);
+        if (key !== current) {
+          current = key;
+          const gid = gname + ':' + key;
+          const count = VIEW.filter((v) => gdef.key(v) === key).length;
+          frag.appendChild(makeGroupHeading(gid, gdef, key, count));
+        }
+        if (store.data.settings.collapsed[gname + ':' + key]) hidden++;
+        else frag.appendChild(makeCard(e, i));
+      });
+      dom.grid.setAttribute('data-hidden', hidden);
+    }
     dom.grid.appendChild(frag);
     FOCUS_INDEX = -1;
   }
@@ -453,7 +560,13 @@
 
     const panel = $('.drawer-panel', dom.drawer);
     const cover = $('#drawerCover');
-    cover.style.setProperty('--cover', `url('${coverFor(e)}')`);
+    cover.style.setProperty('--cover', `url('${eraCover(e)}')`);
+    $$('img', cover).forEach((n) => n.remove());
+    if (e.cover) {
+      const art = el('img', { class: 'drawer-cover-img', src: e.cover, alt: '' });
+      art.addEventListener('error', () => art.remove());
+      cover.appendChild(art);
+    }
     $('#drawerCoverLabel').textContent = labelFor(e);
     $('#drawerEyebrow').textContent = cat.label + (e.type !== 'vanilla' ? ' · ' + e.type : '');
     $('#drawerTitle').textContent = e.name;
@@ -744,6 +857,11 @@
     dom.sortBy.value = store.data.settings.sort;
     dom.sortBy.addEventListener('change', () => {
       store.data.settings.sort = dom.sortBy.value; store.save(); applyFilters();
+    });
+    const groupBy = $('#groupBy');
+    groupBy.value = store.data.settings.groupBy || 'era';
+    groupBy.addEventListener('change', () => {
+      store.data.settings.groupBy = groupBy.value; store.save(); applyFilters();
     });
     const setView = (v) => {
       store.data.settings.view = v; store.save();

@@ -89,6 +89,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok($('#boot').classList.contains('is-done'), 'boot splash dismissed');
   ok(logs.length === 0, 'no console errors during boot', logs.join(' | '));
 
+  const CATVERSIONS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'versions.json'), 'utf8')).versions;
   const cards = $$('.card');
   ok(cards.length === 140, 'renders all 140 build cards', 'got ' + cards.length);
   ok(/140 builds/.test($('#resultCount').textContent) || /140/.test($('#resultCount').textContent),
@@ -149,6 +150,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   console.log('\n── sorting ────────────────────────────');
   const sort = $('#sortBy');
+  // global orderings only apply ungrouped; grouped views cluster by era first
+  const gsel = $('#groupBy');
+  gsel.value = 'none'; gsel.dispatchEvent(new window.Event('change'));
+  await sleep(60);
   sort.value = 'size-desc';
   sort.dispatchEvent(new window.Event('change'));
   await sleep(80);
@@ -165,6 +170,75 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok($$('.card .card-title')[0].textContent.includes('rd-131655'), 'version order starts at rd-131655',
     $$('.card .card-title')[0].textContent);
   ok($$('.card .card-title')[139].textContent.length > 0, 'last card rendered');
+
+  console.log('\n── per-build art + grouping ───────────');
+  // the sorting block above switched grouping off; put it back
+  $('#groupBy').value = 'era';
+  $('#groupBy').dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  const withArt = CATVERSIONS.filter((v) => v.cover);
+  ok(withArt.length === $$('.card .card-cover-img').length,
+    `every build with art renders an <img> (${withArt.length})`,
+    String($$('.card .card-cover-img').length));
+  ok($$('.card .card-cover-img').every((i) => i.getAttribute('loading') === 'lazy'),
+    'cover art is lazy-loaded');
+  ok($$('.card .card-cover').every((c) => /^url\(/.test(c.style.getPropertyValue('--cover'))),
+    'every cover keeps an era fallback behind the art');
+  ok($$('.group-heading').length === 9, 'one sticky heading per era', String($$('.group-heading').length));
+  ok(/Pre-Classic/.test($$('.group-heading')[0].textContent), 'first heading is Pre-Classic',
+    $$('.group-heading')[0].textContent.trim().slice(0, 40));
+
+  const gb = $('#groupBy');
+  gb.value = 'runtime'; gb.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok($$('.group-heading').length === 3, 'grouping by runtime → 3 headings', String($$('.group-heading').length));
+  ok($$('.card').length === 140, 'still 140 cards after regrouping');
+  gb.value = 'none'; gb.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok($$('.group-heading').length === 0, 'grouping “none” removes headings');
+  gb.value = 'era'; gb.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+
+  // collapse the first group
+  $$('.group-heading')[0].click();
+  await sleep(80);
+  ok($$('.card').length === 130, 'collapsing Pre-Classic hides its 10 cards', String($$('.card').length));
+  ok($$('.group-heading')[0].getAttribute('aria-expanded') === 'false', 'collapsed heading is aria-expanded=false');
+  $$('.group-heading')[0].click();
+  await sleep(80);
+  ok($$('.card').length === 140, 'expanding restores the cards');
+
+  console.log('\n── sort overhaul ──────────────────────');
+  const titlesFor = () => $$('.card .card-title').map((t) => t.textContent);
+  const so = $('#sortBy');
+
+  // grouped: a descending timeline should flip the era order too
+  so.value = 'order-desc'; so.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok(/Extras/.test($$('.group-heading')[0].textContent),
+    'descending timeline flips the era order (Extras first)',
+    $$('.group-heading')[0].textContent.trim().slice(0, 30));
+  const order = $$('.group-heading').map((h) => h.querySelector('.group-title').textContent);
+  ok(order[0] === 'Extras' && order[1] === 'Clients' && order[2] === 'Full Release'
+     && order[order.length - 1] === 'Pre-Classic',
+    'era headings run newest → oldest', order.join(' > '));
+
+  // global (ungrouped) sorts
+  gb.value = 'none'; gb.dispatchEvent(new window.Event('change'));
+  await sleep(60);
+  so.value = 'order-desc'; so.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok(/26\.2|Minicraft|Scratch|Injector|Client/.test(titlesFor()[0]),
+    'newest-first puts the modern builds on top', titlesFor()[0]);
+  so.value = 'name-desc'; so.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok(titlesFor()[0] > titlesFor()[1], 'Z–A sort works', titlesFor().slice(0, 2).join(' | '));
+  so.value = 'size-asc'; so.dispatchEvent(new window.Event('change'));
+  await sleep(80);
+  ok(/Minecraft 4k/.test(titlesFor()[0]), 'smallest-first starts with Minecraft 4k', titlesFor()[0]);
+  so.value = 'order'; so.dispatchEvent(new window.Event('change'));
+  gb.value = 'era'; gb.dispatchEvent(new window.Event('change'));
+  await sleep(80);
 
   console.log('\n── card markup ────────────────────────');
   const c0 = $('.card');
