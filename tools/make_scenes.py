@@ -221,29 +221,11 @@ class Scene:
 
     # -- chrome -------------------------------------------------------------
     def label(self, title, sub, accent, chip=None, size=29):
-        """Title block in the reserved bottom band (art stays above y=178)."""
-        # soft dark pool so the type sits on something, without flattening the art
-        g = self.rg([(0, "#000", .62), (.55, "#000", .3), (1, "#000", 0)], .16, .88, .62)
-        self.add('<ellipse cx="150" cy="243" rx="196" ry="66" fill="%s"/>' % g)
-        ty = 220
-        self.add(
-            '<rect x="26" y="%s" width="3.5" height="34" rx="1.75" fill="%s"/>' % (ty - 27, accent),
-            '<rect x="26" y="%s" width="3.5" height="34" rx="1.75" fill="%s" filter="url(#f-tiny)" '
-            'fill-opacity=".8"/>' % (ty - 27, accent),
-            '<text x="40" y="%s" font-family="%s" font-size="%s" font-weight="800" '
-            'fill="url(#g-title)" letter-spacing=".4">%s</text>' % (ty, FONT, size, title),
-            '<text x="41" y="%s" font-family="%s" font-size="9" font-weight="600" '
-            'fill="%s" fill-opacity=".9" letter-spacing="2.2">%s</text>' % (ty + 17, FONT, accent, sub),
-        )
-        if chip:
-            cw = 8.2 * len(chip) + 24
-            self.add(
-                '<rect x="%s" y="22" width="%s" height="22" rx="11" fill="#050a12" fill-opacity=".4" '
-                'stroke="url(#g-rim)" stroke-width=".9"/>' % (480 - 26 - cw, cw),
-                '<text x="%s" y="37" font-family="%s" font-size="8.4" font-weight="700" '
-                'fill="#fff" fill-opacity=".92" letter-spacing="1.4" text-anchor="middle">%s</text>'
-                % (480 - 26 - cw / 2, FONT, chip),
-            )
+        """Scene labels live in the HTML overlay so the background stays clean."""
+        # Keep the call sites descriptive, but let the full-stage illustration
+        # remain free of baked-in headings and counts. The selected build is
+        # rendered above the artwork by the launcher itself.
+        return
 
     def finish(self):
         self.add(
@@ -714,34 +696,24 @@ def scene_extras():
     s.glow(240, 110, 160, "#3fd8b0", 0.2)
     s.stars(30, 131, y1=130, maxr=1.0)
 
-    # three glass plates, fanned and overlapping for depth
-    cards = ((44, 62, 140, 104, "#9ff7dc", -1), (170, 50, 148, 112, "#b8d8ff", 0),
-             (306, 66, 132, 100, "#ffd9a8", 1))
+    # two glass plates for the two bonus games
+    cards = ((66, 62, 148, 104, "#9ff7dc", -1), (266, 50, 158, 112, "#b8d8ff", 0))
     for x, y, w, h, tint, side in cards:
         s.panel(x, y, w, h, 14, tint=tint)
 
     # card 1 -- minicraft
-    s.cube(84, 92, 13, 11, "#8fd46f", "#4f8a3f", "#65a84e")
-    s.cube(106, 98, 10, 9, "#c9b48f", "#8a7657", "#a58f6c")
-    s.add('<text x="58" y="142" font-family="%s" font-size="8.6" font-weight="700" fill="#e2fff4" '
+    s.cube(106, 92, 13, 11, "#8fd46f", "#4f8a3f", "#65a84e")
+    s.cube(128, 98, 10, 9, "#c9b48f", "#8a7657", "#a58f6c")
+    s.add('<text x="88" y="142" font-family="%s" font-size="8.6" font-weight="700" fill="#e2fff4" '
           'fill-opacity=".9" letter-spacing="1.1">MINICRAFT</text>' % FONT)
 
-    # card 2 -- minecraft 4k, big and centred
-    for bx, by, c, o in ((192, 74, "#7fd0ff", .9), (214, 74, "#a8e0ff", .72),
-                         (192, 98, "#5fb0e8", .85), (214, 98, "#8fd0ff", .78)):
+    # card 2 -- Minecraft 4K
+    for bx, by, c, o in ((288, 74, "#7fd0ff", .9), (310, 74, "#a8e0ff", .72),
+                         (288, 98, "#5fb0e8", .85), (310, 98, "#8fd0ff", .78)):
         s.add('<rect x="%s" y="%s" width="19" height="19" rx="3" fill="%s" fill-opacity="%s"/>'
               % (bx, by, c, o))
-    s.add('<text x="188" y="146" font-family="%s" font-size="8.6" font-weight="700" fill="#e6f4ff" '
+    s.add('<text x="284" y="146" font-family="%s" font-size="8.6" font-weight="700" fill="#e6f4ff" '
           'fill-opacity=".9" letter-spacing="1.1">MINECRAFT 4K</text>' % FONT)
-
-    # card 3 -- tools
-    s.add('<circle cx="338" cy="94" r="13" fill="none" stroke="#ffc97a" stroke-opacity=".85" '
-          'stroke-width="2.6"/>')
-    s.add('<path d="M348 104 L362 118" stroke="#ffc97a" stroke-opacity=".85" stroke-width="3.4" '
-          'stroke-linecap="round"/>')
-    s.add('<circle cx="338" cy="94" r="13" fill="#ffc97a" fill-opacity=".12"/>')
-    s.add('<text x="322" y="142" font-family="%s" font-size="8.6" font-weight="700" fill="#fff0dc" '
-          'fill-opacity=".9" letter-spacing="1.1">TOOLS</text>' % FONT)
 
     # sparkles
     for cx, cy, r in ((164, 44, 2.2), (292, 32, 1.8), (438, 156, 2), (36, 152, 1.8)):
@@ -750,8 +722,8 @@ def scene_extras():
               % (cx, cy - r, cy + r, cx - r, cy, cx + r))
 
     s.finish()
-    s.label("EXTRAS", "MINICRAFT \u00b7 4K \u00b7 SCRATCH \u00b7 TOOLS",
-            "#a8f0d8", "6 ITEMS", size=27)
+    s.label("BONUS GAMES", "MINECRAFT 4K · MINICRAFT",
+            "#a8f0d8", "2 GAMES", size=27)
     return s
 
 SCENES = [scene_all, scene_preclassic, scene_classic, scene_devs, scene_alpha,

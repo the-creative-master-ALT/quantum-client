@@ -2,10 +2,9 @@
 #
 # Bring the EaglerVault preview back after a sandbox recycle.
 #
-# A recycle hands you a clean clone at the base commit: every generated file
-# (index.html, the catalogue, cover art, the 90 MB 26.3 build) is gone, the
-# remote-tracking ref is gone, and jsdom is gone from /tmp. This puts all of
-# it back. Safe to run repeatedly -- every step is idempotent.
+# A recycle may leave a sparse checkout with the launcher present and game
+# payloads intentionally omitted. This restores missing site files when needed,
+# audits the catalogue without reading payloads, and can run the UI smoke suite.
 #
 #   ./tools/resume.sh              repair whatever is missing, then serve
 #   ./tools/resume.sh --check      verify only, change nothing
@@ -128,44 +127,48 @@ for route in / /index.html; do
   if [ "$code" = "200" ]; then ok "$route -> 200"; else bad "$route -> $code"; fail=1; fi
 done
 
-# the launcher is one file: if the catalogue is not inside it, the page will
-# render but every list will be empty -- a failure that a 200 alone would hide
-if curl -s --max-time 5 "http://localhost:$PORT/" | grep -q 'id="vault"'; then
-  ok "served page embeds the build catalogue"
+# Validate the embedded data against Git's index without opening game blobs.
+if python3 tools/verify_catalog.py; then
+  ok "catalogue matches tracked builds"
 else
-  bad "served page has no embedded catalogue"; fail=1
+  bad "catalogue audit failed"; fail=1
 fi
 
-python3 - "$PORT" <<'PY'
-import json, re, sys, urllib.parse, urllib.request
+# A full checkout also gets a lightweight HEAD check. Unmaterialized sparse
+# payloads are intentionally skipped; only a launched build transfers bytes.
+if ! python3 - "$PORT" <<'PY'
+import json, os, re, sys, urllib.parse, urllib.request
 port = sys.argv[1]
-
-# the catalogue lives inside index.html now, not in data/versions.json
 html = open('index.html', encoding='utf-8').read()
 m = re.search(r'<script id="vault" type="application/json">(.*?)</script>', html, re.S)
 if not m:
     print('  \033[31m!!\033[0m   index.html has no embedded catalogue')
     sys.exit(1)
 data = json.loads(m.group(1))
-
-broken = []
-for v in data['versions']:
-    url = 'http://localhost:%s/%s' % (port, urllib.parse.quote(v['file']))
+missing, broken, checked = 0, [], 0
+for build in data['versions']:
+    if not os.path.isfile(build['file']):
+        missing += 1
+        continue
+    checked += 1
+    url = 'http://localhost:%s/%s' % (port, urllib.parse.quote(build['file']))
     try:
         code = urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=15).status
-    except Exception as e:
-        code = getattr(e, 'code', 'ERR')
+    except Exception as error:
+        code = getattr(error, 'code', 'ERR')
     if code != 200:
-        broken.append((v['file'], code))
+        broken.append((build['file'], code))
 if broken:
-    print('  \033[31m!!\033[0m   %d/%d builds unreachable' % (len(broken), data['count']))
-    for f, c in broken[:5]:
-        print('        %s -> %s' % (f, c))
+    print('  \033[31m!!\033[0m   %d/%d materialized builds unreachable' % (len(broken), checked))
+    for filename, code in broken[:5]:
+        print('        %s -> %s' % (filename, code))
     sys.exit(1)
-print('  \033[32mok\033[0m   all %d builds reachable, %s'
-      % (data['count'], data['totalSizeText']))
+print('  \033[32mok\033[0m   %d materialized builds reachable; %d sparse payloads omitted'
+      % (checked, missing))
 PY
-[ $? -ne 0 ] && fail=1
+then
+  fail=1
+fi
 
 # ------------------------------------------------------------------- test --
 if [ "$RUN_TEST" -eq 1 ]; then

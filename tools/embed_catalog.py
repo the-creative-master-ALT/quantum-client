@@ -33,7 +33,7 @@ BLOCK = re.compile(
 )
 
 KEEP = ("id", "name", "file", "url", "category", "type", "runtime",
-        "version", "size", "sizeText", "tags")
+        "version", "size", "sizeText", "tags", "order")
 
 
 def load(regen: bool) -> dict:
