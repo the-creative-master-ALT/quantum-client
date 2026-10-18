@@ -1,1 +1,8 @@
-Eaglercraft Scratch.html binary
+# The vault's game builds are single-file bundles, some over 90 MB.
+# Never diff, merge or end-of-line-convert them -- it makes git unusable
+# and rewrites bytes inside the build.
+*.html -diff -merge -text
+
+# ...but the launcher itself is hand-written and should stay reviewable.
+index.html diff merge text
+404.html diff merge text

@@ -1,0 +1,57 @@
+name: Update build catalogue
+
+# The launcher is a single self-contained index.html, and the build catalogue
+# is embedded inside it. Whenever a build is added/removed (or the generator
+# changes) this rescans the *.html files and rewrites that embedded block, so
+# the launcher always matches the files on disk.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - 'tools/**'
+      - 'index.html'
+      - '.github/workflows/update-catalog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-catalog
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # the game builds are ~2.7 GB in total, so a shallow checkout of the
+      # whole tree is unavoidable -- the catalogue needs each file's size and
+      # a sniff of its payload. It only runs when a build actually changes.
+      # embed_catalog.py runs generate_catalog.py itself, folds the result into
+      # index.html, then removes the intermediate data/versions.json
+      - name: Regenerate and embed catalogue
+        run: python3 tools/embed_catalog.py --regen
+
+      - name: Commit changes
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "catalogue already up to date"
+          else
+            git commit -m "chore: refresh build catalogue [skip ci]"
+            git push
+          fi
