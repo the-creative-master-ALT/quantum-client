@@ -1,286 +1,99 @@
-# 🟩 Quantum Launcher
+# Quantum Launcher
 
-**137 self-contained Eaglercraft builds. One HTML file.**
+A self-contained browser launcher for the Eaglercraft archive. The launcher is
+one file: **`index.html` contains its markup, styles, JavaScript, embedded build
+catalogue, inline SVG artwork, and favicon.** It has no external scripts,
+stylesheets, fonts, image requests, package install, or build step.
 
-This repo started as a pile of loose `.html` game files. It is now a launcher
-that indexes every build, groups them by era, and boots any of them — no
-install, no Java, no build step, no server-side anything.
+The page is designed for GitHub Pages and also opens directly from `file://`.
+The individual game builds remain separate HTML files and are loaded only when
+launched.
 
-Live at **<https://the-creative-masteralt.github.io/quantum-client/>**
+## Archive
 
----
+- **134 builds · 2.58 GB** of game payloads
+- **111 chronological builds**, from `rd-131655` through `26.3`
+- **21 clients** in their own scroll wheel
+- **2 bonus-game launch buttons**: Minecraft 4K and Minicraft
 
-## One file, that's it
+Both selectors are iPhone-style vertical picker wheels: options curve and fade
+above and below a fixed center slot, and scrolling snaps a build into that slot.
+The timeline runs from the earliest RD build through 26.3; the client picker is
+independent. The full-stage artwork follows the centered selection. Minecraft
+4K and Minicraft stay pinned at the bottom of the library rail.
 
-`index.html` is the entire launcher. Not "the entry point" — the whole thing:
+Keyboard shortcuts: **↑ / ↓** or **← / →** browse the active wheel, **Enter**
+launches the selected build, **F** saves it, **/** opens the download library,
+and **Esc** closes the library.
 
-| | |
-|---|---|
-| **Markup** | inline |
-| **CSS** | inline `<style>` |
-| **JavaScript** | inline `<script>` |
-| **Build catalogue** (137 entries) | inline `<script type="application/json">` |
-| **Artwork** (11 scenes) | inline `<svg>` symbols |
-| **Favicon** | inline `data:image/svg+xml` URI |
+## Work in a sparse checkout
 
-There is **no** CSS file, no JS file, no JSON fetch, and not a single image
-file. That is deliberate:
-
-- **It works from `file://`.** Double-click it. No server, no CORS, no `fetch`
-  failing on local files.
-- **It works offline.** Nothing to download.
-- **You can move it, email it, or drop it on a USB stick** and it still runs —
-  as long as the game `.html` files sit next to it.
-
-Total weight: **~82 KB**, of which ~33 KB is the build catalogue.
-
-| | |
-|---|---|
-| **137 builds** | `rd-131655` (May 2009) → `26.3`, plus 20 clients and a few bonus games |
-| **10 groups** | Pre-Classic, Classic, Devs, Alpha, Beta, Early / Middle / Modern Releases, Clients, Extras |
-| **2.68 GB** | 84 JavaScript · 46 WebAssembly-GC · 7 WebAssembly |
-| **Zero dependencies** | No framework, no CDN, no npm, no build step |
-
----
-
-## Layout
-
-The same layout at **every** screen size — a smaller window scales the whole
-thing down rather than reflowing it into something unrecognisable. The sidebar
-stays a sidebar and the dock stays a dock.
-
-```
-┌──────────────┬──────────────────────────────────────┐
-│              │                                      │
-│  SIDEBAR     │         ONE GIANT ARTWORK            │
-│              │                                      │
-│  All builds  │   ┌────────────────────────────────┐ │
-│  Pre-Classic │   │                                │ │
-│  Classic     │   │   inline SVG scene, 16:9,      │ │
-│  Devs        │   │   unique per group, with the   │ │
-│  Alpha       │   │   group name baked in as text   │ │
-│  Beta        │   │                                │ │
-│  Early ▸     │   └────────────────────────────────┘ │
-│  Middle ▸    │                                      │
-│  Modern ▸    │   ┌────────────────────────────────┐ │
-│  Clients     │   │ build name · size · runtime    │ │
-│  Extras      │   │ chip          [★]   [▶ Play]   │ │
-│              │   └────────────────────────────────┘ │
-│  ─────────   │                                      │
-│  ★ Starred   │                                      │
-│  ↺ Recent    │                                      │
-│  ─────────   │                                      │
-│  ⬇ Downloads                                   137  │
-├──────────────┴──────────────────────────────────────┤
-│  [ build ▾ ]  [◀][▶]  2 / 32                [◐]     │
-└─────────────────────────────────────────────────────┘
-```
-
-- **Sidebar** — the ten groups, each with a live count. Pick one and the
-  artwork, the dropdown and the build card all follow.
-- **Giant artwork** — a unique inline SVG scene per group, with the group name
-  and its version range drawn right into the art.
-- **Downloads** — pinned at the bottom of the sidebar. Opens a panel listing
-  **all 137 builds**, searchable, each with a direct download button. Grab any
-  build, or narrow it to the current group first.
-- **Bottom bar** — the dropdown lists the builds in whichever group you picked
-  ("All builds" lists every one), plus step arrows and the theme toggle.
-
-Keyboard: <kbd>↑</kbd><kbd>↓</kbd> or <kbd>←</kbd><kbd>→</kbd> to step through
-builds, <kbd>Enter</kbd> to play, <kbd>/</kbd> to open Downloads,
-<kbd>Esc</kbd> to close.
-
-### How the scaling works
-
-There are deliberately **no layout breakpoints** — a breakpoint is exactly what
-turns a sidebar into a topbar. Instead every dimension in the stylesheet is in
-`rem`, and one fluid value on `<html>` scales the whole thing as a single
-piece:
-
-```css
-html { font-size: clamp(8px, min(1.143vw, 1.86vh), 16px); }
-```
-
-`1.143vw` is 16 px at 1400 wide and `1.86vh` is 16 px at 860 tall, so whichever
-is smaller wins and the layout shrinks on a narrow *or* a short window. 1400×860
-is the size the design is drawn for; anything larger renders 1:1, and 8 px is
-the floor.
-
-This is pure CSS — no JavaScript, no `transform: scale()`, nothing that can fall
-out of sync with the viewport.
-
-| Viewport | Root | Scale | Sidebar |
-|---|---:|---:|---:|
-| 1920×1080 | 16.0 px | 1.00 | 264 px |
-| 1366×768 | 14.3 px | 0.89 | 236 px |
-| 1280×720 | 13.4 px | 0.84 | 221 px |
-| 1024×768 | 11.7 px | 0.73 | 193 px |
-| 768×1024 | 8.8 px | 0.55 | 145 px |
-
----
-
-## The artwork
-
-Every group has its own hand-coded SVG scene — no photography, no generated
-imagery, no binary assets at all:
-
-| Group | Scene |
-|---|---|
-| All builds | night panorama, silhouetted ranges, stars |
-| Pre-Classic | cold dawn over raw, untextured cubes |
-| Classic | bright blue sky, blocky clouds, flat green plains |
-| Devs | torch-lit cave with an InDev house and a floating island |
-| Alpha | purple-and-orange sunset over water |
-| Beta | low golden sun, rolling hills, a lake |
-| Early Releases | village houses beside a glowing Nether portal |
-| Middle Releases | End-city spires under a violet sky |
-| Modern Releases | snow-capped peaks, aurora, glowing deep-dark crystals |
-| Clients | neon grid horizon and a cyber skyline |
-| Extras | scattered blocks, a star, a gear |
-
-Each carries its name and version range as real SVG text, so it scales cleanly
-and stays sharp on high-DPI screens.
-
----
-
-## Adding a build
-
-1. Drop the single-file `.html` into the **repository root** — that is where
-   the launcher looks for builds.
-2. Re-embed the catalogue:
-
-   ```bash
-   python3 tools/embed_catalog.py --regen
-   ```
-
-   That rescans the root, rebuilds the catalogue, rewrites the JSON block
-   inside `index.html`, and cleans up the intermediate file. Then just commit
-   `index.html`.
-
-### Adding a big build (the 90 MB case)
-
-Chat uploads cap around 25 MB, so a large build has to arrive in pieces. Split
-it, send the chunks, reassemble, verify, and import in one go:
+The game files are large, so a launcher-only checkout is the recommended way
+to make UI changes. Git's blob filter avoids fetching game payloads, and sparse
+checkout keeps them out of the working tree:
 
 ```bash
-split -n 4 -d --additional-suffix=.html 26.3-wasm.html 26.3-wasmp
-
-# once every chunk is uploaded:
-python3 tools/join_build_parts.py ~/incoming/26.3-wasmp*.html \
-    --size 90804846 \
-    --sha256 cc6996731471299161f492321d4b1d2db61df3a96fcd0803090e22a07a44a62b \
-    --out /tmp/26.3-wasm.html
-
-python3 tools/add_build.py /tmp/26.3-wasm.html --name "Eaglercraft 26.3-WASM" --move
+git clone --filter=blob:none --sparse https://github.com/the-creative-masterALT/quantum-client.git
+cd quantum-client
+git sparse-checkout set --no-cone '/*' '!/*.html' '/index.html'
 ```
 
-`join_build_parts.py` sorts by the trailing number (so `p10` never precedes
-`p2`) and will not hand you a file unless the checksum matches. Never skip
-that check — a build that is off by one byte just silently fails to boot.
+This is enough to edit and test `index.html`, but the omitted game files cannot
+be launched locally. The published site still serves the complete archive.
 
-`add_build.py` detects HTML hiding under any extension, renames it to
-`.html`, refuses anything over 100 MB (GitHub's hard limit), rejects
-byte-identical duplicates, and re-embeds the catalogue for you.
+`tools/verify_catalog.py` checks the embedded catalogue against Git's index and
+checks file sizes for any builds already materialized; it does not read or
+fetch the game payloads. The catalog generator and build importer deliberately
+refuse to run from an incomplete sparse checkout, rather than replacing the
+catalogue with a partial one.
 
-> **Do not use Git LFS for the game builds.** Pages serves the LFS *pointer*
-> file, so the build would silently stop working. GitHub's large-file warning
-> on push is expected and safe to ignore.
+## Local preview and tests
 
-### Fixing a mis-detected build
-
-Filenames and `<title>` tags are unreliable across these builds — roughly
-fifteen of them claim to be "EaglercraftX 1.8", and two say
-"My Drive - Google Drive". When the auto-detection gets one wrong, add an
-entry to the `OVERRIDES` table in `tools/generate_catalog.py` and re-run
-`embed_catalog.py --regen`.
-
----
-
-## Running locally
+Open `index.html` directly, or serve it over HTTP:
 
 ```bash
-python3 -m http.server 8080
-# → http://localhost:8080
+python3 -m http.server 8080 --bind 0.0.0.0
 ```
 
-Or just open `index.html` directly — it is designed to work from `file://`.
-
-Heads-up: launching a build downloads that whole `.html`, so expect 10–90 MB
-per game on the first hit.
-
-### Recovering after a sandbox recycle
-
-A recycle hands you back a clean clone at the base commit: `index.html` and the
-90 MB `26.3` build are gone, the remote-tracking ref is gone, and `jsdom` is
-gone from `/tmp`. One command puts it back:
+Install the smoke-test dependency outside the repository, then run the UI
+suite and catalogue audit:
 
 ```bash
-./tools/resume.sh            # repair, then serve
-./tools/resume.sh --test     # ...then run the smoke suite
-./tools/resume.sh --check    # verify only, change nothing
-./tools/resume.sh --force    # allow a reset despite uncommitted edits
+npm install --prefix /tmp/quantum-test jsdom
+NODE_PATH=/tmp/quantum-test/node_modules node tools/smoke-test.js
+python3 tools/verify_catalog.py
 ```
 
-Every step is idempotent, so it is safe to run on a healthy checkout. It ends
-by checking that every build in the catalogue still serves, and that the
-served page actually contains the embedded catalogue — a page returning 200
-with no data would otherwise look fine.
+The smoke suite runs the real inline launcher in jsdom and works with either a
+full or sparse checkout. In a sparse checkout, catalogue links are checked
+against Git's tracked files rather than requiring the game blobs on disk.
 
-> The script lives inside the branch, so a recycle deletes it too. Keep the
-> manual path handy:
-> ```bash
-> git fetch origin <branch> && git reset --hard FETCH_HEAD
-> git branch --set-upstream-to=origin/<branch>
-> mkdir -p /tmp/testenv && cd /tmp/testenv && npm install jsdom
-> python3 -m http.server 8080 --bind 0.0.0.0
-> ```
+## Importing a build
 
----
-
-## Project layout
-
-```
-index.html                     the entire launcher (markup + CSS + JS + data + SVG art)
-Eaglercraft 26.3-WASM.html     ← 137 game builds live in the root, alongside it
-rd-131655-JS.html
-...
-
-tools/
-  generate_catalog.py          scans the root *.html, writes the catalogue
-  embed_catalog.py             folds that catalogue into index.html
-  add_build.py                 one-command import for a new build
-  join_build_parts.py          reassembles chunked uploads, verifies SHA-256
-  smoke-test.js                57 assertions against the real page (jsdom)
-  resume.sh                    recovery after a sandbox recycle
-```
-
-Run the tests with:
+A new single-file game can be imported with:
 
 ```bash
-mkdir -p /tmp/testenv && cd /tmp/testenv && npm install jsdom
-NODE_PATH=/tmp/testenv/node_modules node tools/smoke-test.js
+python3 tools/add_build.py /path/to/build.html --name "Eaglercraft 26.4"
 ```
 
----
+The importer validates the input and refreshes the embedded catalogue. It
+requires the archive files to be materialized; do not run the generator against
+a sparse directory listing. For chunked uploads, `tools/join_build_parts.py`
+reassembles the pieces only after the expected size and SHA-256 match.
 
-## Notes and caveats
+## Project files
 
-- **4 byte-identical duplicates were removed** (90.7 MB reclaimed). Each was
-  bit-for-bit identical to a file we kept, verified by MD5, and the survivor
-  has the better name — the two `20100233` files carried a typo'd date; the
-  real one is `20100223`. They are listed in `EXCLUDE` in
-  `tools/generate_catalog.py` so they cannot come back.
-- **The archive is 2.68 GB**, over GitHub Pages' 1 GB guidance. It serves fine
-  today (legacy branch build, no compilation step).
-- **Builds must end in `.html`.** Pages serves a `.docx` with a Word MIME type,
-  so the browser would download it instead of running it.
-- Two builds reach out to the network at runtime: `Minicraft.html` loads assets
-  from `api.webmc.xyz`, and `injector.html` pulls Rollup from `unpkg.com`.
-  Both work on Pages; both fail in a sandboxed preview.
-- Filenames contain spaces, so links are percent-encoded (`%20`).
+```text
+index.html                   complete launcher, including catalogue and SVG scenes
+tools/generate_catalog.py    catalogue builder with sparse-checkout safety checks
+tools/embed_catalog.py       embeds the generated catalogue in index.html
+tools/add_build.py           validated build import
+tools/join_build_parts.py    verified chunk reassembly
+tools/verify_catalog.py      low-I/O catalogue / Git-index audit
+tools/smoke-test.js          jsdom interaction and self-containment tests
+tools/make_scenes.py         inline SVG scene generator
+```
 
-## Credits
-
-Every build here was made by other people — the Eaglercraft authors, the
-Minecraft client ports, and the client-pack developers. This is only a launcher
-that indexes them.
+The game ports remain independent single-file HTML builds created by their
+authors; the launcher indexes these local files without bundling them into
+`index.html`.

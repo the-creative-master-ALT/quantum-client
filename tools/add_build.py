@@ -37,6 +37,22 @@ GITHUB_HARD = 100 * 1024 * 1024     # ...and refuses pushes above this
 PAGES_SOFT = 1 * 1024 * 1024 * 1024  # published Pages site guidance
 
 
+def missing_materialized_builds() -> list[str]:
+    """List tracked game files omitted by a sparse checkout, without opening them."""
+    try:
+        tracked = subprocess.check_output(
+            ["git", "ls-files", "-z"], cwd=ROOT, stderr=subprocess.DEVNULL
+        ).split(bytes([0]))
+    except (OSError, subprocess.CalledProcessError):
+        return []
+    return sorted(
+        os.fsdecode(path) for path in tracked
+        if path and b"/" not in path and os.fsdecode(path).lower().endswith(".html")
+        and os.fsdecode(path) not in {"index.html", "404.html"}
+        and not os.path.isfile(os.path.join(ROOT, os.fsdecode(path)))
+    )
+
+
 def human(n: int) -> str:
     for unit in ("B", "KB", "MB", "GB"):
         if n < 1024 or unit == "GB":
@@ -88,6 +104,14 @@ def main() -> int:
     ap.add_argument("--move", action="store_true", help="move instead of copying")
     ap.add_argument("--force", action="store_true", help="add even if it looks wrong")
     args = ap.parse_args()
+
+    omitted = missing_materialized_builds()
+    if omitted:
+        print("error: import requires the game files to be materialized; this checkout is sparse.")
+        print("       %d existing build file(s) are absent (first: %s)."
+              % (len(omitted), ", ".join(omitted[:5])))
+        print("       no file was copied and the catalogue was not changed.")
+        return 2
 
     src = os.path.abspath(os.path.expanduser(args.file))
     if not os.path.isfile(src):

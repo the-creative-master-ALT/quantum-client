@@ -34,6 +34,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 
@@ -59,6 +60,7 @@ EXCLUDE = {
     "Eaglercraft_indev_20100233-wasm.html",
     "Eaglercraft-1.12.html",
     "wispcraft-Eaglercraft_1.12.2-WASM-GC.html",
+
 }
 
 # --------------------------------------------------------------------------
@@ -248,27 +250,13 @@ OVERRIDES = {
         name="Wispcraft Eaglercraft 1.12.2", category="client", type="client",
         version="1.12.2", runtime="wasm-gc"),
 
-    # -------------------------- extras -----------------------------------
-    "mc4k": dict(name="Minecraft 4k", category="extras", type="extra",
+    # -------------------------- bonus games -----------------------------
+    "mc4k": dict(name="Minecraft 4K", category="extras", type="extra",
                  version="", runtime="js",
                  note="Notch's 4-kilobyte Java4K entry, compiled to JS"),
-    "Eaglercraft-4k-JS": dict(name="Minecraft 4k", category="extras",
-                              type="extra", version="", runtime="js",
-                              note="Notch's 4-kilobyte Java4K entry, compiled to JS"),
     "Minicraft": dict(name="Minicraft", category="extras", type="extra",
                       version="", runtime="js",
                       note="Notch's original top-down Minicraft, ported to the web"),
-    "Eaglercraft Scratch": dict(name="Eaglercraft Scratch",
-                                category="extras", type="extra", version="",
-                                runtime="js", tags=["scratch"],
-                                note="Scratch/TurboWarp port of Eaglercraft"),
-    "Eaglercraft-Scratch": dict(name="Eaglercraft Scratch",
-                                category="extras", type="extra", version="",
-                                runtime="js", tags=["scratch"],
-                                note="Scratch/TurboWarp port of Eaglercraft"),
-    "injector": dict(name="Wispcraft Injector", category="extras",
-                     type="tool", version="", runtime="js",
-                     note="Utility for injecting mods -- not a game"),
 }
 
 # Numeric order of the eras, used to build the sort key.
@@ -291,9 +279,9 @@ CATEGORY_INFO = {
     "infdev": dict(label="Infdev", blurb="Infinite terrain arrives"),
     "alpha": dict(label="Alpha", blurb="Survival, multiplayer and the Nether"),
     "beta": dict(label="Beta", blurb="1.0 → 1.8.1, the road to full release"),
-    "release": dict(label="Full Release", blurb="1.0.0 all the way to 26.2"),
+    "release": dict(label="Full Release", blurb="1.0.0 through 26.3"),
     "client": dict(label="Clients", blurb="PvP clients, utility clients and forks"),
-    "extras": dict(label="Extras", blurb="Minicraft, Minecraft 4k, Scratch ports and tools"),
+    "extras": dict(label="Bonus Games", blurb="Minecraft 4K and Minicraft"),
 }
 
 RUNTIME_INFO = {
@@ -507,6 +495,30 @@ def main() -> int:
         if f.lower().endswith(".html") and f not in EXCLUDE
         and os.path.isfile(os.path.join(ROOT, f))
     )
+
+    # A sparse checkout intentionally omits the multi-gigabyte game payloads.
+    # Never mistake that partial directory listing for the complete archive and
+    # overwrite the embedded catalogue with a tiny, incomplete one.
+    try:
+        tracked = subprocess.check_output(
+            ["git", "ls-files", "-z"], cwd=ROOT, stderr=subprocess.DEVNULL
+        ).split(bytes([0]))
+    except (OSError, subprocess.CalledProcessError):
+        tracked = []
+    tracked_builds = {
+        os.fsdecode(path) for path in tracked
+        if path and b"/" not in path and os.fsdecode(path).lower().endswith(".html")
+        and os.fsdecode(path) not in EXCLUDE
+    }
+    missing_checkout = sorted(tracked_builds.difference(files))
+    if missing_checkout:
+        print("error: refusing to regenerate from a partial checkout.")
+        print("       %d tracked build file(s) are not materialized; the embedded catalogue was left untouched."
+              % len(missing_checkout))
+        print("       first missing: %s" % ", ".join(missing_checkout[:5]))
+        print("       materialize the game files before running this scanner.")
+        return 2
+
     hash_cache = load_hash_cache()
 
     entries, problems = [], []
