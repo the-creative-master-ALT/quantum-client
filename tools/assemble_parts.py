@@ -7,9 +7,9 @@ File names are NOT trustworthy -- a chat client can rename, renumber, or hand
 back the parts out of order. This script decides the order from the bytes
 themselves: the tail of one chunk must be the head of the next.
 
-    python3 tools/assemble_parts.py "incoming/efi-*.html" --out /tmp/efi.html
-    python3 tools/assemble_parts.py "incoming/efi-*.html" \
-        --name "EaglercraftForge 1.8.8" --add
+    python3 tools/assemble_parts.py "incoming/chunk-*.html" --out /tmp/joined.html
+    python3 tools/assemble_parts.py "incoming/chunk-*.html" \
+        --name "My Client" --add
 
 Two hard rules are enforced before anything is imported:
 

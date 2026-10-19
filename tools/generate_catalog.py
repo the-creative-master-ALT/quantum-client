@@ -200,13 +200,6 @@ OVERRIDES = {
     # -------------------------- clients ----------------------------------
     "Aero Client JS": dict(name="Aero Client", category="client", type="client",
                            version="1.12.2", runtime="js"),
-    # EFI (EaglercraftForge): the only build here that ships Eaglercraft's
-    # ModAPI, so the launcher's ModAPI mods actually load inside it.
-    "EFI": dict(name="EFI", category="client", type="client", version="1.8.8",
-                runtime="js", tags=["forge", "modapi"],
-                note="EaglercraftForge 1.8.8 - ships ModAPI, so every launcher mod "
-                     "loads here (Xray, Fullbright, AutoRespawn, Autoclicker, Duck, "
-                     "Grapple Hook)"),
     "Eaglet": dict(name="Eaglet", category="client", type="client", version="",
                    runtime="js", tags=["tiny"],
                    note="Eaglercraft shrunk to 2.7 MB - the whole game in one tiny file"),
@@ -400,6 +393,25 @@ def sort_key(category: str, version: str, raw: str) -> float:
     if not v:
         return era + 5e11
     return era + v[0] * 1e9 + v[1] * 1e6 + v[2] * 1e3 + (v[3] + 1000)
+
+
+# --------------------------------------------------------------------------
+# Builds that are a directory, not a single HTML file.
+# --------------------------------------------------------------------------
+MULTI_FILE_BUILDS = [
+    dict(
+        name="EaglerForge",
+        file="EaglerForge/index.html",
+        category="client",
+        type="client",
+        version="1.8.8",
+        runtime="js",
+        tags=["forge", "modapi"],
+        note="EaglercraftX 1.8 with Eaglercraft's ModAPI and an in-game mod "
+             "manager. This is the build every launcher mod is written for.",
+        order=7001008099000.0,
+    ),
+]
 
 
 def auto_metadata(stem: str, title: str | None) -> dict:
@@ -602,6 +614,38 @@ def main() -> int:
         cover_rel = "./assets/img/builds/%s.jpg" % entry["id"]
         entry["cover"] = cover_rel if os.path.exists(
             os.path.join(ROOT, cover_rel[2:])) else None
+        entries.append(entry)
+
+    for spec in MULTI_FILE_BUILDS:
+        target = os.path.join(ROOT, spec["file"])
+        if not os.path.exists(target):
+            problems.append("missing multi-file build: %s" % spec["file"])
+            continue
+        folder = os.path.dirname(target)
+        size = sum(
+            os.path.getsize(os.path.join(base, name))
+            for base, _dirs, names in os.walk(folder) for name in names
+        )
+        entry = {
+            "id": slugify(spec["name"]) + "-" + md5_file(target)[:6],
+            "sha1_12": md5_file(target)[:12],
+            "name": spec["name"],
+            "file": spec["file"],
+            "url": "./" + spec["file"],
+            "category": spec["category"],
+            "type": spec["type"],
+            "runtime": spec["runtime"],
+            "version": spec["version"] or None,
+            "size": size,
+            "sizeText": human_size(size),
+            "tags": sorted(set(spec["tags"])),
+            "note": spec["note"],
+            "title": spec["name"],
+            "order": spec["order"],
+            "multiFile": True,
+        }
+        entry["eraCover"] = "./assets/img/cat-%s.jpg" % spec["category"]
+        entry["cover"] = None
         entries.append(entry)
 
     entries.sort(key=lambda e: (e["order"], e["name"].lower()))

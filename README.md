@@ -23,21 +23,13 @@ launched.
    in the sidebar. Extras opens a two-button menu for Minecraft 4K and Minicraft.
    Custom HTML accepts your own single-file builds (file picker or drag and
    drop), stores them in this browser with IndexedDB, and launches them in the
-   embedded player with your mods applied.
+   embedded player.
 
 ## Mods
 
-Seven mods ship inline. Each row in the Mods panel is labelled with what it
-needs.
-
-**Any build** (DOM-level, works on every game file):
-
-- **Music Player** — adds a draggable player; name tracks and paste audio URLs.
-- **Screenshot** — press `F2` to save a PNG of the game canvas.
-- **Keystrokes HUD** — WASD overlay in the corner of the game window.
-- **Custom Crosshair** — a cross overlay that stays visible on dark terrain.
-
-**ModAPI** (needs a build that exposes Eaglercraft's `ModAPI` hook):
+Ten mods ship inline, all written for **EaglerForge**. The launcher does not
+inject mod code into game pages: it hands you the `.js` file and EaglerForge
+loads it itself.
 
 - **Coal-Xray** — `X` hides everything but ores, chests, and furnaces.
 - **Fullbright** — `PageUp` pushes gamma to 1000 for a lit-up world.
@@ -45,23 +37,24 @@ needs.
 - **Autoclicker** — clicks twice per second.
 - **Duck Entity** — a modelled duck with AI, textures, and quacks.
 - **Grapple Hook** — hook a block and get pulled toward it; crouch to cancel.
+- **Music Player** — a draggable player; name tracks and paste audio URLs.
+- **Screenshot** — press `F2` to save a PNG of the game canvas.
+- **Keystrokes HUD** and **Custom Crosshair** — overlay widgets for the game window.
 
-Launcher-hosted sessions load supported builds through a generated wrapper that
-evaluates the enabled mods inside the game. A badge in the game window reports
-how many loaded, and warns when a build does not expose `ModAPI`. The mods list
-is baked into the wrapper at launch, so Reload re-applies the current selection.
-**EFI** (EaglercraftForge 1.8.8) is the build that ships `ModAPI`, so every mod
-in the list loads there. Enable mods, open **Clients → EFI**, and the badge in
-the game corner should read "10 of 10 mods loaded". Use **Test with mods** in
-the Mods panel to jump straight there. The other archive builds do not expose
-`ModAPI`; the DOM-level mods still load in them.
+To use one: open **Mods**, press **Download .js**, then launch **Clients →
+EaglerForge** (or **Play EaglerForge** in the Mods panel) and add the file
+through its in-game mod manager (`ModGUI.js`). Nothing is installed
+automatically, and the other archive builds do not get mods — they launch as
+shipped. EaglerForge is a multi-file web build (`EaglerForge/index.html` +
+`classes.js`, `assets.epk`, `lang/`), so it must be served over HTTP; opening it
+from `file://` is blocked by its own loader.
 
-The archive now also contains **Eaglet** (Eaglercraft packed into 2.7 MB) and
+The archive also contains **Eaglet** (Eaglercraft packed into 2.7 MB) and
 **Resent Client 1.8.8**.
 
 ## Archive
 
-- **137 builds · 2.68 GB** of game payloads
+- **137 builds · 2.65 GB** of game payloads
 - **111 chronological builds**, from `rd-131655` through `26.3`
 - **24 clients** in their own scroll wheel
 - **2 bonus games**, reachable only through **Extras**: Minecraft 4K and Minicraft
@@ -84,8 +77,8 @@ order and exact byte splits share no repeated text, so join them from content,
 not from the file names:
 
 ```bash
-python3 tools/assemble_parts.py "incoming/efi-*.html" \
-    --name "EaglercraftForge 1.8.8" --add
+python3 tools/assemble_parts.py "incoming/chunk-*.html" \
+    --name "My Client" --add
 ```
 
 `assemble_parts.py` finds the chunk that opens the document and the one that
@@ -93,9 +86,9 @@ ends in `</html>`, orders the rest between them, then refuses to import anything
 that does not start with `<!DOCTYPE` and end with `</html>`. Partial joins are
 deleted so a half build can never be launched. `incoming/` is git-ignored.
 
-The only build here that ships Eaglercraft's **ModAPI** is *EaglercraftForge
-1.8.8* (tagged `modapi` in the catalogue). Enable mods, launch it from Clients
-with the embedded player, and the launcher's ModAPI mods load inside it.
+The mod-capable build here is **EaglerForge** (tagged `modapi` in the
+catalogue). Download a mod from the Mods panel and load it inside EaglerForge;
+the launcher itself never injects scripts into a game page.
 
 ## Work in a sparse checkout
 

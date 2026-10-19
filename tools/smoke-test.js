@@ -52,7 +52,15 @@ const $ = (selector) => doc.querySelector(selector);
 const $$ = (selector) => Array.from(doc.querySelectorAll(selector));
 const text = (selector) => $(selector) ? $(selector).textContent.trim() : '';
 const CAT = JSON.parse(doc.getElementById('vault').textContent);
-const tracked = new Set(gitFiles().filter((name) => !name.includes('/')));
+const tracked = new Set(gitFiles());
+const folderSize = (file) => {
+  const dir = path.dirname(path.join(ROOT, file));
+  const walk = (base) => fs.readdirSync(base).reduce((sum, name) => {
+    const target = path.join(base, name);
+    return sum + (fs.statSync(target).isDirectory() ? walk(target) : fs.statSync(target).size);
+  }, 0);
+  return walk(dir);
+};
 const trackedBuilds = new Set(Array.from(tracked).filter((name) => name.toLowerCase().endsWith('.html') && !['index.html', '404.html'].includes(name)));
 const indexedBuilds = new Set(CAT.versions.map((build) => build.file));
 const timeline = CAT.versions.filter((build) => build.category !== 'client' && build.category !== 'extras');
@@ -89,7 +97,8 @@ ok(unlisted.length === 0, 'every tracked game HTML is catalogued', unlisted.slic
 const diskMissing = CAT.versions.filter((build) => !fs.existsSync(path.join(ROOT, build.file)));
 const sizeMismatch = CAT.versions.filter((build) => {
   const file = path.join(ROOT, build.file);
-  return fs.existsSync(file) && fs.statSync(file).size !== build.size;
+  if (!fs.existsSync(file)) return false;
+  return (build.multiFile ? folderSize(build.file) : fs.statSync(file).size) !== build.size;
 });
 ok(sizeMismatch.length === 0, 'materialized payload sizes match catalogue metadata', sizeMismatch.slice(0, 3).map((b) => b.file).join(', '));
 ok(isSparse() || diskMissing.length === 0, isSparse() ? `${diskMissing.length} unmaterialized files are allowed by sparse checkout` : 'all payloads are materialized in the full checkout');
