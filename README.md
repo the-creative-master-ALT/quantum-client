@@ -2,12 +2,40 @@
 
 A self-contained browser launcher for the Eaglercraft archive. The launcher is
 one file: **`index.html` contains its markup, styles, JavaScript, embedded build
-catalogue, inline SVG artwork, and favicon.** It has no external scripts,
-stylesheets, fonts, image requests, package install, or build step.
+catalogue, inline SVG artwork, favicon, boot intro, and mod sources.** It has no
+external scripts, stylesheets, fonts, image requests, package install, or build
+step.
 
 The page is designed for GitHub Pages and also opens directly from `file://`.
 The individual game builds remain separate HTML files and are loaded only when
 launched.
+
+## The launcher flow
+
+1. **Boot intro** — three animated atoms, the letters of EAGLERCRAFT appearing
+   one by one, then a QUANTUM LAUNCHER wordmark and progress bar. It lasts about
+   three seconds and can be skipped, replayed from Settings → Advanced, or
+   disabled with Settings → Behavior → Boot animation.
+2. **Home** — the wordmark, a PLAY button, Settings, GitHub, Mods, and a shortcut
+   to the build library, all over an animated artwork backdrop.
+3. **Play chooser** — PLAY asks for **Vanilla**, **Clients**, or **Extras**.
+   Vanilla and Clients open the stage with only that picker wheel. Extras opens
+   a two-button menu for Minecraft 4K and Minicraft.
+
+## Mods
+
+The launcher ships three client mods inline and can inject them into builds that
+expose Eaglercraft's `ModAPI`:
+
+- **Coal-Xray** — press `X` in-game to show only ores, chests, and furnaces.
+- **AutoRespawn** — respawns you as soon as you die.
+- **Autoclicker** — clicks twice per second.
+
+Enable them under **Mods** on the home screen. Launcher-hosted sessions
+(embedded player and "This tab") load supported builds through a generated
+wrapper that waits for `ModAPI` and evaluates the enabled mods inside the game.
+Popup, new-tab, and direct launches open the original unmodified build, so use
+the embedded player or This tab mode when playing with mods.
 
 ## Archive
 
@@ -24,7 +52,7 @@ independent. The full-stage artwork follows the centered selection. Minecraft
 
 Keyboard shortcuts: **↑ / ↓** or **← / →** browse the active wheel, **Enter**
 launches the selected build, **F** saves it, **/** opens the download library,
-and **Esc** closes the library.
+**,** opens settings, and **Esc** closes a dialog or returns home.
 
 ## Work in a sparse checkout
 
