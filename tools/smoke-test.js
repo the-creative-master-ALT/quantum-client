@@ -103,8 +103,11 @@ ok(/perspective:\s*720px/i.test($('style').textContent) && /rotateX\(var\(--whee
 ok(!$('#nav [data-group]'), 'category sidebar navigation has been removed');
 ok($$('#timelineWheel [role="option"]').length === timeline.length, 'timeline wheel renders every chronological option');
 ok($$('#clientWheel [role="option"]').length === clients.length, 'client wheel renders every client option');
-ok($$('#bonusActions .bonus-link').length === 2, 'two quick-launch buttons sit in the library footer');
-ok($('#bonusActions').closest('.rail-footer') === $('.rail-footer'), 'bonus buttons are inside the bottom rail footer');
+ok($$('#buildWheels').length === 1 && $('#buildWheels').closest('.rail') === $('.rail'), 'both picker wheels live in the sidebar rail');
+ok($$('#railMode [data-railcat]').length === 2, 'sidebar has a Vanilla / Clients wheel switch');
+ok(!!$('#railExtras') && !!$('#railLibrary'), 'rail footer keeps Extras and Library actions');
+ok(!$('#bonusActions') && $$('[data-extra-id]').length === 0, 'bonus games are not present until Extras is opened');
+ok($$('.wheel-fade').every((fade) => fade.closest('.rail') === $('.rail')), 'wheel chrome stays inside the sidebar');
 
 sec('full-stage artwork and selection');
 ok(/\.art-wrap\s*\{[^}]*position:\s*absolute[^}]*inset:\s*0/s.test($('style').textContent), 'artwork layer fills the stage');

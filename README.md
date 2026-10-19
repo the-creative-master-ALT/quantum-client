@@ -19,36 +19,49 @@ launched.
 2. **Home** — the wordmark, a PLAY button, Settings, GitHub, Mods, and a shortcut
    to the build library, all over an animated artwork backdrop.
 3. **Play chooser** — PLAY asks for **Vanilla**, **Clients**, or **Extras**.
-   Vanilla and Clients open the stage with only that picker wheel. Extras opens
-   a two-button menu for Minecraft 4K and Minicraft.
+   Vanilla and Clients open the stage with that wheel selected in the sidebar.
+   Extras opens a two-button menu for Minecraft 4K and Minicraft.
 
 ## Mods
 
-The launcher ships three client mods inline and can inject them into builds that
-expose Eaglercraft's `ModAPI`:
+Seven mods ship inline. Each row in the Mods panel is labelled with what it
+needs.
 
-- **Coal-Xray** — press `X` in-game to show only ores, chests, and furnaces.
-- **AutoRespawn** — respawns you as soon as you die.
+**Any build** (DOM-level, works on every game file):
+
+- **Music Player** — adds a draggable player; name tracks and paste audio URLs.
+- **Screenshot** — press `F2` to save a PNG of the game canvas.
+
+**ModAPI** (needs a build that exposes Eaglercraft's `ModAPI` hook):
+
+- **Coal-Xray** — `X` hides everything but ores, chests, and furnaces.
+- **Fullbright** — `PageUp` pushes gamma to 1000 for a lit-up world.
+- **AutoRespawn** — respawns you the instant you die.
 - **Autoclicker** — clicks twice per second.
+- **Duck Entity** — a modelled duck with AI, textures, and quacks.
 
-Enable them under **Mods** on the home screen. Launcher-hosted sessions
-(embedded player and "This tab") load supported builds through a generated
-wrapper that waits for `ModAPI` and evaluates the enabled mods inside the game.
-Popup, new-tab, and direct launches open the original unmodified build, so use
-the embedded player or This tab mode when playing with mods.
+Launcher-hosted sessions load supported builds through a generated wrapper that
+evaluates the enabled mods inside the game. A badge in the game window reports
+how many loaded, and warns when a build does not expose `ModAPI`. The mods list
+is baked into the wrapper at launch, so Reload re-applies the current selection.
+None of the builds currently bundled in this archive expose `ModAPI`; add a
+ModAPI-enabled build to the archive and it will be picked up automatically. Use
+**Test on Minecraft 4K** in the Mods panel to watch the Music and Screenshot
+mods load.
 
 ## Archive
 
 - **134 builds · 2.58 GB** of game payloads
 - **111 chronological builds**, from `rd-131655` through `26.3`
 - **21 clients** in their own scroll wheel
-- **2 bonus-game launch buttons**: Minecraft 4K and Minicraft
+- **2 bonus games**, reachable only through **Extras**: Minecraft 4K and Minicraft
 
-Both selectors are iPhone-style vertical picker wheels: options curve and fade
-above and below a fixed center slot, and scrolling snaps a build into that slot.
-The timeline runs from the earliest RD build through 26.3; the client picker is
-independent. The full-stage artwork follows the centered selection. Minecraft
-4K and Minicraft stay pinned at the bottom of the library rail.
+Both selectors are iPhone-style vertical picker wheels that live in the library
+rail: options curve and fade above and below a fixed center slot, and scrolling
+snaps a build into that slot. A Vanilla / Clients switch at the top of the rail
+(and the Play chooser) decides which wheel is shown. The full-stage artwork
+follows the centered selection. Minecraft 4K and Minicraft are never listed
+outside the Extras menu.
 
 Keyboard shortcuts: **↑ / ↓** or **← / →** browse the active wheel, **Enter**
 launches the selected build, **F** saves it, **/** opens the download library,

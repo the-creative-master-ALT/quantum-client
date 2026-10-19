@@ -121,7 +121,7 @@ button:focus-visible, input:focus-visible {
 .wheels { display: flex; flex: 1; flex-direction: column; min-height: 0; padding: 2px 14px 0; }
 .wheel-section { display: flex; min-height: 0; flex-direction: column; }
 .timeline-section { flex: 1 1 0; min-height: 0; }
-.clients-section { flex: 0 0 clamp(176px, 27vh, 210px); min-height: 0; }
+.clients-section { flex: 1 1 0; min-height: 0; }
 .wheel-head {
   flex: none; display: flex; align-items: center; justify-content: space-between;
   gap: 10px; min-height: 48px; padding: 4px 5px 7px;
@@ -405,13 +405,13 @@ button:focus-visible, input:focus-visible {
 html[data-radius="sharp"] .sheet, html[data-radius="sharp"] .play-button, html[data-radius="sharp"] .stage-control,
 html[data-radius="sharp"] .glass-button, html[data-radius="sharp"] .theme-button, html[data-radius="sharp"] .icon-button,
 html[data-radius="sharp"] .search-box, html[data-radius="sharp"] .filter-toggle, html[data-radius="sharp"] .rail-icon,
-html[data-radius="sharp"] .bonus-link, html[data-radius="sharp"] .picker-dock, html[data-radius="sharp"] .setting-group,
+html[data-radius="sharp"] .rail-action, html[data-radius="sharp"] .rail-mode, html[data-radius="sharp"] .setting-group,
 html[data-radius="sharp"] .setting-control, html[data-radius="sharp"] .dl-btn, html[data-radius="sharp"] .wheel-center,
 html[data-radius="sharp"] .brand-mark, html[data-radius="sharp"] .sheet-close { border-radius: 4px; }
 html[data-radius="round"] .sheet, html[data-radius="round"] .play-button, html[data-radius="round"] .stage-control,
 html[data-radius="round"] .glass-button, html[data-radius="round"] .theme-button, html[data-radius="round"] .icon-button,
 html[data-radius="round"] .search-box, html[data-radius="round"] .filter-toggle, html[data-radius="round"] .rail-icon,
-html[data-radius="round"] .bonus-link, html[data-radius="round"] .picker-dock, html[data-radius="round"] .setting-group,
+html[data-radius="round"] .rail-action, html[data-radius="round"] .rail-mode, html[data-radius="round"] .setting-group,
 html[data-radius="round"] .setting-control, html[data-radius="round"] .dl-btn, html[data-radius="round"] .wheel-center,
 html[data-radius="round"] .brand-mark, html[data-radius="round"] .sheet-close { border-radius: 18px; }
 html[data-radius="round"] .play-button, html[data-radius="round"] .glass-button, html[data-radius="round"] .theme-button,
@@ -439,8 +439,8 @@ html[data-noise="on"] .stage::before {
 html[data-glow="off"] .brand-mark, html[data-glow="off"] .play-button, html[data-glow="off"] .caption-dot,
 html[data-glow="off"] .play-button:hover { box-shadow: none; }
 html[data-glow="off"] .wheel-item[aria-selected="true"] { text-shadow: none; }
-html[data-show-bonus="off"] .rail-footer { display: none; }
-html[data-show-note="off"] .rail-picker-note { display: none; }
+html[data-show-bonus="off"] #railExtras { display: none; }
+html[data-show-note="off"] .rail-mode { display: none; }
 html[data-show-caption="off"] .stage-caption { display: none; }
 html[data-show-foot="off"] .stage-foot { display: none; }
 html[data-show-counts="off"] .wheel-count { display: none; }
@@ -470,7 +470,7 @@ html[data-embedbar="off"] #gameFrame { position: absolute; inset: 0; }
 html[data-density="compact"] .brand { padding-top: 13px; padding-bottom: 10px; }
 html[data-density="compact"] .search-row { padding-top: 8px; padding-bottom: 5px; }
 html[data-density="compact"] .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
-html[data-density="compact"] .rail-footer { padding-top: 9px; padding-bottom: 10px; }
+html[data-density="compact"] .rail-footer { padding-top: 8px; padding-bottom: 9px; }
 html[data-art="off"] .art-wrap { display: none; }
 html[data-glass="off"] .glass-button, html[data-glass="off"] .theme-button, html[data-glass="off"] .icon-button, html[data-glass="off"] .stage-control { backdrop-filter: none; -webkit-backdrop-filter: none; }
 html[data-tags="off"] .chips { display: none; }
@@ -498,110 +498,109 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
 }
 
 
-/* The version pickers sit in a shared dock under the stage preview. */
-.rail-picker-note { margin: auto 14px; padding: 17px 15px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, color-mix(in srgb, var(--rail-raised) 94%, transparent), color-mix(in srgb, var(--rail) 88%, transparent)); }
-.rail-picker-note h2 { margin: 8px 0 6px; font-size: 16px; letter-spacing: -.35px; }
-.rail-picker-note > p:not(.eyebrow) { margin: 0; color: var(--dim); font-size: 11px; line-height: 1.55; }
-.picker-jump { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 36px; margin-top: 14px; padding: 0 10px; border: 1px solid rgba(var(--accent-rgb),.26); border-radius: 9px; color: var(--accent); background: rgba(var(--accent-rgb),.07); font-size: 10px; font-weight: 700; }
-.picker-jump:hover { border-color: rgba(var(--accent-rgb),.58); background: rgba(var(--accent-rgb),.12); }
-.picker-dock {
-  position: absolute; z-index: 4; right: clamp(18px, 3.5vw, 56px); bottom: 48px; left: clamp(18px, 3.5vw, 56px);
-  display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, .85fr); gap: 18px;
-  height: clamp(176px, 23vh, 226px); padding: 12px 16px;
-  border: 1px solid rgba(255,255,255,.19); border-radius: 17px;
-  background: rgba(7,13,20,.76); box-shadow: 0 18px 60px rgba(0,0,0,.24);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+/* The version pickers live in the rail above a compact action footer. */
+.rail-mode {
+  display: grid; flex: none; grid-template-columns: 1fr 1fr; gap: 4px;
+  margin: 4px 14px 6px; padding: 3px; border: 1px solid var(--line); border-radius: 11px;
+  background: color-mix(in srgb, var(--rail-raised) 62%, transparent);
 }
-.picker-dock .wheel-section { min-width: 0; }
-.picker-dock .timeline-section, .picker-dock .clients-section { flex: 1 1 auto; }
-.picker-dock .wheel-head { min-height: 38px; padding: 0 5px 5px; }
-.picker-dock .wheel-viewport { min-height: 0; }
-.picker-dock .clients-section { padding-left: 14px; border-left: 1px solid var(--line); }
-.stage-content { right: 40px; bottom: clamp(280px, 32vh, 350px); max-width: min(780px, calc(100% - 80px)); }
-.stage-foot { bottom: 16px; }
-@media (max-width: 1000px) and (min-width: 701px) {
-  .picker-dock { right: 18px; left: 18px; grid-template-columns: minmax(0,1.2fr) minmax(190px,.8fr); gap: 10px; padding: 10px; }
-  .stage-content { right: 28px; bottom: clamp(275px, 34vh, 330px); max-width: calc(100% - 56px); }
-  .build-name { max-width: 13ch; }
+.rail-mode-btn {
+  min-height: 30px; padding: 0 8px; border: 0; border-radius: 8px; color: var(--dim);
+  background: transparent; font-size: 10px; font-weight: 720; letter-spacing: .3px; transition: .16s ease;
 }
-@media (max-height: 680px) and (min-width: 701px) {
-  .picker-dock { height: 164px; bottom: 42px; }
-  .picker-dock .wheel-head { min-height: 32px; }
-  .stage-content { bottom: 225px; }
-  .build-name { font-size: clamp(34px, 4.2vw, 56px); }
-  .hero-kicker { margin-bottom: 10px; }
-  .build-sub { margin-top: 10px; }
-  .hero-actions { margin-top: 14px; }
+.rail-mode-btn:hover { color: var(--text); }
+.rail-mode-btn[aria-pressed="true"] { color: #071510; background: var(--accent); box-shadow: 0 4px 14px rgba(var(--accent-rgb), .22); }
+body[data-category="vanilla"] .clients-section,
+body[data-category="clients"] .timeline-section { display: none; }
+.rail-footer { display: grid; flex: none; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px 14px 14px; border-top: 1px solid var(--line); }
+.rail-action {
+  display: flex; align-items: center; gap: 8px; min-width: 0; padding: 8px;
+  border: 1px solid var(--line); border-radius: 10px; color: var(--text);
+  background: color-mix(in srgb, var(--rail-raised) 72%, transparent); text-align: left; transition: .15s ease;
 }
-
+.rail-action:hover { transform: translateY(-1px); border-color: rgba(var(--accent-rgb), .5); }
+.rail-action-icon {
+  display: grid; flex: none; place-items: center; width: 26px; height: 26px;
+  border-radius: 7px; color: var(--accent); background: rgba(var(--accent-rgb), .12);
+  font-family: var(--mono); font-size: 11px; font-weight: 900;
+}
+.rail-action strong { display: block; font-size: 10px; font-weight: 740; }
+.rail-action small { display: block; margin-top: 2px; overflow: hidden; color: var(--dim); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.stage-content { right: 40px; bottom: clamp(72px, 10vh, 108px); max-width: min(900px, calc(100% - 80px)); }
+.stage-foot { bottom: 18px; }
 @media (max-width: 1000px) {
-  .shell { grid-template-columns: minmax(276px, min(var(--rail-max, 312px), 340px)) minmax(0, 1fr); }
-  .stage-content { left: 40px; bottom: 78px; }
-  .build-name { font-size: clamp(36px, 5vw, 62px); }
+  .shell { grid-template-columns: minmax(232px, min(var(--rail-max, 300px), 300px)) minmax(0, 1fr); }
+  .stage-content { left: 32px; right: 26px; bottom: clamp(64px, 9vh, 92px); max-width: calc(100% - 58px); }
+  .build-name { font-size: clamp(30px, 4.6vw, 58px); }
 }
 @media (max-width: 700px) {
-  body { overflow: auto; }
-  .shell { display: flex; flex-direction: column; height: auto; min-height: 100dvh; }
-  .rail { height: auto; min-height: 0; max-height: none; overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); }
-  .brand { padding: 12px 14px 10px; }
-  .brand-mark { width: 36px; height: 36px; border-radius: 11px; }
-  .brand-mark svg { width: 21px; height: 21px; }
-  .search-row { padding: 9px 12px 4px; }
-  .rail-picker-note { margin: 15px 12px; padding: 12px; }
-  .rail-picker-note h2 { margin-top: 5px; font-size: 14px; }
-  .rail-picker-note > p:not(.eyebrow) { max-width: 40ch; }
-  .picker-jump { margin-top: 10px; }
-  .wheel-section, .timeline-section, .clients-section { min-height: 0; flex: none; }
-  .wheel-section { height: 100%; }
-  .wheel-head { min-height: 42px; }
-  .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
+  .shell { grid-template-columns: minmax(0, 42vw) minmax(0, 1fr); min-height: 0; }
+  .rail { border-bottom: 0; border-right: 1px solid var(--line); }
+  .brand { padding: 10px 10px 8px; gap: 8px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
+  .brand-mark svg { width: 17px; height: 17px; }
+  .brand h1 { font-size: 13px !important; }
+  .brand-sub, .brand-eyebrow { display: none; }
+  .search-row { padding: 8px 8px 4px; gap: 5px; }
+  .search-box { height: 32px; padding: 0 7px; border-radius: 8px; }
+  .search-box kbd { display: none; }
+  .filter-toggle { width: 32px; height: 32px; border-radius: 8px; }
+  .rail-mode { margin: 4px 8px 5px; }
+  .rail-mode-btn { min-height: 26px; font-size: 9px; }
+  .wheels { padding: 0 8px; }
+  .wheel-head { min-height: 34px; padding: 2px 3px 4px; }
+  .wheel-head h2 { font-size: 11px !important; }
+  .wheel-head .eyebrow { display: none; }
+  .wheel-count { font-size: 8px; }
   .wheel-title { font-size: 10px; }
-  .rail-footer { padding: 9px 12px 10px; }
-  .footer-head { margin-bottom: 6px; }
-  .bonus-link { padding: 6px 8px; }
-  .bonus-icon { width: 25px; height: 25px; }
-  .stage { height: auto; min-height: 760px; overflow: hidden; }
-  .picker-dock { position: relative; inset: auto; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: 6px; height: 286px; margin: 18px 12px 56px; padding: 8px; border-radius: 14px; }
-  .picker-dock .wheel-head { min-height: 43px; padding: 2px 4px 5px; }
-  .picker-dock .clients-section { padding-left: 7px; }
-  .stage-content { position: relative; top: auto; right: auto; bottom: auto; left: auto; max-width: none; margin: 0; padding: 112px 20px 16px; }
-  .stage-foot { display: none; }
-  .stage-top { justify-content: flex-end; padding: 15px 16px; }
-  .stage-caption { display: none; font-size: 8px; letter-spacing: 1px; }
-  .glass-button { min-height: 34px; padding: 0 9px; font-size: 10px; }
+  .rail-footer { padding: 8px; gap: 5px; }
+  .rail-action { gap: 5px; padding: 6px; }
+  .rail-action-icon { width: 20px; height: 20px; font-size: 9px; }
+  .rail-action small { display: none; }
+  .rail-action strong { font-size: 8px; }
+  .stage { min-height: 0; }
+  .stage-top { justify-content: flex-end; gap: 8px; padding: 10px 12px; }
+  .stage-caption, .browse-back span, .settings-button span { display: none; }
+  .browse-back, .settings-button { width: 30px; min-height: 30px; padding: 0; }
+  .theme-button { width: 30px; min-height: 30px; }
+  .glass-button { min-height: 30px; padding: 0 8px; font-size: 9px; }
   .glass-count { display: none; }
-  .theme-button { width: 34px; min-height: 34px; }
-  .hero-kicker { margin-bottom: 12px; }
-  .build-name { max-width: 13ch; font-size: clamp(34px, 9vw, 52px); }
-  .build-sub { margin-top: 11px; font-size: 9px; }
-  .chips { margin-top: 9px; }
-  .hero-actions { gap: 7px; margin-top: 17px; }
-  .play-button { min-height: 42px; padding: 0 14px; font-size: 10px; }
-  .stage-control { width: 38px; height: 38px; }
-  .control-separator { display: none; }
-  .stage-foot { display: none; }
-  .sheet { max-height: 90dvh; }
-  .sheet-head { padding: 15px; }
-  .sheet-tools { padding: 10px 12px; }
+  .stage-content { left: 14px; right: 12px; bottom: clamp(42px, 9vh, 70px); max-width: calc(100% - 26px); }
+  .hero-kicker { gap: 6px; margin-bottom: 8px; }
+  .hero-kicker .eyebrow { font-size: 8px !important; letter-spacing: 1px; }
+  .build-name { max-width: 100%; font-size: clamp(20px, 6.4vw, 40px); }
+  .build-sub, .chips { display: none; }
+  .hero-actions { flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .play-button { min-height: 34px; padding: 0 10px; gap: 6px; font-size: 9px; letter-spacing: .6px; }
+  .play-button svg { width: 13px; height: 13px; }
+  .stage-control { width: 30px; height: 30px; border-radius: 8px; }
+  .stage-control svg { width: 13px; height: 13px; }
+  .control-separator, .stage-foot { display: none; }
+  .position-count { font-size: 8px; }
+  .sheet { max-height: 92dvh; }
+  .sheet-head { padding: 14px; }
+  .sheet-tools { padding: 9px 11px; }
   .dl-row { gap: 7px; padding: 8px 6px; }
   .dl-size { display: none; }
   .dl-btn { padding: 6px 7px; }
+  .play-dialog, .settings-sheet { border-radius: 16px; }
+  .settings-content { padding: 10px; }
 }
+@media (max-height: 560px) {
+  .shell { min-height: 0; }
+  .brand-sub, .brand-eyebrow { display: none; }
+  .rail-footer small { display: none; }
+  .stage-content { bottom: 40px; }
+  .build-name { font-size: clamp(24px, 4vw, 44px); }
+  .chips, .build-sub { display: none; }
+}
+
 @media (min-width: 701px) and (max-height: 680px) {
-  .brand { padding-top: 12px; padding-bottom: 10px; }
-  .search-row { padding-top: 8px; padding-bottom: 5px; }
-  .wheel-head { min-height: 40px; padding-bottom: 4px; }
+  .brand { padding-top: 10px; padding-bottom: 8px; }
+  .search-row { padding-top: 7px; padding-bottom: 4px; }
+  .wheel-head { min-height: 36px; padding-bottom: 4px; }
   .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
-  .clients-section { flex-basis: 154px; }
   .rail-footer { padding-top: 8px; padding-bottom: 9px; }
-}
-@media (max-width: 1000px) and (min-width: 701px) {
-  .stage-content { left: 40px; right: 28px; bottom: clamp(275px, 34vh, 330px); max-width: calc(100% - 68px); }
-}
-@media (max-height: 680px) and (min-width: 701px) {
-  .picker-dock { height: 164px; bottom: 42px; }
-  .picker-dock .wheel-head { min-height: 32px; }
-  .stage-content { bottom: 225px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -813,16 +812,16 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
 .mod-key kbd { padding: 2px 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--text); background: rgba(0, 0, 0, .2); font-family: var(--mono); font-size: 8px; }
 .mod-toggle { flex: none; }
 .mods-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; color: var(--dim); font-size: 10px; }
+.mod-badge-api[data-api="false"] { color: #9fe0ff; border-color: rgba(120, 200, 255, .34); }
+.mod-badge-api[data-api="true"] { color: #ffcf8a; border-color: rgba(255, 190, 110, .34); }
+.mods-foot-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+
 .mods-note { margin: 14px 0 0; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; color: var(--dim); background: color-mix(in srgb, var(--rail-raised) 55%, transparent); font-size: 10px; line-height: 1.55; }
 .mods-note strong { color: var(--text); font-weight: 650; }
 .browse-back { flex: none; }
 .stage-left { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .stage-left .stage-caption { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-body[data-category="vanilla"] .clients-section { display: none; }
-body[data-category="clients"] .timeline-section { display: none; }
-body[data-category] .picker-dock { grid-template-columns: minmax(0, 1fr); }
-body[data-category] .picker-dock .clients-section { padding-left: 0; border-left: 0; }
-body[data-category] .rail-footer .footer-head span { color: var(--accent); }
+body[data-category] .wheel-head { border-bottom: 0; }
 @media (max-width: 820px) {
   .play-options { grid-template-columns: 1fr; }
   .play-card { padding: 16px; }
@@ -1565,10 +1564,13 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
       <button class="sheet-close" id="modsClose" type="button" aria-label="Close mods"><svg viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4-5-5-5 5-1.4-1.4 5-5-5-5L5.5 5.5 12 12l6.3-6.3z"/></svg></button>
     </header>
     <div class="mods-list" id="modsList"></div>
-    <p class="mods-note" id="modsNote"><strong>How mods load:</strong> enabled mods run inside launcher-hosted game sessions. Popup, new-tab, and direct launches open the original untouched build, so use <strong>Embedded in this window</strong> or <strong>This tab</strong> to play with mods.</p>
+    <p class="mods-note" id="modsNote"><strong>How mods load:</strong> enabled mods are injected into launcher-hosted sessions (embedded player, This tab, popup, and new-tab wrapper). A badge in the game window reports exactly how many loaded. <strong>ModAPI</strong> mods need a build that exposes Eaglercraft's ModAPI hook — the builds bundled in this archive do not ship it, so those will report “needs ModAPI”. <strong>Any build</strong> mods (Music Player, Screenshot) work everywhere, so use those to confirm injection is live.</p>
     <div class="mods-foot">
       <span id="modsSummary">— mods enabled</span>
-      <button class="settings-reset" id="modsDisableAll" type="button">Disable all</button>
+      <span class="mods-foot-actions">
+        <button class="settings-reset" id="modsTest" type="button">Test on Minecraft 4K</button>
+        <button class="settings-reset" id="modsDisableAll" type="button">Disable all</button>
+      </span>
     </div>
   </section>
 </div>
@@ -1598,16 +1600,46 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
       </button>
     </div>
 
-    <section class="rail-picker-note" aria-labelledby="pickerNoteTitle">
-      <p class="eyebrow">BUILD PICKER</p>
-      <h2 id="pickerNoteTitle">Choose from the archive</h2>
-      <p>Version and client wheels are together below the preview, with room to browse.</p>
-      <button class="picker-jump" id="pickerJump" type="button">Jump to build wheels <span aria-hidden="true">↓</span></button>
+    <section class="rail-mode" id="railMode" aria-label="Build category">
+      <button class="rail-mode-btn" type="button" data-railcat="vanilla" aria-pressed="true">Vanilla</button>
+      <button class="rail-mode-btn" type="button" data-railcat="clients" aria-pressed="false">Clients</button>
     </section>
 
+    <div class="wheels" id="buildWheels">
+      <section class="wheel-section timeline-section" aria-labelledby="timelineTitle">
+        <header class="wheel-head">
+          <div><p class="eyebrow">01 / MAINLINE</p><h2 id="timelineTitle">Version timeline</h2></div>
+          <span class="wheel-count" id="timelineCount">—</span>
+        </header>
+        <div class="wheel-viewport">
+          <div class="wheel" id="timelineWheel" role="listbox" tabindex="0" aria-orientation="vertical" aria-label="Chronological game versions; scroll or use arrow keys to pick"></div>
+          <div class="wheel-fade" aria-hidden="true"></div>
+          <div class="wheel-center" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="wheel-section clients-section" aria-labelledby="clientsTitle">
+        <header class="wheel-head">
+          <div><p class="eyebrow">02 / ALTERNATE BUILDS</p><h2 id="clientsTitle">Clients</h2></div>
+          <span class="wheel-count" id="clientCount">—</span>
+        </header>
+        <div class="wheel-viewport">
+          <div class="wheel" id="clientWheel" role="listbox" tabindex="0" aria-orientation="vertical" aria-label="Client builds; scroll or use arrow keys to pick"></div>
+          <div class="wheel-fade" aria-hidden="true"></div>
+          <div class="wheel-center" aria-hidden="true"></div>
+        </div>
+      </section>
+    </div>
+
     <footer class="rail-footer">
-      <div class="footer-head"><strong>Bonus games</strong><span>QUICK LAUNCH</span></div>
-      <div class="bonus-actions" id="bonusActions" aria-label="Bonus game shortcuts"></div>
+      <button class="rail-action" id="railExtras" type="button">
+        <span class="rail-action-icon" aria-hidden="true">▣</span>
+        <span><strong>Extras</strong><small>Bonus games</small></span>
+      </button>
+      <button class="rail-action" id="railLibrary" type="button">
+        <span class="rail-action-icon" aria-hidden="true">↓</span>
+        <span><strong>Library</strong><small>Download builds</small></span>
+      </button>
     </footer>
   </aside>
 
@@ -1664,32 +1696,6 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
         <span class="position-count" id="pos">—</span>
       </div>
     </section>
-
-    <div class="wheels picker-dock" id="pickerDock">
-      <section class="wheel-section timeline-section" aria-labelledby="timelineTitle">
-        <header class="wheel-head">
-          <div><p class="eyebrow">01 / MAINLINE</p><h2 id="timelineTitle">Version timeline</h2></div>
-          <span class="wheel-count" id="timelineCount">—</span>
-        </header>
-        <div class="wheel-viewport">
-          <div class="wheel" id="timelineWheel" role="listbox" tabindex="0" aria-orientation="vertical" aria-label="Chronological game versions; scroll or use arrow keys to pick"></div>
-          <div class="wheel-fade" aria-hidden="true"></div>
-          <div class="wheel-center" aria-hidden="true"></div>
-        </div>
-      </section>
-
-      <section class="wheel-section clients-section" aria-labelledby="clientsTitle">
-        <header class="wheel-head">
-          <div><p class="eyebrow">02 / ALTERNATE BUILDS</p><h2 id="clientsTitle">Clients</h2></div>
-          <span class="wheel-count" id="clientCount">—</span>
-        </header>
-        <div class="wheel-viewport">
-          <div class="wheel" id="clientWheel" role="listbox" tabindex="0" aria-orientation="vertical" aria-label="Client builds; scroll or use arrow keys to pick"></div>
-          <div class="wheel-fade" aria-hidden="true"></div>
-          <div class="wheel-center" aria-hidden="true"></div>
-        </div>
-      </section>
-    </div>
 
     <footer class="stage-foot"><span>Scroll a wheel to travel through versions · Enter to launch</span><span>RD-131655&nbsp; → &nbsp;26.3</span></footer>
   </main>
@@ -1818,7 +1824,7 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
     /* behavior */
     latest: false, defaultWheel: "timeline", wrapNav: true, shortcuts: true,
     hashLinks: true, focusSearch: false,
-    boot: true, mods: { xray: false, autorespawn: false, autoclicker: false }
+    boot: true, mods: { xray: false, fullbright: false, autorespawn: false, autoclicker: false, duck: false, music: false, screenshot: false }
   };
   var SETTINGS_PRESETS = {
     "quantum": { label: "Quantum", values: {} },
@@ -1864,8 +1870,8 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
           { key: "showFoot", label: "Stage footer hints", desc: "Keyboard hints along the bottom of the stage.", type: "toggle" },
           { key: "showCounts", label: "Wheel counts", desc: "Build counts next to each picker heading.", type: "toggle" },
           { key: "showSearch", label: "Library search", desc: "The search row at the top of the rail.", type: "toggle" },
-          { key: "showNote", label: "Rail picker note", desc: "The explanatory card above the bonus games.", type: "toggle" },
-          { key: "showBonus", label: "Bonus game shortcuts", desc: "Minecraft 4K and Minicraft quick-launch buttons.", type: "toggle" }
+          { key: "showNote", label: "Category switcher", desc: "Vanilla / Clients switch above the sidebar wheels.", type: "toggle" },
+          { key: "showBonus", label: "Extras shortcut", desc: "The Extras button that opens Minecraft 4K and Minicraft.", type: "toggle" }
         ]
       }
     ],
@@ -2300,21 +2306,6 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
     updateWheelSelection(scroll, smooth);
   }
 
-  function renderBonusButtons() {
-    var ordered = BONUS.slice().sort(function (a, b) {
-      var order = { "Minecraft 4K": 0, "Minecraft 4k": 0, "Minicraft": 1 };
-      return (order[a.name] == null ? 9 : order[a.name]) - (order[b.name] == null ? 9 : order[b.name]);
-    });
-    $("bonusActions").innerHTML = ordered.map(function (b) {
-      var is4k = /4k/i.test(b.name);
-      var title = is4k ? "Minecraft 4K" : "Minicraft";
-      var mark = is4k ? "4K" : "M";
-      var sub = is4k ? "Tiny classic" : "Top-down survival";
-      return '<button class="bonus-link" type="button" data-bonus-id="' + esc(b.id) + '" aria-label="Launch ' + esc(title) + '">' +
-        '<span class="bonus-icon" aria-hidden="true">' + mark + '</span><span class="bonus-copy"><span class="bonus-title">' + esc(title) + '</span><span class="bonus-sub">' + sub + '</span></span></button>';
-    }).join("");
-  }
-
   function bindWheel(wheel, which) {
     wheel.addEventListener("click", function (event) {
       var row = event.target.closest("[data-build-id]");
@@ -2425,7 +2416,7 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
     if (activeMods().length) {
       frame.removeAttribute("src");
       frame.srcdoc = wrapperDocument(b);
-      showLaunchNote(activeMods().length + " mod" + (activeMods().length === 1 ? "" : "s") + " injected into this session.");
+      showLaunchNote(activeMods().length + " mod" + (activeMods().length === 1 ? "" : "s") + " armed for this session — watch the badge in the corner of the game.");
     } else {
       frame.removeAttribute("srcdoc");
       frame.src = b.url;
@@ -2520,19 +2511,7 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
     renderWheels();
     setBuild(b, state.wheel, false);
   });
-  $("bonusActions").addEventListener("click", function (event) {
-    var button = event.target.closest("[data-bonus-id]");
-    if (!button) return;
-    var b = byId(button.getAttribute("data-bonus-id"));
-    if (!b) return;
-    setBuild(b, "bonus", false);
-    launch(b);
-  });
   $("play").addEventListener("click", function () { launch(byId(state.id)); });
-  $("pickerJump").addEventListener("click", function () {
-    $("pickerDock").scrollIntoView({ behavior: settings.reducedMotion ? "auto" : "smooth", block: "center" });
-    try { timelineWheel.focus({ preventScroll: true }); } catch (e) { timelineWheel.focus(); }
-  });
   $("prev").addEventListener("click", function () { step(-1); });
   $("next").addEventListener("click", function () { step(1); });
 
@@ -2821,7 +2800,6 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
   $("brandSub").textContent = TIMELINE.length + " timeline builds · " + CLIENTS.length + " clients";
   $("dlCount").textContent = String(BUILDS.length);
   $("dlSearch").placeholder = "Search " + BUILDS.length + " builds";
-  renderBonusButtons();
   renderWheels();
 
   var hash = settings.hashLinks ? (location.hash || "").replace(/^#\/?/, "") : "";
@@ -2835,80 +2813,55 @@ body[data-category] .rail-footer .footer-head span { color: var(--accent); }
   setBuild(initial, initialWheel, true, false);
   /* ======================= client mods ======================= */
   var MOD_SOURCES = {
-    xray: `//Coalest xray mod to ever exist!
-
-//IIFE. I like scoped variables.
-(function () {
-    var enabled = false
-    ModAPI.addEventListener("key", function(ev){
-        if(ev.key == 45){// the "x" key
-          if(enabled){
-                disable()
-                enabled = false
-          } else{
-                update(); //Trigger the coal xray.
-                enabled = true
-          }
-        }
-    })
-    var targets = ["diamond_block","diamond_ore","gold_block","gold_ore","iron_block","iron_ore","coal_block","coal_ore","emerald_ore","emerald_block","redstone_ore","redstone_block","lapis_ore","lapis_block","chest","furnace","lit_furnace","ender_chest"]; //The target blocks
-    var allblocks = Object.keys(ModAPI.blocks); //List of all block IDsw
-    function update() {
-      ModAPI.displayToChat({msg: "xray Enabled!"})
-      allblocks.forEach(block=>{ //Loop through all the blocks
-        if (targets.includes(block)) { //If it is in the targets list, force it to render.
-          ModAPI.blocks[block].forceRender = true;
-          ModAPI.blocks[block].reload(); //Push the changes.
-        } else if (ModAPI.blocks[block] && ("noRender" in ModAPI.blocks[block])) { //Otherwise, if it is a valid block, and can be set to not render, do so.
-          ModAPI.blocks[block].noRender = true;
-          ModAPI.blocks[block].reload(); //Push the changes.
-        }
-      });
-      ModAPI.reloadchunks()
-    }
-    function disable(){
-      ModAPI.displayToChat({msg: "xray Disabled!"})
-              allblocks.forEach(block=>{ //Loop through all the blocks
- if (ModAPI.blocks[block] && ("noRender" in ModAPI.blocks[block])) { 
-          ModAPI.blocks[block].noRender = false;
-          ModAPI.blocks[block].reload(); //Push the changes.
-        }
-      });
-    ModAPI.reloadchunks()
-    }
-  })();`,
-    autorespawn: `ModAPI.require('player');
-ModAPI.addEventListener("update", () => {
-    if (Boolean(ModAPI.player ? (ModAPI.player.isPlayer() ? true : false) : false)) {
-        if (ModAPI.player.isEntityAlive() === false) {
-            ModAPI.player.respawnPlayer();
-        };
-    };
-});`,
-    autoclicker: `let cps = 2
-
-function click() {
-  ModAPI.clickMouse()
-}
-let intervalTime = 1000 / cps;
-let intervalID = setInterval(click, intervalTime);`
-  };
+ "xray": "//Coalest xray mod to ever exist!\n\n//IIFE. I like scoped variables.\n(function () {\n    var enabled = false\n    ModAPI.addEventListener(\"key\", function(ev){\n        if(ev.key == 45){// the \"x\" key\n          if(enabled){\n                disable()\n                enabled = false\n          } else{\n                update(); //Trigger the coal xray.\n                enabled = true\n          }\n        }\n    })\n    var targets = [\"diamond_block\",\"diamond_ore\",\"gold_block\",\"gold_ore\",\"iron_block\",\"iron_ore\",\"coal_block\",\"coal_ore\",\"emerald_ore\",\"emerald_block\",\"redstone_ore\",\"redstone_block\",\"lapis_ore\",\"lapis_block\",\"chest\",\"furnace\",\"lit_furnace\",\"ender_chest\"]; //The target blocks\n    var allblocks = Object.keys(ModAPI.blocks); //List of all block IDsw\n    function update() {\n      ModAPI.displayToChat({msg: \"xray Enabled!\"})\n      allblocks.forEach(block=>{ //Loop through all the blocks\n        if (targets.includes(block)) { //If it is in the targets list, force it to render.\n          ModAPI.blocks[block].forceRender = true;\n          ModAPI.blocks[block].reload(); //Push the changes.\n        } else if (ModAPI.blocks[block] && (\"noRender\" in ModAPI.blocks[block])) { //Otherwise, if it is a valid block, and can be set to not render, do so.\n          ModAPI.blocks[block].noRender = true;\n          ModAPI.blocks[block].reload(); //Push the changes.\n        }\n      });\n      ModAPI.reloadchunks()\n    }\n    function disable(){\n      ModAPI.displayToChat({msg: \"xray Disabled!\"})\n              allblocks.forEach(block=>{ //Loop through all the blocks\n if (ModAPI.blocks[block] && (\"noRender\" in ModAPI.blocks[block])) { \n          ModAPI.blocks[block].noRender = false;\n          ModAPI.blocks[block].reload(); //Push the changes.\n        }\n      });\n    ModAPI.reloadchunks()\n    }\n  })();",
+ "fullbright": "ModAPI.require(\"settings\");\nvar gamma = 1000\nvar toggled = true\nModAPI.settings.gammaSetting = gamma\nModAPI.settings.reload()\nModAPI.addEventListener(\"key\", function(ev){\n    if(ev.key == 33){\n        if(!toggled){\n            ModAPI.settings.gammaSetting = gamma\n            ModAPI.settings.reload()\n            ModAPI.displayToChat({msg: \"fullbright enabled!\"})\n            toggled = true\n        } else{\n            ModAPI.settings.gammaSetting = 1\n            ModAPI.settings.reload()\n            ModAPI.displayToChat({msg: \"fullbright disabled!\"})\n            toggled = false\n        }\n    }\n        \n})",
+ "autorespawn": "ModAPI.require('player');\nModAPI.addEventListener(\"update\", () => {\n    if (Boolean(ModAPI.player ? (ModAPI.player.isPlayer() ? true : false) : false)) {\n        if (ModAPI.player.isEntityAlive() === false) {\n            ModAPI.player.respawnPlayer();\n        };\n    };\n});",
+ "autoclicker": "let cps = 2\n\nfunction click() {\n  ModAPI.clickMouse()\n}\nlet intervalTime = 1000 / cps;\nlet intervalID = setInterval(click, intervalTime);",
+ "duck": "(function DuckEntity() {\n    ModAPI.meta.title(\"Duck Mod 🦆\");\n    ModAPI.meta.version(\"v1\");\n    ModAPI.meta.description(\"adds ducks to the game\");\n    ModAPI.meta.credits(\"By ZXMushroom63\");\n    function waitForRenderManager() {\n        return new Promise((res, rej)=>{\n            function check() {\n                if (ModAPI.mc.renderManager) {\n                    res();\n                } else {\n                    setTimeout(check, 1/20);\n                }\n            }\n            check();\n        });\n    }\n    function registerEntity() {\n        ModAPI.hooks.methods.jl_String_format = ModAPI.hooks.methods.nlev_HString_format; //temporary thing to fix an issue in eaglercraft\n        // Utils\n        function AITask(name, length) {\n            return ModAPI.reflect.getClassById(\"net.minecraft.entity.ai.\" + name).constructors.find(x => x.length === length);\n        }\n        const ResourceLocation = ModAPI.reflect.getClassByName(\"ResourceLocation\").constructors.find(x => x.length === 1);\n        const EntityPlayer = ModAPI.reflect.getClassByName(\"EntityPlayer\");\n        const GlStateManager = Object.fromEntries(Object.values(ModAPI.reflect.getClassByName(\"GlStateManager\").staticMethods).map(x => [x.methodNameShort, x.method]));\n        const SharedMonsterAttributes = ModAPI.reflect.getClassByName(\"SharedMonsterAttributes\").staticVariables;\n\n        // START CUSTOM ENTITY\n        var entityClass = ModAPI.reflect.getClassById(\"net.minecraft.entity.passive.EntityAnimal\");\n        var entitySuper = ModAPI.reflect.getSuper(entityClass, (x) => x.length === 2);\n        var nme_EntityDuck = function nme_EntityDuck($worldIn) {\n            entitySuper(this, $worldIn);\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            this.wrapped.setSize(0.4, 0.7);\n            this.wrapped.tasks.addTask(0, AITask(\"EntityAISwimming\", 1)(this));\n            this.wrapped.tasks.addTask(1, AITask(\"EntityAIPanic\", 2)(this, 1.9));\n            this.wrapped.tasks.addTask(2, AITask(\"EntityAIMate\", 2)(this, 1.0));\n            this.wrapped.tasks.addTask(3, AITask(\"EntityAITempt\", 4)(this, 1.5, ModAPI.items.bread.getRef(), 0)); //won't cause a problem as the bread is obtained when the entity is constructed.\n            this.wrapped.tasks.addTask(4, AITask(\"EntityAIFollowParent\", 2)(this, 1.2));\n            this.wrapped.tasks.addTask(5, AITask(\"EntityAIWander\", 2)(this, 1.1));\n            this.wrapped.tasks.addTask(6, AITask(\"EntityAIWatchClosest\", 3)(this, ModAPI.util.asClass(EntityPlayer.class), 6));\n            this.wrapped.tasks.addTask(7, AITask(\"EntityAILookIdle\", 1)(this));\n        }\n        ModAPI.reflect.prototypeStack(entityClass, nme_EntityDuck);\n        nme_EntityDuck.prototype.$getEyeHeight = function () {\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            return this.wrapped.height;\n        }\n\n        const originalApplyEntityAttributes = nme_EntityDuck.prototype.$applyEntityAttributes;\n        nme_EntityDuck.prototype.$applyEntityAttributes = function () {\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            originalApplyEntityAttributes.apply(this, []);\n            this.wrapped.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(5);\n            this.wrapped.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25);\n        }\n\n        const originalLivingUpdate = nme_EntityDuck.prototype.$onLivingUpdate;\n        nme_EntityDuck.prototype.$onLivingUpdate = function () {\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            originalLivingUpdate.apply(this, []);\n            if (this.wrapped.isInWater()) {\n                this.wrapped.motionY *= 0.5;\n                this.wrapped.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(1.4);\n            } else {\n                this.wrapped.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25);\n            }\n        }\n\n        nme_EntityDuck.prototype.$getLivingSound = function () {\n            return ModAPI.util.str(\"mob.duck.quack\");\n        }\n        nme_EntityDuck.prototype.$getHurtSound = function () {\n            return ModAPI.util.str(\"mob.duck.quack\");\n        }\n        nme_EntityDuck.prototype.$getDeathSound = function () {\n            return ModAPI.util.str(\"mob.duck.quack\");\n        }\n        nme_EntityDuck.prototype.$playStepSound = function () {\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            this.wrapped.playSound(ModAPI.util.str(\"mob.duck.step\"), 0.2, 1);\n        }\n        nme_EntityDuck.prototype.$getDropItem = function () {\n            return ModAPI.items.feather.getRef();\n        }\n        nme_EntityDuck.prototype.$createChild = function (otherParent) {\n            this.wrapped ||= ModAPI.util.wrap(this).getCorrective();\n            return new nme_EntityDuck(this.wrapped.worldObj?.getRef() ?? null);\n        }\n        nme_EntityDuck.prototype.$isBreedingItem = function (itemstack) {\n            return itemstack !== null && itemstack.$getItem() === ModAPI.items.bread.getRef();\n        }\n        // END CUSTOM ENTITY\n\n\n        // START CUSTOM MODEL\n        var modelChickenClass = ModAPI.reflect.getClassById(\"net.minecraft.client.model.ModelChicken\");\n        var modelChickenSuper = ModAPI.reflect.getSuper(modelChickenClass); //while super isn't used when extending this class, java implies the call.\n        var nmcm_ModelDuck = function nmcm_ModelDuck() {\n            modelChickenSuper(this);\n        }\n        ModAPI.reflect.prototypeStack(modelChickenClass, nmcm_ModelDuck);\n        // END CUSTOM MODEL\n\n\n        // START CUSTOM RENDERER\n        var renderClass = ModAPI.reflect.getClassById(\"net.minecraft.client.renderer.entity.RenderLiving\");\n        var renderSuper = ModAPI.reflect.getSuper(renderClass, (x) => x.length === 4);\n        const duckTextures = ResourceLocation(ModAPI.util.str(\"textures/entity/duck.png\"));\n        var nmcre_RenderDuck = function nmcre_RenderDuck(renderManager, modelBaseIn, shadowSizeIn) {\n            renderSuper(this, renderManager, modelBaseIn, shadowSizeIn);\n        }\n        ModAPI.reflect.prototypeStack(renderClass, nmcre_RenderDuck);\n        nmcre_RenderDuck.prototype.$getEntityTexture = function (entity) {\n            return duckTextures;\n        }\n        nmcre_RenderDuck.prototype.$handleRotationFloat = function (entity, partialTicks) {\n            entity = ModAPI.util.wrap(entity);\n            if ((!entity.onGround) && (!entity.isInWater())) {\n                return 2; //falling\n            } else {\n                return 0;\n            }\n        }\n\n        const ID = ModAPI.keygen.entity(\"duck\");\n        ModAPI.reflect.getClassById(\"net.minecraft.entity.EntityList\").staticMethods.addMapping0.method(\n            ModAPI.util.asClass(nme_EntityDuck),\n            {\n                $createEntity: function ($worldIn) {\n                    return new nme_EntityDuck($worldIn);\n                }\n            },\n            ModAPI.util.str(\"Duck\"),\n            ID,\n            0x5e3e2d, //egg base\n            0x269166 //egg spots\n        );\n\n        const SpawnPlacementType = ModAPI.reflect.getClassById(\"net.minecraft.entity.EntityLiving$SpawnPlacementType\").staticVariables;\n        const ENTITY_PLACEMENTS = ModAPI.util.wrap(\n            ModAPI.reflect.getClassById(\"net.minecraft.entity.EntitySpawnPlacementRegistry\")\n                .staticVariables.ENTITY_PLACEMENTS\n        );\n        ENTITY_PLACEMENTS.put(ModAPI.util.asClass(nme_EntityDuck), SpawnPlacementType.ON_GROUND);\n        ModAPI.addEventListener('bootstrap', ()=>{\n            const SpawnListEntry = ModAPI.reflect\n                .getClassById(\"net.minecraft.world.biome.BiomeGenBase$SpawnListEntry\")\n                .constructors.find(x => x.length === 4);\n            const BiomeGenSwamp = ModAPI.util.wrap(\n                ModAPI.reflect.getClassById(\"net.minecraft.world.biome.BiomeGenBase\")\n                    .staticVariables.swampland\n            );\n            const BiomeGenRiver = ModAPI.util.wrap(\n                ModAPI.reflect.getClassById(\"net.minecraft.world.biome.BiomeGenBase\")\n                    .staticVariables.river\n            );\n            const BiomeGenBeach = ModAPI.util.wrap(\n                ModAPI.reflect.getClassById(\"net.minecraft.world.biome.BiomeGenBase\")\n                    .staticVariables.beach\n            );\n            const duckSpawnSwamp = SpawnListEntry(ModAPI.util.asClass(nme_EntityDuck), 22, 3, 5);\n            const duckSpawnRiverBed = SpawnListEntry(ModAPI.util.asClass(nme_EntityDuck), 10, 5, 9);\n            const duckSpawnBeach = SpawnListEntry(ModAPI.util.asClass(nme_EntityDuck), 24, 2, 3);\n            BiomeGenSwamp.spawnableCreatureList.add(duckSpawnSwamp);\n            BiomeGenRiver.spawnableCreatureList.add(duckSpawnRiverBed);\n            BiomeGenBeach.spawnableCreatureList.add(duckSpawnBeach);\n        });\n        \n\n        ModAPI.addEventListener(\"lib:asyncsink\", async () => {\n            AsyncSink.L10N.set(\"entity.Duck.name\", \"Duck\");\n        });\n\n\n        return {\n            EntityDuck: nme_EntityDuck,\n            ModelDuck: nmcm_ModelDuck,\n            RenderDuck: nmcre_RenderDuck,\n            duckTextures: duckTextures\n        }\n    }\n\n    ModAPI.dedicatedServer.appendCode(registerEntity);\n    var data = registerEntity();\n\n    ModAPI.addEventListener(\"lib:asyncsink\", async () => {\n        AsyncSink.setFile(\"resourcepacks/AsyncSinkLib/assets/minecraft/textures/entity/duck.png\", await (await fetch(\n            \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgBAMAAABQs2O3AAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAACdQTFRFAAAALJBrKYdk1pcLp3UI4JEzL5pyaFY4AAAANa6BW0AjYUQlVTwhXohvWAAAAA10Uk5TAP///////////////y0EQa0AAADJSURBVHicY2RgVPj/gIGBwZhBkGEPkGb9zYACGBmYEv4tADKKj/CCFYT+3oCmgE3g1weQAQwQIzAUJLIyMACF9MA8kBEMASgqGIXYGl8ArbiPEEJToMbg8AdIz8OpIJGBFSTwCqcCIQYGfgb8VjDYoFqBChiBeDWYFYpbwSkwywy3ArDvGVyoZMVuVwJWrApDV7AaiQO05YwJuoJTSBwzbFbsQeK4UGzFIwaGf0wMDCE4rQDGGuN/BgZTnFZAFbiRZgUDATCqAAIA8Z45IRCQkrIAAAAASUVORK5CYII=\"\n        )).arrayBuffer());\n        AsyncSink.hideFile(\"resourcepacks/AsyncSinkLib/assets/minecraft/textures/entity/duck.png.mcmeta\");\n\n        await waitForRenderManager();\n\n        AsyncSink.setFile(\"resourcepacks/AsyncSinkLib/assets/minecraft/sounds/mob/duck/quack.ogg\", await (await fetch(\n            \"data:audio/ogg;base64,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Mdaaa869p9ZijLHWmnPuvQAAkwcHAKgEG2dYSTorHA0uNGQlAJAbAIAgxJhzzkEIIYQQQgghUoox5yCEEEIIIZRSSqQUY85BCCGEEEIIIYSMMeeggxBCCKWUUkopGWPOQQghhBBKKKWEEjrnoIMQQgmllFJKKaV0zjkIIYQQSimllFJK6SCEEEIIpZRSSimllNJBCCGEUEoppZRSSiklhBBCCKWUUkoppZRSSgghhBBKKaWUUkoppZQQQgillFJKKaWUUkopIYQQSimllFJKKaWUUkIIpZRSSimllFJKKaWEEEoppZRSSimllFJKCaGUUkoppZRSSimllBJKKaWUUkoppZRSSikllFJKKaWUUkoppZRSSiillFJKKaWUUkoppZRQSimllFJKKaWUUkopoZRSSimllFJKKaWUUgoAADpwAAAIMKLSQuw048ojcEQhwwRUaMhKACAcAABABDoIIYQQQggRcxBCCCGEEEKImIMQQgghhBBCCCGEEEIIpZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppRQAdZnhABg9YeMMK0lnhaPBhYasBADSAgAAYxhjjCnIpLMWY60NYxBCB52EFGqoJaaGMQghdFBKSi22WHMGoaRSSkktxliDzT2DUEoppaQWY605F+NBSCWl1GKrteccjO4glJJSSjHWmnPuvWjQSUmptVpz7j0HXzwIpaTWWow9Bx+MMKKUlmKssdYcfBFGGFFKSy3GmnvNvRhjhEopxlp7zrnnXIwRPqUWY6659x58LsL44mLMOffigw8+CGGMkDHm2HPwvRdjjA/CyFxzLsIY44swwvggbK25B1+MEUYYY3zvNfigezHCCCOMMcII3XPRRfhijDFGGF+EAQC5EQ4AiAtGElJnGVYaceMJGCKQQkNWAQAxAAAEMcYgpJBSSinFGGOMMcYYY4wxxhhjjDHGnGPOOeecAADABAcAgAAr2JVZWrVR3NRJXvRB4BM6YjMy5FIqZnIi6JEaarES7NAKbvACsNCQlQAAGQAA5KSUlFotGkLKQWk1iMgg5STFJCJjkILSgqeQMYhJyh1jCiEFqXbQMYUUoxpSCplS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\"\n        )).arrayBuffer());\n        AsyncSink.Audio.register(\"mob.duck.quack\", AsyncSink.Audio.Category.ANIMALS, [\n            {\n                path: \"sounds/mob/duck/quack.ogg\",\n                pitch: 1,\n                volume: 1,\n                streaming: false //use for large audio files\n            }\n        ]);\n        AsyncSink.setFile(\"resourcepacks/AsyncSinkLib/assets/minecraft/sounds/mob/duck/step.ogg\", await (await fetch(\n            \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAAAbPQAAAAAAALYZWdIBHgF2b3JiaXMAAAAAAYA+AAAAAAAAmIYBAAAAAACpAU9nZ1MAAAAAAAAAAAAAGz0AAAEAAABfKbNYD5D/////////////////4AN2b3JiaXM0AAAAWGlwaC5PcmcgbGliVm9yYmlzIEkgMjAyMDA3MDQgKFJlZHVjaW5nIEVudmlyb25tZW50KQIAAAAzAAAAVElUTEU9VGhlIFNvb3RoaW5nIFNvdW5kcyBvZiBEVUNLICMzIChydW5uaW5nIGR1Y2spEQAAAEFSVElTVD1zZURVQ0t0aXZlAQV2b3JiaXMkQkNWAQBAAAAYQhAqBa1jjjrIFSGMGaKgQsopxx1C0CGjJEOIOsY1xxhjR7lkikLJgdCQVQAAQAAApBxXUHJJLeecc6MYV8xx6CDnnHPlIGfMcQkl55xzjjnnknKOMeecc6MYVw5yKS3nnHOBFEeKcacY55xzpBxHinGoGOecc20xt5JyzjnnnHPmIIdScq4155xzpBhnDnILJeecc8YgZ8xx6yDnnHOMNbfUcs4555xzzjnnnHPOOeecc4wx55xzzjnnnHNuMecWc64555xzzjnnHHPOOeeccyA0ZBUAkAAAoKEoiuIoDhAasgoAyAAAEEBxFEeRFEuxHMvRJA0IDVkFAAABAAgAAKBIhqRIiqVYjmZpniZ6oiiaoiqrsmnKsizLsuu6LhAasgoASAAAUFEUxXAUBwgNWQUAZAAACGAoiqM4juRYkqVZngeEhqwCAIAAAAQAAFAMR7EUTfEkz/I8z/M8z/M8z/M8z/M8z/M8z/M8DQgNWQUAIAAAAIIoZBgDQkNWAQBAAAAIIRoZQ51SElwKFkIcEUMdQs5DqaWD4CmFJWPSU6xBCCF87z333nvvgdCQVQAAEAAAYRQ4iIHHJAghhGIUJ0RxpiAIIYTlJFjKeegkCN2DEEK4nHvLuffeeyA0ZBUAAAgAwCCEEEIIIYQQQggppJRSSCmmmGKKKcccc8wxxyCDDDLooJNOOsmkkk46yiSjjlJrKbUUU0yx5RZjrbXWnHOvQSljjDHGGGOMMcYYY4wxxhgjCA1ZBQCAAAAQBhlkkEEIIYQUUkgppphyzDHHHANCQ1YBAIAAAAIAAAAcRVIkR3IkR5IkyZIsSZM8y7M8y7M8TdRETRVV1VVt1/ZtX/Zt39Vl3/Zl29VlXZZl3bVtXdZdXdd1Xdd1Xdd1Xdd1Xdd1XdeB0JBVAIAEAICO5DiO5DiO5EiOpEgKEBqyCgCQAQAQAICjOIrjSI7kWI4lWZImaZZneZaneZqoiR4QGrIKAAAEABAAAAAAAICiKIqjOI4kWZamaZ6neqIomqqqiqapqqpqmqZpmqZpmqZpmqZpmqZpmqZpmqZpmqZpmqZpmqZpmqZpAqEhqwAACQAAHcdxHEdxHMdxJEeSJCA0ZBUAIAMAIAAAQ1EcRXIsx5I0S7M8y9NEz/RcUTZ1U1dtIDRkFQAACAAgAAAAAAAAx3M8x3M8yZM8y3M8x5M8SdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TdM0TQNCQ1YCAGQAABzFmHtSSqnOQUgxJ2c7xhy0mJsOFUJMWi02ZIgYJq3H0ilCkKOaSsiQMYpqKaVTCCmppZTQMcakptZaKqW0HggNWREARAEAAAghxhBjiDEGIYMQMcYgdBAixhyEDEIGIZQUSskghBJCSZFjDEIHIYMQUgmhZBBCKSGVAgAAAhwAAAIshEJDVgQAcQIACELOIcYgRIxBCCWkFEJIKWIMQuaclMw5KaWU1kIpqUWMQcick5I5JyWU0lIppbVQSmullNZCKa211mpNrcUaSmktlNJaKaW11FqNrbUaI8YgZM5JyZyTUkpprZTSWuYclQ5CSh2ElEpKLZaUWsyck9JBR6WDkFJJJbaSUowlldhKSjGWlGJsLcbaYqw1lNJaSSW2klKMLbYaW4w1R4xByZyTkjknpZTSWimptcw5KR2ElDoHJZWUYiwltZg5J6WDkFIHIaWSUmwlpdhCKa2VlGIsJbXYYsy1tdhqKKnFklKMJaUYW4y1tthq7KS0FlKJLZTSYoux1tZaraGUGEtKMZaUYowx1txirDmU0mJJJcaSUosttlxbjDWn1nJtLdbcYsw1xlx7rbXn1FqtqbVaW4w1xxpzrLXm3kFpLZQSWyipxdZarS3GWkMpsZWUYiwlxdhizLW1WHMoJcaSUowlpRhbjLXGGHNOrdXYYsw1tVZrrbXnGGvsqbVaW4w1t9hqrbX2XnPstQAAgAEHAIAAE8pAoSErAYAoAADCGKUYg9AgpJRjEBqElGIOQqUUY85JqZRizDkpmWPOQUglY845CCWFEEpJJaUQQiklpVQAAECBAwBAgA2aEosDFBqyEgAICQAgEFKKMecglJJSShFCTDkGIYRSUmotQkgp5hyEUEpKrVVMMeYchBBKSam1SjHGnIMQQikptZY55xyEEEpJKaXWMuacgxBCKSml1FoHIYQQSiklpdZa6yCEEEIppaTUWmshhBBKKaWklFqLMYQQQimlpJJSazGWUkpJKaWUUmstxlJKKSmllFJLrcWYUkoppdZaay3GGFNKKaXUWmuxxRhjaq211lqLMcYYa02ttdZaizHGGGOtBQAAHDgAAAQYQScZVRZhowkXHoBCQ1YEAFEAAIAxiDHEGHKOQcigRM4xCZmEyDlHpZOSSQmhldYyKaGVklrknJPSUcqolJZCaZmk0lpooQAAsAMHALADC6HQkJUAQB4AAIGQUow55xxSijHGnHMOKaUYY845pxhjzDnnnFOMMeacc84xxpxzzjnnGGPOOeecc84555xzDkLnnHPOOQehc8455yCE0DnnnHMQQigAAKjAAQAgwEaRzQlGggoNWQkApAIAAMgw5pxzUlJqlGIMQgilpNQoxRiEEEpJKXMOQgilpNRaxhh0EkpJqbUOQiilpNRajB2EEkpJqbUYOwilpJRSazF2EEpJqaXWYiylpNRaazHWWkpJqbXWYqw1pdRajDHWWmtKqbUYY6y11gIAwBMcAIAKbFgd4aRoLLDQkJUAQAYAwBAAwAEAAAMOAAABJpSBQkNWAgCpAACAMYw55xyEUhqlnIMQQimpNEo5ByGEUlLKnJNQSikptZY5J6WUUlJqrYNQSkoptRZjB6GUlFJqLcYOQioptRZjjR2EUlJqLcYYQykptRZjjLWGUlJqLcYYay0ptRZjjbXmWlJqLcYaa821AACEBgcAsAMbVkc4KRoLLDRkJQCQBwBAIMQYY4w5h5RijDHnnENKMcaYc84xxhhzzjnnGGOMOeecc4wx55xzzjnGmHPOOeccc84555xzjjnnnHPOOeecc84555xzzjnnnHPOCQAAKnAAAAiwUWRzgpGgQkNWAgDhAACAMYw5xxh0ElJqmIIOQgglpNBCo5hzEEIopaTUMuikpFRKSq3FljknpaRSUkqtxQ5CSiml1FqMMXYQUkoppdZijLWDUEpKLcVYY60dhFJSaq21GGsNpaTUWmwx1ppzKCWl1lqMsdaaS0qtxVhjrbnmXFJqLbZYa60159RajDHWmmvOvafWYoyx1ppz7r0AAJMHBwCoBBtnWEk6KxwNLjRkJQCQGwCAIMSYc85BCCGEEEIIIVKKMecghBBCCCGUUkqkFGPOQQghhBBCCCGEjDHnoIMQQgillFJKKRljzkEIIYQQSiilhBI656CDEEIJpZRSSimldM45CCGEEEoppZRSSukghBBCCKWUUkoppZTSQQghhFBKKaWUUkopJYQQQgillFJKKaWUUkoIIYQQSimllFJKKaWUEEIIpZRSSimllFJKKSGEEEoppZRSSimllFJCCKWUUkoppZRSSimlhBBKKaWUUkoppZRSSgmhlFJKKaWUUkoppZQSSimllFJKKaWUUkopJZRSSimllFJKKaWUUkoopZRSSimllFJKKaWUUEoppZRSSimllFJKKaGUUkoppZRSSimllFIKAAA6cAAACDCi0kLsNOPKI3BEIcMEVGjISgAgHAAAQAQ6CCGEEEIIEXMQQgghhBBCiJiDEEIIIYQQQgghhBBCCKWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaUUAHWZ4QAYPWHjDCtJZ4WjwYWGrAQA0gIAAGMYY4wpyKSzFmOtDWMQQgedhBRqqCWmhjEIIXRQSkottlhzBqGkUkpJLcZYg809g1BKKaWkFmOtORfjQUglpdRiq7XnHIzuIJSSUkox1ppz7r1o0ElJqbVac+49B188CKWk1lqMPQcfjDCilJZirLHWHHwRRhhRSkstxpp7zb0YY4RKKcZae86551yMET6lFmOuufcefC7C+OJizDn34oMPPghhjJAx5thz8L0XY4wPwshccy7CGOOLMML4IGytuQdfjBFGGGN87zX4oHsxwggjjDHCCN1z0UX4YowxRhhfhAEAuREOAIgLRhJSZxlWGnHjCRgikEJDVgEAMQAABDHGIKSQUkopxRhjjDHGGGOMMcYYY4wxxpxjzjnnnAAAwAQHAIAAK9iVWVq1UdzUSV70QeATOmIzMuRSKmZyIuiRGmqxEuzQCm7wArDQkJUAABkAAOSklJRaLRpCykFpNYjIIOUkxSQiY5CC0oKnkDGIScodYwohBal2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\"\n        )).arrayBuffer());\n        AsyncSink.Audio.register(\"mob.duck.step\", AsyncSink.Audio.Category.ANIMALS, [\n            {\n                path: \"sounds/mob/duck/step.ogg\",\n                pitch: 1,\n                volume: 1,\n                streaming: false //use for large audio files\n            }\n        ]);\n\n        ModAPI.mc.renderManager.entityRenderMap.put(ModAPI.util.asClass(data.EntityDuck), new data.RenderDuck(ModAPI.mc.renderManager.getRef(), new data.ModelDuck(), 0.3));\n        ModAPI.promisify(ModAPI.mc.renderEngine.bindTexture)(data.duckTextures).then(() => {\n            console.log(\"Loaded duck texture into cache.\");\n        });\n    });\n})();",
+ "music": "var playButton = document.createElement('button');\nplayButton.textContent = 'Music';\nplayButton.style.position = 'fixed';\nplayButton.style.top = '20px';\nplayButton.style.right = '20px';\nplayButton.style.padding = '10px 20px';\nplayButton.style.backgroundColor = '#007bff';\nplayButton.style.color = '#fff';\nplayButton.style.border = 'none';\nplayButton.style.borderRadius = '5px';\nplayButton.style.cursor = 'pointer';\nplayButton.style.fontFamily = 'Poppins, sans-serif';\n\ndocument.body.appendChild(playButton);\n\nvar songs = JSON.parse(localStorage.getItem('songs')) || {};\n\nvar audioElement = new Audio();\n\nplayButton.addEventListener('click', function() {\n    var modal = document.createElement('div');\n    modal.style.position = 'fixed';\n    modal.style.top = '50%';\n    modal.style.left = '50%';\n    modal.style.transform = 'translate(-50%, -50%)';\n    modal.style.backgroundColor = '#141414';\n    modal.style.borderRadius = '10px';\n    modal.style.padding = '40px';\n    modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';\n    modal.style.zIndex = '9999';\n    modal.style.cursor = 'move';\n\n    var isDragging = false;\n    var offsetX, offsetY;\n\n    function handleMouseDown(event) {\n        isDragging = true;\n        offsetX = event.clientX - modal.offsetLeft;\n        offsetY = event.clientY - modal.offsetTop;\n    }\n\n    function handleMouseMove(event) {\n        if (isDragging) {\n            var x = event.clientX - offsetX;\n            var y = event.clientY - offsetY;\n            modal.style.left = x + 'px';\n            modal.style.top = y + 'px';\n        }\n    }\n\n    function handleMouseUp() {\n        isDragging = false;\n    }\n\n    modal.addEventListener('mousedown', handleMouseDown);\n    window.addEventListener('mousemove', handleMouseMove);\n    window.addEventListener('mouseup', handleMouseUp);\n\n    var closeButton = document.createElement('button');\n    closeButton.textContent = '✕';\n    closeButton.style.position = 'absolute';\n    closeButton.style.top = '10px';\n    closeButton.style.right = '10px';\n    closeButton.style.backgroundColor = 'transparent';\n    closeButton.style.border = 'none';\n    closeButton.style.fontSize = '20px';\n    closeButton.style.cursor = 'pointer';\n    closeButton.style.color = 'red';\n\n    closeButton.addEventListener('click', function() {\n        modal.style.display = 'none';\n    });\n\n    var title = document.createElement('h2');\n    title.textContent = 'Barneys Music Player';\n    title.style.color = '#fff';\n    title.style.textAlign = 'center';\n    title.style.marginBottom = '20px';\n    title.style.fontFamily = 'Poppins, sans-serif';\n\n    var songNameInput = document.createElement('input');\n    songNameInput.setAttribute('type', 'text');\n    songNameInput.style.width = '100%';\n    songNameInput.style.marginBottom = '20px';\n    songNameInput.placeholder = 'Enter the name of the song';\n    songNameInput.disabled = false;\n    songNameInput.style.fontFamily = 'Poppins, sans-serif';\n\n    songNameInput.addEventListener('click', function() {\n        var songName = prompt('Please enter the name of the song:');\n        if (songName) {\n            songNameInput.value = songName;\n        }\n    });\n\n    var musicUrlInput = document.createElement('input');\n    musicUrlInput.setAttribute('type', 'text');\n    musicUrlInput.style.width = '100%';\n    musicUrlInput.style.marginBottom = '20px';\n    musicUrlInput.placeholder = 'Enter the URL of the song';\n    musicUrlInput.disabled = false;\n    musicUrlInput.style.fontFamily = 'Poppins, sans-serif';\n\n    musicUrlInput.addEventListener('click', function() {\n        var musicUrl = prompt('Please enter the URL of the song:');\n        if (musicUrl) {\n            musicUrlInput.value = musicUrl;\n        }\n    });\n\n    var addButton = document.createElement('button');\n    addButton.textContent = 'Add';\n    addButton.style.width = '100%';\n    addButton.style.padding = '10px 0';\n    addButton.style.backgroundColor = 'purple';\n    addButton.style.color = '#fff';\n    addButton.style.border = 'none';\n    addButton.style.borderRadius = '5px';\n    addButton.style.cursor = 'pointer';\n    addButton.style.marginBottom = '10px';\n    addButton.style.fontFamily = 'Poppins, sans-serif';\n\n    var playButton = document.createElement('button');\n    playButton.textContent = 'Play';\n    playButton.style.width = '100%';\n    playButton.style.padding = '10px 0';\n    playButton.style.backgroundColor = 'purple';\n    playButton.style.color = '#fff';\n    playButton.style.border = 'none';\n    playButton.style.borderRadius = '5px';\n    playButton.style.cursor = 'pointer';\n    playButton.style.marginBottom = '10px';\n    playButton.style.fontFamily = 'Poppins, sans-serif';\n\n    playButton.addEventListener('click', function() {\n        var selectedSongName = songNameInput.value;\n        if (selectedSongName && songs[selectedSongName]) {\n            var url = songs[selectedSongName];\n            audioElement.pause();\n            audioElement.src = url;\n            audioElement.play();\n        } else {\n            alert('Please select a song from the list.');\n        }\n    });\n\n    modal.appendChild(closeButton);\n    modal.appendChild(title);\n    modal.appendChild(songNameInput);\n    modal.appendChild(musicUrlInput);\n    modal.appendChild(addButton);\n    modal.appendChild(playButton);\n\n    document.body.appendChild(modal);\n\n    addButton.addEventListener('click', function() {\n        var songName = songNameInput.value;\n        var musicUrl = musicUrlInput.value;\n        if (songName && musicUrl) {\n            if (!songs[songName]) {\n                songs[songName] = musicUrl;\n                localStorage.setItem('songs', JSON.stringify(songs));\n                songNameInput.value = '';\n                musicUrlInput.value = '';\n                displaySongs();\n                alert('Song added successfully!');\n            } else {\n                alert('Song with the same name already exists.');\n            }\n        } else {\n            alert('Please enter song name and URL.');\n        }\n    });\n\n    function displaySongs() {\n        while (modal.lastChild && modal.lastChild.tagName === 'UL') {\n            modal.removeChild(modal.lastChild);\n        }\n\n        var songList = document.createElement('ul');\n        songList.style.color = '#fff';\n        for (var song in songs) {\n            var listItem = document.createElement('li');\n            listItem.textContent = song;\n            listItem.style.cursor = 'pointer';\n            listItem.addEventListener('click', function() {\n                songNameInput.value = this.textContent;\n            });\n            songList.appendChild(listItem);\n        }\n        modal.appendChild(songList);\n    }\n\n    displaySongs();\n});\n\nfunction playMusic(url) {\n    audioElement.pause();\n    audioElement.src = url;\n    audioElement.play();\n}\n",
+ "screenshot": "// Quantum screenshot — DOM-level, works on any build.\n(function () {\n  function biggestCanvas(doc) {\n    var best = null, area = 0, list = doc.querySelectorAll(\"canvas\");\n    for (var i = 0; i < list.length; i++) {\n      var canvas = list[i], size = (canvas.width || 0) * (canvas.height || 0);\n      if (size > area) { area = size; best = canvas; }\n    }\n    return best;\n  }\n  function shoot() {\n    var canvas = biggestCanvas(document);\n    if (!canvas) { console.warn(\"[Quantum] no canvas to capture\"); return; }\n    try {\n      var out = document.createElement(\"canvas\");\n      out.width = canvas.width;\n      out.height = canvas.height;\n      out.getContext(\"2d\").drawImage(canvas, 0, 0);\n      var link = document.createElement(\"a\");\n      link.download = \"quantum-\" + Date.now() + \".png\";\n      link.href = out.toDataURL(\"image/png\");\n      link.click();\n    } catch (error) { console.warn(\"[Quantum] screenshot blocked\", error); }\n  }\n  window.addEventListener(\"keydown\", function (event) {\n    if (event.key === \"F2\" || event.keyCode === 113) { event.preventDefault(); shoot(); }\n  }, true);\n})();"
+};
   var MODS = [
-    { id: "xray", name: "Coal-Xray", mark: "XR", tag: "Render", desc: "Hides everything except ores, chests, and furnaces, and forces those to render. Toggle it in-game — great for locating a stash or a vein fast.", key: "X" },
-    { id: "autorespawn", name: "AutoRespawn", mark: "AR", tag: "Utility", desc: "Respawns you the moment you die, so a death screen never interrupts a session. Handy when testing worlds or grinding.", key: "" },
-    { id: "autoclicker", name: "Autoclicker", mark: "AC", tag: "Input", desc: "Clicks twice per second for you. Change the cps value in the mod source if you want a faster or slower rate.", key: "" }
+    { id: "xray", name: "Coal-Xray", mark: "XR", tag: "Render", api: true, key: "X", desc: "Hides every block except ores, chests, furnaces, and ender chests, and forces those to render. Toggle it in-game to spot a vein or a stash fast." },
+    { id: "fullbright", name: "Fullbright", mark: "BR", tag: "Visual", api: true, key: "PageUp", desc: "Cranks gamma to 1000 so caves, night, and the Nether read like daylight. Press PageUp again to return to normal brightness." },
+    { id: "autorespawn", name: "AutoRespawn", mark: "AR", tag: "Utility", api: true, key: "", desc: "Respawns you the moment you die, so a death screen never interrupts a session. Handy when testing worlds or grinding." },
+    { id: "autoclicker", name: "Autoclicker", mark: "AC", tag: "Input", api: true, key: "", desc: "Clicks twice per second for you. Change the cps value in the mod source if you want a faster or slower rate." },
+    { id: "duck", name: "Duck Entity", mark: "DK", tag: "Entities", api: true, key: "", desc: "Adds a fully modelled duck with AI, textures, stepping sounds, and quacks. The heaviest mod here — it needs an EaglercraftX build with reflection hooks." },
+    { id: "music", name: "Music Player", mark: "\u266a", tag: "Audio", api: false, key: "Music button", desc: "Adds a Music button that opens a draggable player: name a track, paste an audio URL, and it is saved in the game's local storage." },
+    { id: "screenshot", name: "Screenshot", mark: "PN", tag: "Capture", api: false, key: "F2", desc: "Press F2 to save a PNG of the game canvas straight to your downloads folder. Works on every build, no ModAPI required." }
   ];
+  var MOD_API_IDS = MODS.filter(function (mod) { return mod.api; }).map(function (mod) { return mod.id; });
   function activeMods() {
     return MODS.filter(function (mod) { return !!settings.mods[mod.id]; }).map(function (mod) { return mod.id; });
   }
-  function modsBootstrapSource() {
+  function modsBootstrapSource(enabledIds) {
     return '(function(){' +
       'var SOURCES=' + JSON.stringify(MOD_SOURCES) + ';' +
-      'var injected={};' +
-      'function enabled(){try{var s=JSON.parse(localStorage.getItem(' + JSON.stringify(SETTINGS_KEY) + ')||"{}");var m=s&&s.mods||{};return Object.keys(SOURCES).filter(function(k){return !!m[k];});}catch(e){return [];}}' +
-      'function tick(){try{var f=document.getElementById("game");var w=f&&f.contentWindow;if(!w)return;var api=null;try{api=w.ModAPI;}catch(e){}if(!api||typeof api.addEventListener!=="function")return;var list=enabled();if(!list.length)return;list.forEach(function(key){if(injected[key])return;try{w.eval(SOURCES[key]);injected[key]=true;}catch(err){try{w.console.warn("[Quantum] mod failed: "+key,err);}catch(_){}}});if(Object.keys(injected).length===list.length)clearInterval(timer);}catch(e){}}' +
-      'var timer=setInterval(tick,400);tick();setTimeout(function(){clearInterval(timer);},300000);' +
-      '})();';
+      'var NEEDS_API=' + JSON.stringify(MOD_API_IDS) + ';' +
+      'var ENABLED=' + JSON.stringify(enabledIds || []) + ';' +
+      'var injected={},reported="";' +
+      'function enabled(){return ENABLED.filter(function(key){return !!SOURCES[key];});}' +
+      'function paint(text,tone){var badge=document.getElementById("qmods");if(!badge)return;if(reported===text)return;reported=text;badge.textContent=text;badge.setAttribute("data-tone",tone||"ok");badge.hidden=false;try{parent.postMessage({source:"quantum-mods",text:text,tone:tone||"ok"},"*");}catch(e){}}' +
+      'function tick(){' +
+        'var frame=document.getElementById("game");if(!frame)return;' +
+        'var doc=null,win=null;try{doc=frame.contentDocument;win=frame.contentWindow;}catch(e){return;}' +
+        'if(!doc||!win||!doc.body)return;' +
+        'var list=enabled();if(!list.length){paint("No mods enabled","idle");return;}' +
+        'var api=null;try{api=win.ModAPI;}catch(e){}' +
+        'var ready=!!(api&&typeof api.addEventListener==="function");' +
+        'var loaded=0,skipped=0;' +
+        'list.forEach(function(key){' +
+          'if(injected[key]){loaded++;return;}' +
+          'if(NEEDS_API.indexOf(key)>=0&&!ready){skipped++;return;}' +
+          'try{win.eval(SOURCES[key]);injected[key]=true;loaded++;}' +
+          'catch(error){skipped++;try{win.console.warn("[Quantum] mod failed: "+key,error);}catch(ignored){}}' +
+        '});' +
+        'paint(skipped?(loaded+" of "+list.length+" mods loaded \\u00b7 "+skipped+" need ModAPI"):(loaded+" of "+list.length+" mods loaded"),skipped?"warn":"ok");' +
+        'if(loaded===list.length)clearInterval(timer);' +
+      '}' +
+      'var timer=setInterval(tick,350);tick();' +
+      'setTimeout(function(){clearInterval(timer);var list=enabled();var missed=list.filter(function(key){return !injected[key];});if(missed.length)paint("Build has no ModAPI \\u2014 "+missed.length+" of "+list.length+" mods skipped","warn");},20000);' +
+    '})();';
   }
   function absoluteUrl(url) { try { return new URL(url, document.baseURI).href; } catch (e) { return url; } }
   function baseHref() {
@@ -2921,11 +2874,18 @@ let intervalID = setInterval(click, intervalTime);`
   }
   function wrapperDocument(build) {
     var title = esc(build.name + " — Quantum Launcher");
+    var css = '*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#04080c;overflow:hidden}' +
+      '#game{width:100%;height:100%;border:0;display:block;background:#000}' +
+      '#qmods{position:fixed;z-index:2147483647;left:10px;bottom:10px;padding:7px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.18);' +
+      'background:rgba(5,10,16,.88);color:#d7fff3;font:600 10px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.3px;' +
+      'backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;transition:opacity .3s}' +
+      '#qmods[data-tone="warn"]{color:#ffd79a;border-color:rgba(255,180,90,.45)}' +
+      '#qmods[data-tone="idle"]{color:#9fb4c4}';
     return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<base href="' + esc(baseHref()) + '"><title>' + title + '</title>' +
-      '<style>*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#04080c;overflow:hidden}#game{width:100%;height:100%;border:0;display:block;background:#000}</style></head><body>' +
+      '<base href="' + esc(baseHref()) + '"><title>' + title + '</title><style>' + css + '</style></head><body>' +
       '<iframe id="game" src="' + esc(absoluteUrl(build.url)) + '" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write" allowfullscreen title="' + title + '"></iframe>' +
-      '<script>' + modsBootstrapSource() + '<\/script></body></html>';
+      '<div id="qmods" hidden></div>' +
+      '<script>' + modsBootstrapSource(activeMods()) + '<\/script></body></html>';
   }
   function wrapperUrl(build) {
     try { return URL.createObjectURL(new Blob([wrapperDocument(build)], { type: "text/html" })); } catch (e) { return null; }
@@ -2938,7 +2898,8 @@ let intervalID = setInterval(click, intervalTime);`
       return '<div class="mod-row" data-enabled="' + String(on) + '" data-mod-row="' + esc(mod.id) + '">' +
         '<span class="mod-icon" aria-hidden="true">' + esc(mod.mark) + '</span>' +
         '<div class="mod-copy"><div class="mod-name">' + esc(mod.name) +
-        '<span class="mod-badge">' + esc(mod.tag) + '</span></div>' +
+        '<span class="mod-badge">' + esc(mod.tag) + '</span>' +
+        '<span class="mod-badge mod-badge-api" data-api="' + String(!!mod.api) + '">' + (mod.api ? "ModAPI" : "Any build") + '</span></div>' +
         '<p class="mod-desc">' + esc(mod.desc) + '</p>' +
         (mod.key ? '<span class="mod-key">IN-GAME KEY <kbd>' + esc(mod.key) + '</kbd></span>' : "") +
         '</div>' +
@@ -2970,6 +2931,18 @@ let intervalID = setInterval(click, intervalTime);`
     Object.keys(settings.mods).forEach(function (key) { settings.mods[key] = false; });
     saveSettings();
     renderMods();
+  });
+  $("modsTest").addEventListener("click", function () {
+    var build = BONUS.filter(function (item) { return /4k/i.test(item.name); })[0] || BONUS[0];
+    if (!build) return;
+    closeMods();
+    launchEmbedded(build);
+    if (!activeMods().length) showLaunchNote("No mods are enabled yet — turn on Music Player or Screenshot, then test again.");
+  });
+  window.addEventListener("message", function (event) {
+    var data = event.data;
+    if (!data || data.source !== "quantum-mods") return;
+    if (!$("gameDock").hidden) showLaunchNote(data.text);
   });
 
   /* ======================= boot intro ======================= */
@@ -3034,19 +3007,10 @@ let intervalID = setInterval(click, intervalTime);`
     $("playClose").focus();
   }
   function closePlay() { $("playScrim").hidden = true; }
-  function updateCategoryNote() {
-    var note = document.querySelector(".rail-picker-note h2");
-    var copy = document.querySelector(".rail-picker-note > p:not(.eyebrow)");
-    var jump = $("pickerJump");
-    if (currentCategory === "clients") {
-      if (note) note.textContent = "Choose a client";
-      if (copy) copy.textContent = "Community builds with their own menus, HUDs, and features. Scroll the client wheel to pick one.";
-      if (jump) jump.innerHTML = 'Jump to client wheel <span aria-hidden="true">↓</span>';
-    } else {
-      if (note) note.textContent = "Choose a version";
-      if (copy) copy.textContent = "Official releases in chronological order. Scroll the timeline wheel to travel through Eaglercraft history.";
-      if (jump) jump.innerHTML = 'Jump to version wheel <span aria-hidden="true">↓</span>';
-    }
+  function syncRailMode() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-railcat]"), function (button) {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-railcat") === currentCategory));
+    });
   }
   function enterBrowser(category) {
     currentCategory = category === "clients" ? "clients" : "vanilla";
@@ -3060,7 +3024,7 @@ let intervalID = setInterval(click, intervalTime);`
       preferred = list[list.length - 1];
     }
     if (preferred) setBuild(preferred, currentCategory === "clients" ? "clients" : "timeline", true, false);
-    updateCategoryNote();
+    syncRailMode();
     window.scrollTo(0, 0);
     var wheel = currentCategory === "clients" ? clientWheel : timelineWheel;
     if (wheel) { try { wheel.focus({ preventScroll: true }); } catch (e) {} }
@@ -3102,6 +3066,18 @@ let intervalID = setInterval(click, intervalTime);`
     $("playOptions").hidden = false;
   });
   $("browseHome").addEventListener("click", showHome);
+  $("railMode").addEventListener("click", function (event) {
+    var button = event.target.closest("[data-railcat]");
+    if (button) enterBrowser(button.getAttribute("data-railcat"));
+  });
+  $("railExtras").addEventListener("click", function () {
+    $("playOptions").hidden = true;
+    $("playExtras").hidden = false;
+    $("playScrim").hidden = false;
+    $("playClose").focus();
+    showExtras();
+  });
+  $("railLibrary").addEventListener("click", openDownloads);
   $("homeSettings").addEventListener("click", openSettings);
   $("homeSettings2").addEventListener("click", openSettings);
   $("libraryOpen").addEventListener("click", function () { enterBrowser("vanilla"); openDownloads(); });
