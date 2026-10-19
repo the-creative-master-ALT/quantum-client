@@ -18,9 +18,12 @@ launched.
    disabled with Settings → Behavior → Boot animation.
 2. **Home** — the wordmark, a PLAY button, Settings, GitHub, Mods, and a shortcut
    to the build library, all over an animated artwork backdrop.
-3. **Play chooser** — PLAY asks for **Vanilla**, **Clients**, or **Extras**.
-   Vanilla and Clients open the stage with that wheel selected in the sidebar.
-   Extras opens a two-button menu for Minecraft 4K and Minicraft.
+3. **Play chooser** — PLAY asks for **Vanilla**, **Clients**, **Extras**, or
+   **Custom HTML**. Vanilla and Clients open the stage with that wheel selected
+   in the sidebar. Extras opens a two-button menu for Minecraft 4K and Minicraft.
+   Custom HTML accepts your own single-file builds (file picker or drag and
+   drop), stores them in this browser with IndexedDB, and launches them in the
+   embedded player with your mods applied.
 
 ## Mods
 
@@ -31,6 +34,8 @@ needs.
 
 - **Music Player** — adds a draggable player; name tracks and paste audio URLs.
 - **Screenshot** — press `F2` to save a PNG of the game canvas.
+- **Keystrokes HUD** — WASD overlay in the corner of the game window.
+- **Custom Crosshair** — a cross overlay that stays visible on dark terrain.
 
 **ModAPI** (needs a build that exposes Eaglercraft's `ModAPI` hook):
 
@@ -39,21 +44,26 @@ needs.
 - **AutoRespawn** — respawns you the instant you die.
 - **Autoclicker** — clicks twice per second.
 - **Duck Entity** — a modelled duck with AI, textures, and quacks.
+- **Grapple Hook** — hook a block and get pulled toward it; crouch to cancel.
 
 Launcher-hosted sessions load supported builds through a generated wrapper that
 evaluates the enabled mods inside the game. A badge in the game window reports
 how many loaded, and warns when a build does not expose `ModAPI`. The mods list
 is baked into the wrapper at launch, so Reload re-applies the current selection.
-None of the builds currently bundled in this archive expose `ModAPI`; add a
-ModAPI-enabled build to the archive and it will be picked up automatically. Use
-**Test on Minecraft 4K** in the Mods panel to watch the Music and Screenshot
-mods load.
+**EFI** (EaglercraftForge 1.8.8) is the build that ships `ModAPI`, so every mod
+in the list loads there. Enable mods, open **Clients → EFI**, and the badge in
+the game corner should read "10 of 10 mods loaded". Use **Test with mods** in
+the Mods panel to jump straight there. The other archive builds do not expose
+`ModAPI`; the DOM-level mods still load in them.
+
+The archive now also contains **Eaglet** (Eaglercraft packed into 2.7 MB) and
+**Resent Client 1.8.8**.
 
 ## Archive
 
-- **134 builds · 2.58 GB** of game payloads
+- **137 builds · 2.68 GB** of game payloads
 - **111 chronological builds**, from `rd-131655` through `26.3`
-- **21 clients** in their own scroll wheel
+- **24 clients** in their own scroll wheel
 - **2 bonus games**, reachable only through **Extras**: Minecraft 4K and Minicraft
 
 Both selectors are iPhone-style vertical picker wheels that live in the library
