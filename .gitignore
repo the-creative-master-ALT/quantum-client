@@ -15,3 +15,6 @@ Thumbs.db
 *.log
 .env
 .env.local
+
+# partially uploaded build chunks (joined with tools/assemble_parts.py)
+incoming/

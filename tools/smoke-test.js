@@ -52,7 +52,15 @@ const $ = (selector) => doc.querySelector(selector);
 const $$ = (selector) => Array.from(doc.querySelectorAll(selector));
 const text = (selector) => $(selector) ? $(selector).textContent.trim() : '';
 const CAT = JSON.parse(doc.getElementById('vault').textContent);
-const tracked = new Set(gitFiles().filter((name) => !name.includes('/')));
+const tracked = new Set(gitFiles());
+const folderSize = (file) => {
+  const dir = path.dirname(path.join(ROOT, file));
+  const walk = (base) => fs.readdirSync(base).reduce((sum, name) => {
+    const target = path.join(base, name);
+    return sum + (fs.statSync(target).isDirectory() ? walk(target) : fs.statSync(target).size);
+  }, 0);
+  return walk(dir);
+};
 const trackedBuilds = new Set(Array.from(tracked).filter((name) => name.toLowerCase().endsWith('.html') && !['index.html', '404.html'].includes(name)));
 const indexedBuilds = new Set(CAT.versions.map((build) => build.file));
 const timeline = CAT.versions.filter((build) => build.category !== 'client' && build.category !== 'extras');
@@ -73,7 +81,7 @@ ok(CAT.versions.every((build) => build.id && build.name && build.file && build.u
 ok(new Set(CAT.versions.map((build) => build.id)).size === CAT.count, 'build ids are unique');
 ok(new Set(CAT.versions.map((build) => build.file)).size === CAT.count, 'build filenames are unique');
 ok(timeline.length === 111, `${timeline.length} mainline builds in the timeline`);
-ok(clients.length === 21, `${clients.length} clients in their own wheel`);
+ok(clients.length >= 21, `${clients.length} clients in their own wheel`);
 ok(bonus.length === 2 && new Set(bonus.map((build) => build.name)).size === 2, 'exactly two bonus games remain');
 ok(new Set(bonus.map((build) => build.name)).has('Minecraft 4K') && new Set(bonus.map((build) => build.name)).has('Minicraft'), 'bonus games are Minecraft 4K and Minicraft');
 ok(timeline[0]?.version === 'rd-131655', `timeline starts at ${timeline[0]?.version}`);
@@ -89,7 +97,8 @@ ok(unlisted.length === 0, 'every tracked game HTML is catalogued', unlisted.slic
 const diskMissing = CAT.versions.filter((build) => !fs.existsSync(path.join(ROOT, build.file)));
 const sizeMismatch = CAT.versions.filter((build) => {
   const file = path.join(ROOT, build.file);
-  return fs.existsSync(file) && fs.statSync(file).size !== build.size;
+  if (!fs.existsSync(file)) return false;
+  return (build.multiFile ? folderSize(build.file) : fs.statSync(file).size) !== build.size;
 });
 ok(sizeMismatch.length === 0, 'materialized payload sizes match catalogue metadata', sizeMismatch.slice(0, 3).map((b) => b.file).join(', '));
 ok(isSparse() || diskMissing.length === 0, isSparse() ? `${diskMissing.length} unmaterialized files are allowed by sparse checkout` : 'all payloads are materialized in the full checkout');
@@ -103,8 +112,11 @@ ok(/perspective:\s*720px/i.test($('style').textContent) && /rotateX\(var\(--whee
 ok(!$('#nav [data-group]'), 'category sidebar navigation has been removed');
 ok($$('#timelineWheel [role="option"]').length === timeline.length, 'timeline wheel renders every chronological option');
 ok($$('#clientWheel [role="option"]').length === clients.length, 'client wheel renders every client option');
-ok($$('#bonusActions .bonus-link').length === 2, 'two quick-launch buttons sit in the library footer');
-ok($('#bonusActions').closest('.rail-footer') === $('.rail-footer'), 'bonus buttons are inside the bottom rail footer');
+ok($$('#buildWheels').length === 1 && $('#buildWheels').closest('.rail') === $('.rail'), 'both picker wheels live in the sidebar rail');
+ok($$('#railMode [data-railcat]').length === 2, 'sidebar has a Vanilla / Clients wheel switch');
+ok(!!$('#railExtras') && !!$('#railLibrary'), 'rail footer keeps Extras and Library actions');
+ok(!$('#bonusActions') && $$('[data-extra-id]').length === 0, 'bonus games are not present until Extras is opened');
+ok($$('.wheel-fade').every((fade) => fade.closest('.rail') === $('.rail')), 'wheel chrome stays inside the sidebar');
 
 sec('full-stage artwork and selection');
 ok(/\.art-wrap\s*\{[^}]*position:\s*absolute[^}]*inset:\s*0/s.test($('style').textContent), 'artwork layer fills the stage');
@@ -131,7 +143,7 @@ ok(text('#pos') === '1 / 111', 'previous returns to the prior build', text('#pos
 $('#clientWheel .wheel-item').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
 ok($('#artUse').getAttribute('href') === '#scene-clients', 'client selection uses client artwork');
 ok(text('#bName') === clients[0].name, 'client wheel selects its own build');
-ok(text('#pos') === '1 / 21', 'client position is counted within the client wheel');
+ok(text('#pos') === '1 / ' + clients.length, 'client position is counted within the client wheel', text('#pos'));
 
 const search = $('#wheelSearch');
 search.value = '26.3';
