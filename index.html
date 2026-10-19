@@ -2907,6 +2907,16 @@ body[data-category] .wheel-head { border-bottom: 0; }
         '</div>';
     }).join("");
     var count = activeMods().length;
+    var hosts = BUILDS.filter(function (build) { return (build.tags || []).indexOf("modapi") >= 0; });
+    var note = $("modsNote");
+    if (note && hosts.length) {
+      note.innerHTML = '<strong>ModAPI build in the archive:</strong> ' +
+        hosts.map(function (build) { return esc(build.name); }).join(", ") +
+        ' ships Eaglercraft\u2019s ModAPI, so every mod below loads inside it. Launch it from ' +
+        '<strong>Clients</strong> with the embedded player (or This tab) and watch the badge in the game corner.' +
+        '<br><br>The other bundled builds do not expose ModAPI, so ModAPI mods will skip there \u2014 ' +
+        'Music Player and Screenshot still work everywhere.';
+    }
     $("modsSummary").textContent = count + " of " + MODS.length + " mods enabled";
     $("modsCount").textContent = String(MODS.length);
     if ($("homeStatMods")) $("homeStatMods").textContent = String(MODS.length);

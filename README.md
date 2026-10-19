@@ -67,6 +67,26 @@ Keyboard shortcuts: **↑ / ↓** or **← / →** browse the active wheel, **En
 launches the selected build, **F** saves it, **/** opens the download library,
 **,** opens settings, and **Esc** closes a dialog or returns home.
 
+## Chunked uploads
+
+Big builds arrive as chat-size chunks. The chunks are **not** in a reliable
+order and exact byte splits share no repeated text, so join them from content,
+not from the file names:
+
+```bash
+python3 tools/assemble_parts.py "incoming/efi-*.html" \
+    --name "EaglercraftForge 1.8.8" --add
+```
+
+`assemble_parts.py` finds the chunk that opens the document and the one that
+ends in `</html>`, orders the rest between them, then refuses to import anything
+that does not start with `<!DOCTYPE` and end with `</html>`. Partial joins are
+deleted so a half build can never be launched. `incoming/` is git-ignored.
+
+The only build here that ships Eaglercraft's **ModAPI** is *EaglercraftForge
+1.8.8* (tagged `modapi` in the catalogue). Enable mods, launch it from Clients
+with the embedded player, and the launcher's ModAPI mods load inside it.
+
 ## Work in a sparse checkout
 
 The game files are large, so a launcher-only checkout is the recommended way
@@ -129,7 +149,8 @@ index.html                   complete launcher, including catalogue and SVG scen
 tools/generate_catalog.py    catalogue builder with sparse-checkout safety checks
 tools/embed_catalog.py       embeds the generated catalogue in index.html
 tools/add_build.py           validated build import
-tools/join_build_parts.py    verified chunk reassembly
+tools/join_build_parts.py    verified chunk reassembly (needs a known hash)
+tools/assemble_parts.py      content-ordered chunk join + validated import
 tools/verify_catalog.py      low-I/O catalogue / Git-index audit
 tools/smoke-test.js          jsdom interaction and self-containment tests
 tools/make_scenes.py         inline SVG scene generator

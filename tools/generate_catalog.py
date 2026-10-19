@@ -200,6 +200,17 @@ OVERRIDES = {
     # -------------------------- clients ----------------------------------
     "Aero Client JS": dict(name="Aero Client", category="client", type="client",
                            version="1.12.2", runtime="js"),
+    # EaglercraftForge (EFI): the only build here that ships Eaglercraft's
+    # ModAPI, so the launcher's ModAPI mods actually load inside it.
+    "EaglercraftForge 1.8.8": dict(name="EaglercraftForge 1.8.8", category="client",
+                                   type="client", version="1.8.8", runtime="js",
+                                   tags=["forge", "modapi"],
+                                   note="Ships ModAPI: Xray, Fullbright, AutoRespawn, "
+                                        "Autoclicker and the Duck entity all load here"),
+    "EaglercraftForge-1.8.8": dict(name="EaglercraftForge 1.8.8", category="client",
+                                   type="client", version="1.8.8", runtime="js",
+                                   tags=["forge", "modapi"],
+                                   note="Ships ModAPI: launcher mods load inside this build"),
     "EB Client Nextgen CU4": dict(name="EB Client Nextgen CU4",
                                   category="client", type="client", version=""),
     "Eclipse Client": dict(name="Eclipse Client", category="client",
