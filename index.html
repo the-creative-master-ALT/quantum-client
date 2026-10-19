@@ -56,7 +56,7 @@ button:focus-visible, input:focus-visible {
 }
 .shell {
   display: grid;
-  grid-template-columns: minmax(292px, 344px) minmax(0, 1fr);
+  grid-template-columns: minmax(var(--rail-min, 292px), var(--rail-max, 344px)) minmax(0, 1fr);
   width: 100%; height: 100vh; height: 100dvh;
   min-height: 560px;
 }
@@ -129,7 +129,7 @@ button:focus-visible, input:focus-visible {
 .wheel-head h2 { margin: 3px 0 0; font-size: 13px; line-height: 1.1; letter-spacing: -.1px; font-weight: 720; }
 .wheel-count { color: var(--dim); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
 .wheel-viewport {
-  --wheel-row-height: 40px;
+  --wheel-row-height: var(--wheel-row-size, 40px);
   position: relative; flex: 1; min-height: 0; overflow: hidden;
   perspective: 720px; perspective-origin: center center;
   background: radial-gradient(ellipse at center, rgba(var(--accent-rgb), .035), transparent 72%);
@@ -371,11 +371,105 @@ button:focus-visible, input:focus-visible {
 .settings-status { flex: 1; min-width: 0; color: var(--dim); font-size: 10px; }
 .settings-reset { min-height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: var(--rail-raised); font-size: 10px; font-weight: 650; }
 .settings-reset:hover { color: var(--text); border-color: rgba(var(--accent-rgb),.45); }
+.settings-sheet { width: min(980px, 100%); height: min(88dvh, 880px); }
+.settings-tabs {
+  display: flex; flex: none; gap: 5px; padding: 9px 16px;
+  border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none;
+}
+.settings-tabs::-webkit-scrollbar { display: none; }
+.settings-tab {
+  flex: none; min-height: 33px; padding: 0 12px; border: 1px solid transparent;
+  border-radius: 999px; color: var(--muted); background: transparent;
+  font-size: 10px; font-weight: 700; letter-spacing: .3px; white-space: nowrap;
+}
+.settings-tab:hover { color: var(--text); background: var(--rail-raised); }
+.settings-tab[aria-selected="true"] { color: #071510; background: var(--accent); border-color: transparent; }
+.settings-panel { display: none; }
+.settings-panel[data-active="true"] { display: block; }
+.preset-strip { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+.preset-chip {
+  min-height: 30px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px;
+  color: var(--muted); background: var(--rail-raised); font-size: 10px; font-weight: 680;
+}
+.preset-chip:hover { color: var(--accent); border-color: rgba(var(--accent-rgb),.5); }
+.settings-io { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.settings-io .settings-reset { padding: 0 12px; }
+.settings-panel .setting-group + .setting-group { margin-top: 14px; }
+.setting-field { display: flex; flex: none; align-items: center; gap: 7px; }
+.setting-field .setting-control { width: min(180px, 48vw); }
+.setting-field .setting-control[type="range"] { width: min(150px, 34vw); }
+.setting-note { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; color: var(--dim); background: color-mix(in srgb, var(--rail-raised) 60%, transparent); font-size: 10px; line-height: 1.55; }
+.settings-tabpanel-hint { margin: 0 0 12px; color: var(--dim); font-size: 10px; line-height: 1.55; }
+.range-control output { min-width: 38px; }
+/* Live style overrides driven by launcher settings. */
+html[data-radius="sharp"] .sheet, html[data-radius="sharp"] .play-button, html[data-radius="sharp"] .stage-control,
+html[data-radius="sharp"] .glass-button, html[data-radius="sharp"] .theme-button, html[data-radius="sharp"] .icon-button,
+html[data-radius="sharp"] .search-box, html[data-radius="sharp"] .filter-toggle, html[data-radius="sharp"] .rail-icon,
+html[data-radius="sharp"] .bonus-link, html[data-radius="sharp"] .picker-dock, html[data-radius="sharp"] .setting-group,
+html[data-radius="sharp"] .setting-control, html[data-radius="sharp"] .dl-btn, html[data-radius="sharp"] .wheel-center,
+html[data-radius="sharp"] .brand-mark, html[data-radius="sharp"] .sheet-close { border-radius: 4px; }
+html[data-radius="round"] .sheet, html[data-radius="round"] .play-button, html[data-radius="round"] .stage-control,
+html[data-radius="round"] .glass-button, html[data-radius="round"] .theme-button, html[data-radius="round"] .icon-button,
+html[data-radius="round"] .search-box, html[data-radius="round"] .filter-toggle, html[data-radius="round"] .rail-icon,
+html[data-radius="round"] .bonus-link, html[data-radius="round"] .picker-dock, html[data-radius="round"] .setting-group,
+html[data-radius="round"] .setting-control, html[data-radius="round"] .dl-btn, html[data-radius="round"] .wheel-center,
+html[data-radius="round"] .brand-mark, html[data-radius="round"] .sheet-close { border-radius: 18px; }
+html[data-radius="round"] .play-button, html[data-radius="round"] .glass-button, html[data-radius="round"] .theme-button,
+html[data-radius="round"] .icon-button, html[data-radius="round"] .stage-control { border-radius: 999px; }
+html[data-font="mono"] { --font: var(--mono); }
+html[data-font="serif"] { --font: Georgia, "Times New Roman", serif; }
+html[data-font="rounded"] { --font: "SF Pro Rounded", "Varela Round", "Nunito", ui-rounded, system-ui, sans-serif; }
+html[data-bgmode="art"] .art-wrap { display: block; }
+html[data-bgmode="gradient"] .art-wrap, html[data-bgmode="solid"] .art-wrap, html[data-bgmode="grid"] .art-wrap { display: none; }
+html[data-bgmode="gradient"] .stage { background: radial-gradient(ellipse at 22% 16%, rgba(var(--accent-rgb), .17), transparent 58%), radial-gradient(ellipse at 82% 82%, rgba(96, 150, 255, .13), transparent 55%), linear-gradient(160deg, #0a1622, #060b11 74%); }
+html[data-bgmode="solid"] .stage { background: #060c12; }
+html[data-bgmode="grid"] .stage {
+  background-color: #060b11;
+  background-image: linear-gradient(rgba(126, 168, 201, .09) 1px, transparent 1px), linear-gradient(90deg, rgba(126, 168, 201, .09) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+html[data-theme="light"][data-bgmode="gradient"] .stage { background: radial-gradient(ellipse at 22% 16%, rgba(var(--accent-rgb), .3), transparent 58%), linear-gradient(160deg, #f2f7fa, #dbe5ec 78%); }
+html[data-theme="light"][data-bgmode="solid"] .stage { background: #e6edf2; }
+html[data-theme="light"][data-bgmode="grid"] .stage { background-color: #e9eff4; background-image: linear-gradient(rgba(35, 58, 77, .1) 1px, transparent 1px), linear-gradient(90deg, rgba(35, 58, 77, .1) 1px, transparent 1px); }
+html[data-noise="on"] .stage::before {
+  position: absolute; z-index: -1; inset: 0; content: ""; pointer-events: none; opacity: .16;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+html[data-glow="off"] .brand-mark, html[data-glow="off"] .play-button, html[data-glow="off"] .caption-dot,
+html[data-glow="off"] .play-button:hover { box-shadow: none; }
+html[data-glow="off"] .wheel-item[aria-selected="true"] { text-shadow: none; }
+html[data-show-bonus="off"] .rail-footer { display: none; }
+html[data-show-note="off"] .rail-picker-note { display: none; }
+html[data-show-caption="off"] .stage-caption { display: none; }
+html[data-show-foot="off"] .stage-foot { display: none; }
+html[data-show-counts="off"] .wheel-count { display: none; }
+html[data-show-search="off"] .search-row { display: none; }
+.art { filter: brightness(var(--art-brightness, 1)) saturate(var(--art-saturation, 1)) blur(var(--art-blur, 0px)); }
+/* Embedded game player. */
+.game-dock { position: fixed; z-index: 40; inset: 0; display: grid; grid-template-rows: auto 1fr; background: #04080c; }
+.game-dock[hidden] { display: none; }
+.game-bar {
+  display: flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 12px;
+  border-bottom: 1px solid rgba(255,255,255,.12); background: rgba(8,14,21,.96);
+  color: #eef5fa; font-size: 11px; transition: opacity .2s ease;
+}
+.game-bar strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; }
+.game-bar button {
+  min-height: 30px; padding: 0 10px; border: 1px solid rgba(255,255,255,.2); border-radius: 8px;
+  color: #eef5fa; background: rgba(255,255,255,.06); font-size: 10px; font-weight: 650;
+}
+.game-bar button:hover { color: var(--accent); border-color: rgba(var(--accent-rgb),.6); }
+#gameFrame { width: 100%; height: 100%; border: 0; background: #000; }
+html[data-embedbar="off"] .game-bar { position: absolute; top: 0; right: 0; left: 0; z-index: 1; opacity: 0; }
+html[data-embedbar="off"] .game-bar:hover, html[data-embedbar="off"] .game-bar:focus-within { opacity: 1; }
+html[data-embedbar="off"] .game-dock { grid-template-rows: 1fr; }
+html[data-embedbar="off"] #gameFrame { position: absolute; inset: 0; }
 .launch-note { position: fixed; z-index: 50; right: 18px; bottom: 18px; max-width: min(420px, calc(100vw - 36px)); padding: 12px 15px; border: 1px solid rgba(var(--accent-rgb),.42); border-radius: 11px; color: var(--text); background: var(--rail); box-shadow: var(--shadow); font-size: 11px; line-height: 1.45; }
 .launch-note[hidden] { display: none; }
 html[data-density="compact"] .brand { padding-top: 13px; padding-bottom: 10px; }
 html[data-density="compact"] .search-row { padding-top: 8px; padding-bottom: 5px; }
-html[data-density="compact"] .wheel-viewport { --wheel-row-height: 34px; }
+html[data-density="compact"] .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
 html[data-density="compact"] .rail-footer { padding-top: 9px; padding-bottom: 10px; }
 html[data-art="off"] .art-wrap { display: none; }
 html[data-glass="off"] .glass-button, html[data-glass="off"] .theme-button, html[data-glass="off"] .icon-button, html[data-glass="off"] .stage-control { backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -395,6 +489,8 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
 .hero-kicker .eyebrow { font-size: calc(10px * var(--text-scale, 1)); }
 @media (max-width: 700px) {
   .icon-button { width: 34px; min-height: 34px; }
+  .settings-button { width: 34px; min-height: 34px; padding: 0; }
+  .settings-button span { display: none; }
   .settings-grid { grid-template-columns: 1fr; gap: 9px; }
   .settings-content { padding: 12px; }
   .setting-group { padding: 13px; }
@@ -439,7 +535,7 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
 }
 
 @media (max-width: 1000px) {
-  .shell { grid-template-columns: minmax(276px, 312px) minmax(0, 1fr); }
+  .shell { grid-template-columns: minmax(276px, min(var(--rail-max, 312px), 340px)) minmax(0, 1fr); }
   .stage-content { left: 40px; bottom: 78px; }
   .build-name { font-size: clamp(36px, 5vw, 62px); }
 }
@@ -458,7 +554,7 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
   .wheel-section, .timeline-section, .clients-section { min-height: 0; flex: none; }
   .wheel-section { height: 100%; }
   .wheel-head { min-height: 42px; }
-  .wheel-viewport { --wheel-row-height: 34px; }
+  .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
   .wheel-title { font-size: 10px; }
   .rail-footer { padding: 9px 12px 10px; }
   .footer-head { margin-bottom: 6px; }
@@ -495,7 +591,7 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
   .brand { padding-top: 12px; padding-bottom: 10px; }
   .search-row { padding-top: 8px; padding-bottom: 5px; }
   .wheel-head { min-height: 40px; padding-bottom: 4px; }
-  .wheel-viewport { --wheel-row-height: 34px; }
+  .wheel-viewport { --wheel-row-height: calc(var(--wheel-row-size, 40px) - 6px); }
   .clients-section { flex-basis: 154px; }
   .rail-footer { padding-top: 8px; padding-bottom: 9px; }
 }
@@ -1146,8 +1242,9 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
         <button class="theme-button" id="theme" type="button" aria-label="Toggle light theme" title="Toggle theme">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 109 9 7 7 0 01-9-9zm0-3h2v3h-2zm0 21h2v3h-2zM0 11h3v2H0zm21 0h3v2h-3zM3.5 4.9 4.9 3.5 7 5.6 5.6 7zM17 18.4l1.4-1.4 2.1 2.1-1.4 1.4zM17 5.6l2.1-2.1 1.4 1.4L18.4 7zM3.5 19.1l2.1-2.1L7 18.4l-2.1 2.1z"/></svg>
         </button>
-        <button class="icon-button" id="settingsOpen" type="button" aria-label="Open launcher settings" title="Launcher settings (comma)">
+        <button class="glass-button settings-button" id="settingsOpen" type="button" aria-label="Open launcher settings" title="Launcher settings (,)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.62.06-.94s-.02-.63-.07-.94l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.6-.22l-2.39.96a7.2 7.2 0 00-1.63-.94l-.36-2.54a.49.49 0 00-.49-.42h-3.84a.49.49 0 00-.49.42L9.2 5.32c-.59.23-1.14.55-1.63.94l-2.39-.96a.5.5 0 00-.6.22L2.66 8.84a.5.5 0 00.12.64l2.03 1.58c-.05.31-.08.63-.08.94s.03.63.08.94l-2.03 1.58a.5.5 0 00-.12.64l1.92 3.32c.12.21.37.3.6.22l2.39-.96c.49.39 1.04.71 1.63.94l.36 2.54c.04.24.25.42.49.42h3.84c.24 0 .45-.18.49-.42l.36-2.54c.59-.23 1.14-.55 1.63-.94l2.39.96c.23.08.48-.01.6-.22l1.92-3.32a.5.5 0 00-.12-.64zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>
+          <span>Settings</span>
         </button>
       </div>
     </header>
@@ -1224,44 +1321,67 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
 <div class="scrim" id="settingsScrim" hidden>
   <section class="sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <header class="sheet-head">
-      <div class="sheet-head-copy"><h2 id="settingsTitle">Launcher settings</h2><p>Make the launcher yours. Settings are saved on this device.</p></div>
+      <div class="sheet-head-copy"><h2 id="settingsTitle">Launcher settings</h2><p>Style the launcher, choose how games open, and tune the pickers. Saved on this device.</p></div>
       <button class="sheet-close" id="settingsClose" type="button" aria-label="Close settings"><svg viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4-5-5-5 5-1.4-1.4 5-5-5-5L5.5 5.5 12 12l6.3-6.3z"/></svg></button>
     </header>
-    <div class="settings-content">
-      <div class="settings-grid">
-        <section class="setting-group" aria-labelledby="appearanceSettings">
-          <h3 id="appearanceSettings">Appearance</h3><p class="setting-hint">Tune the color, contrast, and amount of visual detail.</p>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Color theme</span><span class="setting-desc">Follow your device or pin a theme.</span></span><select class="setting-control" id="settingTheme"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Accent color</span><span class="setting-desc">Build colors follow each version when set to Auto.</span></span><select class="setting-control" id="settingAccent"><option value="auto">Auto by era</option><option value="mint">Quantum mint</option><option value="sky">Sky blue</option><option value="violet">Violet</option><option value="amber">Amber</option><option value="rose">Rose</option><option value="custom">Custom color</option></select></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Custom accent</span><span class="setting-desc">Used when Accent color is set to Custom.</span></span><input class="setting-control" id="settingCustomAccent" type="color" value="#61e6c2" aria-label="Choose custom accent color"></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Interface density</span><span class="setting-desc">Compact mode fits more controls on screen.</span></span><select class="setting-control" id="settingDensity"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Text scale</span><span class="setting-desc">Adjust key labels and interface text.</span></span><span class="range-control"><input class="setting-control" id="settingTextScale" type="range" min="0.85" max="1.2" step="0.05" value="1" aria-label="Text size"><output class="range-value" id="textScaleValue">100%</output></span></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Stage artwork</span><span class="setting-desc">Hide the artwork for a quieter backdrop.</span></span><input class="setting-control" id="settingArtwork" type="checkbox" checked aria-label="Show stage artwork"></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Artwork brightness</span><span class="setting-desc">Lower the backdrop to emphasize build details.</span></span><span class="range-control"><input class="setting-control" id="settingDim" type="range" min="0.2" max="1" step="0.05" value="1" aria-label="Artwork brightness"><output class="range-value" id="dimValue">100%</output></span></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Glass effects</span><span class="setting-desc">Toggle blur behind floating controls.</span></span><input class="setting-control" id="settingGlass" type="checkbox" checked aria-label="Enable glass effects"></label>
-        </section>
-        <section class="setting-group" aria-labelledby="launchSettings">
-          <h3 id="launchSettings">Launch behavior</h3><p class="setting-hint">Choose where a build opens and how much room it gets.</p>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Open builds in</span><span class="setting-desc">Fullscreen opens a dedicated game window with a fullscreen control.</span></span><select class="setting-control" id="settingLaunchMode"><option value="current">This tab</option><option value="tab">New tab</option><option value="popup">Popup window</option><option value="fullscreen">Fullscreen window</option></select></label>
-          <div class="setting-row"><span class="setting-copy"><span class="setting-label">Popup size</span><span class="setting-desc">Used for Popup and Fullscreen window modes.</span></span><span class="setting-number"><input class="setting-control" id="settingPopupWidth" type="number" min="480" max="3840" step="40" value="1280" aria-label="Popup width"><span>×</span><input class="setting-control" id="settingPopupHeight" type="number" min="360" max="2160" step="40" value="800" aria-label="Popup height"><span>px</span></span></div>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Ask before launching</span><span class="setting-desc">Add a confirmation before opening the selected build.</span></span><input class="setting-control" id="settingConfirm" type="checkbox" aria-label="Confirm before launch"></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Remember selected build</span><span class="setting-desc">Restore your last selection when you return.</span></span><input class="setting-control" id="settingRemember" type="checkbox" aria-label="Remember selected build"></label>
-        </section>
-        <section class="setting-group" aria-labelledby="pickerSettings">
-          <h3 id="pickerSettings">Picker &amp; motion</h3><p class="setting-hint">Change how the version wheels look and move.</p>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Wheel style</span><span class="setting-desc">Choose the 3D curve strength.</span></span><select class="setting-control" id="settingWheel"><option value="full">Full 3D</option><option value="soft">Subtle curve</option><option value="flat">Flat list</option></select></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Build detail chips</span><span class="setting-desc">Show runtime, type, and tag badges.</span></span><input class="setting-control" id="settingTags" type="checkbox" checked aria-label="Show build detail chips"></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Reduced motion</span><span class="setting-desc">Limit scrolling and transition animation.</span></span><input class="setting-control" id="settingMotion" type="checkbox" aria-label="Reduce motion"></label>
-        </section>
-        <section class="setting-group" aria-labelledby="convenienceSettings">
-          <h3 id="convenienceSettings">Convenience</h3><p class="setting-hint">Small behavior preferences for the archive.</p>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Start on latest build</span><span class="setting-desc">Ignore the saved build and start at the newest timeline entry.</span></span><input class="setting-control" id="settingLatest" type="checkbox" aria-label="Always start on latest build"></label>
-          <label class="setting-row"><span class="setting-copy"><span class="setting-label">Use system reduced-motion preference</span><span class="setting-desc">Respect your operating-system accessibility setting.</span></span><input class="setting-control" id="settingSystemMotion" type="checkbox" checked aria-label="Use system reduced motion preference"></label>
-        </section>
-      </div>
+    <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+      <button class="settings-tab" type="button" role="tab" id="tab-appearance" aria-controls="panel-appearance" aria-selected="true" data-settings-tab="appearance">Appearance</button>
+      <button class="settings-tab" type="button" role="tab" id="tab-launch" aria-controls="panel-launch" aria-selected="false" tabindex="-1" data-settings-tab="launch">Launch &amp; windows</button>
+      <button class="settings-tab" type="button" role="tab" id="tab-picker" aria-controls="panel-picker" aria-selected="false" tabindex="-1" data-settings-tab="picker">Pickers &amp; motion</button>
+      <button class="settings-tab" type="button" role="tab" id="tab-behavior" aria-controls="panel-behavior" aria-selected="false" tabindex="-1" data-settings-tab="behavior">Behavior</button>
+      <button class="settings-tab" type="button" role="tab" id="tab-advanced" aria-controls="panel-advanced" aria-selected="false" tabindex="-1" data-settings-tab="advanced">Advanced</button>
+    </div>
+    <div class="settings-content" id="settingsContent">
+      <section class="settings-panel" role="tabpanel" id="panel-appearance" aria-labelledby="tab-appearance" data-active="true" data-panel="appearance">
+        <p class="settings-tabpanel-hint">Start from a preset, then fine-tune anything below. Every change applies instantly.</p>
+        <div class="preset-strip" id="presetStrip" aria-label="Style presets"></div>
+        <div class="settings-grid" id="appearanceGrid"></div>
+      </section>
+      <section class="settings-panel" role="tabpanel" id="panel-launch" aria-labelledby="tab-launch" data-panel="launch">
+        <p class="settings-tabpanel-hint">Launch mode decides where a build opens. Popup and fullscreen window modes use the size and window options here.</p>
+        <div class="settings-grid" id="launchGrid"></div>
+      </section>
+      <section class="settings-panel" role="tabpanel" id="panel-picker" aria-labelledby="tab-picker" data-panel="picker">
+        <p class="settings-tabpanel-hint">Tune the scroll wheels, labels, and how much motion the launcher uses.</p>
+        <div class="settings-grid" id="pickerGrid"></div>
+      </section>
+      <section class="settings-panel" role="tabpanel" id="panel-behavior" aria-labelledby="tab-behavior" data-panel="behavior">
+        <p class="settings-tabpanel-hint">Startup, navigation, and keyboard preferences.</p>
+        <div class="settings-grid" id="behaviorGrid"></div>
+      </section>
+      <section class="settings-panel" role="tabpanel" id="panel-advanced" aria-labelledby="tab-advanced" data-panel="advanced">
+        <div class="settings-grid">
+          <section class="setting-group" aria-labelledby="advancedIo">
+            <h3 id="advancedIo">Backup &amp; restore</h3><p class="setting-hint">Settings live in this browser. Export a JSON file to move them to another device, or import one you saved earlier.</p>
+            <div class="settings-io">
+              <button class="settings-reset" id="settingsExport" type="button">Export settings</button>
+              <button class="settings-reset" id="settingsImport" type="button">Import settings…</button>
+            </div>
+            <p class="setting-hint" style="margin-top:12px">Saved builds and your last selection stay on this device and are never uploaded.</p>
+            <input type="file" id="settingsImportFile" accept="application/json,.json" hidden aria-label="Choose a settings file to import">
+          </section>
+          <section class="setting-group" aria-labelledby="advancedInfo">
+            <h3 id="advancedInfo">About this launcher</h3><p class="setting-hint">One self-contained HTML file. No external scripts, stylesheets, fonts, or images — everything below runs from the file you already loaded.</p>
+            <p class="setting-note" id="advancedStats">Archive loading…</p>
+            <p class="setting-note" style="margin-top:8px">Shortcuts: <strong>/</strong> library · <strong>,</strong> settings · <strong>↑ ↓</strong> browse · <strong>Enter</strong> launch · <strong>F</strong> save · <strong>Esc</strong> close. Turn shortcuts off in Behavior.</p>
+          </section>
+        </div>
+      </section>
     </div>
     <footer class="settings-foot"><span class="settings-status" id="settingsStatus" role="status">Changes save automatically.</span><button class="settings-reset" id="settingsReset" type="button">Reset defaults</button></footer>
   </section>
+</div>
+
+<!-- ============================== embedded player ============================== -->
+<div class="game-dock" id="gameDock" hidden>
+  <header class="game-bar">
+    <strong id="gameTitle">Game</strong>
+    <button id="gameReload" type="button">Reload</button>
+    <button id="gameFullscreen" type="button">Fullscreen</button>
+    <button id="gameNewTab" type="button">Open in new tab</button>
+    <button id="gameClose" type="button">Close game</button>
+  </header>
+  <iframe id="gameFrame" title="Embedded game" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write" allowfullscreen></iframe>
 </div>
 <div class="launch-note" id="launchNote" role="status" aria-live="polite" hidden></div>
 
@@ -1289,25 +1409,172 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
   var LS = "quantum-launcher-v1";
   var SETTINGS_KEY = LS + "-settings";
   var SETTINGS_DEFAULTS = {
-    theme: "dark", accent: "auto", customAccent: "#61e6c2", density: "comfortable", textScale: 1,
-    artwork: true, stageDim: 1, glass: true, launchMode: "current", popupWidth: 1280, popupHeight: 800,
-    confirmLaunch: false, rememberSelection: false, wheel: "full", tags: true, reducedMotion: false,
-    latest: false, systemMotion: true
+    /* appearance */
+    theme: "dark", accent: "auto", customAccent: "#61e6c2", radius: "soft", density: "comfortable",
+    textScale: 1, font: "system", artwork: true, background: "art", stageDim: 1, artBrightness: 1,
+    artBlur: 0, glass: true, glow: true, noise: false, tags: true, showCaption: true, showFoot: true,
+    showCounts: true, showSearch: true, showNote: true, showBonus: true, railWidth: "standard",
+    /* launch */
+    launchMode: "current", popupPreset: "custom", popupWidth: 1280, popupHeight: 800,
+    centerWindow: true, resizable: true, scrollbars: false, autoFullscreen: true,
+    confirmLaunch: false, rememberSelection: false, embedBar: true, confirmClose: false,
+    /* pickers + motion */
+    wheel: "full", wheelRow: 40, reducedMotion: false, systemMotion: true, smoothScroll: true,
+    /* behavior */
+    latest: false, defaultWheel: "timeline", wrapNav: true, shortcuts: true,
+    hashLinks: true, focusSearch: false
   };
+  var SETTINGS_PRESETS = {
+    "quantum": { label: "Quantum", values: {} },
+    "cinematic": { label: "Cinematic", values: { radius: "round", density: "comfortable", artwork: true, background: "art", stageDim: .78, artBrightness: 1.06, artBlur: 0, glass: true, glow: true, noise: true, wheel: "full", wheelRow: 46, glass: true } },
+    "minimal": { label: "Minimal", values: { radius: "sharp", density: "compact", artwork: false, background: "solid", glass: false, glow: false, noise: false, tags: false, showCaption: false, showFoot: false, showCounts: false, wheel: "flat", wheelRow: 34, railWidth: "narrow" } },
+    "retro": { label: "Retro", values: { font: "mono", radius: "sharp", accent: "amber", background: "grid", artwork: false, glass: false, glow: false, noise: true, wheel: "flat", wheelRow: 36, showCaption: true } },
+    "focus": { label: "Focus", values: { radius: "sharp", density: "compact", artwork: false, background: "solid", glass: false, glow: false, noise: false, tags: false, showNote: false, showBonus: false, showCaption: false, showFoot: false, wheel: "flat", wheelRow: 36, textScale: 1.1, reducedMotion: true, railWidth: "narrow" } },
+    "aurora": { label: "Aurora", values: { radius: "round", background: "gradient", artwork: false, glass: true, glow: true, noise: false, accent: "violet", wheel: "soft", wheelRow: 42, stageDim: 1 } }
+  };
+  var SETTINGS_SCHEMA = {
+    appearance: [
+      {
+        title: "Look & feel", hint: "Theme, accent, type, and shape of the interface.",
+        rows: [
+          { key: "theme", label: "Color theme", desc: "Follow your device or pin dark / light.", type: "select", options: [["dark", "Dark"], ["light", "Light"], ["system", "System"]] },
+          { key: "accent", label: "Accent color", desc: "Auto follows the era of the selected build.", type: "select", options: [["auto", "Auto by era"], ["mint", "Quantum mint"], ["sky", "Sky blue"], ["violet", "Violet"], ["amber", "Amber"], ["rose", "Rose"], ["custom", "Custom color"]] },
+          { key: "customAccent", label: "Custom accent", desc: "Used when Accent color is Custom.", type: "color" },
+          { key: "radius", label: "Corner style", desc: "Square, soft, or pill-shaped controls.", type: "select", options: [["sharp", "Sharp"], ["soft", "Soft"], ["round", "Rounded"]] },
+          { key: "density", label: "Interface density", desc: "Compact fits more of the archive on screen.", type: "select", options: [["comfortable", "Comfortable"], ["compact", "Compact"]] },
+          { key: "textScale", label: "Text scale", desc: "Resize labels, chips, and interface text.", type: "range", min: .85, max: 1.25, step: .05, percent: true },
+          { key: "font", label: "Typeface", desc: "All fonts are local; nothing is downloaded.", type: "select", options: [["system", "System UI"], ["mono", "Monospace"], ["serif", "Serif"], ["rounded", "Rounded"]] },
+          { key: "railWidth", label: "Sidebar width", desc: "How much room the library rail takes.", type: "select", options: [["narrow", "Narrow"], ["standard", "Standard"], ["wide", "Wide"]] }
+        ]
+      },
+      {
+        title: "Backdrop", hint: "Control the full-stage artwork and background treatment.",
+        rows: [
+          { key: "artwork", label: "Stage artwork", desc: "Show the era illustration behind the controls.", type: "toggle" },
+          { key: "background", label: "Background style", desc: "Artwork, gradient, flat, or a technical grid.", type: "select", options: [["art", "Era artwork"], ["gradient", "Gradient glow"], ["solid", "Flat dark"], ["grid", "Grid lines"]] },
+          { key: "stageDim", label: "Backdrop shade", desc: "Darken or lift the artwork for legibility.", type: "range", min: .2, max: 1, step: .05, percent: true },
+          { key: "artBrightness", label: "Artwork brightness", desc: "Brighten or mute the illustration itself.", type: "range", min: .4, max: 1.35, step: .05, percent: true },
+          { key: "artBlur", label: "Artwork blur", desc: "Soften the backdrop with a blur filter.", type: "range", min: 0, max: 16, step: 1, suffix: "px" },
+          { key: "noise", label: "Film grain", desc: "Add a subtle noise texture over the stage.", type: "toggle" }
+        ]
+      },
+      {
+        title: "Chrome", hint: "Choose which pieces of the interface remain visible.",
+        rows: [
+          { key: "glass", label: "Glass effects", desc: "Backdrop blur behind floating controls.", type: "toggle" },
+          { key: "glow", label: "Accent glow", desc: "Colored shadows and glows on key controls.", type: "toggle" },
+          { key: "tags", label: "Build detail chips", desc: "Runtime, type, and tag badges under the title.", type: "toggle" },
+          { key: "showCaption", label: "Stage caption", desc: "The small label in the stage top-left.", type: "toggle" },
+          { key: "showFoot", label: "Stage footer hints", desc: "Keyboard hints along the bottom of the stage.", type: "toggle" },
+          { key: "showCounts", label: "Wheel counts", desc: "Build counts next to each picker heading.", type: "toggle" },
+          { key: "showSearch", label: "Library search", desc: "The search row at the top of the rail.", type: "toggle" },
+          { key: "showNote", label: "Rail picker note", desc: "The explanatory card above the bonus games.", type: "toggle" },
+          { key: "showBonus", label: "Bonus game shortcuts", desc: "Minecraft 4K and Minicraft quick-launch buttons.", type: "toggle" }
+        ]
+      }
+    ],
+    launch: [
+      {
+        title: "Where games open", hint: "Each mode remembers your choice for next time.",
+        rows: [
+          { key: "launchMode", label: "Launch mode", desc: "Embedded plays inside this page; fullscreen opens a game window that goes fullscreen.", type: "select", options: [["current", "This tab"], ["embed", "Embedded in this window"], ["tab", "New tab"], ["popup", "Popup window"], ["fullscreen", "Fullscreen window"]] },
+          { key: "confirmLaunch", label: "Ask before launching", desc: "Show a confirmation with the build name and runtime.", type: "toggle" },
+          { key: "rememberSelection", label: "Remember selected build", desc: "Restore your last selection when you return.", type: "toggle" },
+          { key: "embedBar", label: "Show embedded game bar", desc: "Reload, fullscreen, and close controls in the embedded player.", type: "toggle" },
+          { key: "confirmClose", label: "Confirm closing embedded game", desc: "Ask before ending an embedded session.", type: "toggle" }
+        ]
+      },
+      {
+        title: "Popup window", hint: "Used by popup, fullscreen window, and wrapper pages. Browsers may block windows unless you allow popups for this site.",
+        rows: [
+          { key: "popupPreset", label: "Size preset", desc: "Pick a common window size or fine-tune below.", type: "select", options: [["custom", "Custom"], ["960x540", "960 × 540"], ["1280x720", "1280 × 720"], ["1600x900", "1600 × 900"], ["1920x1080", "1920 × 1080"], ["2560x1440", "2560 × 1440"], ["3840x2160", "3840 × 2160"]] },
+          { key: "popupWidth", label: "Window width", desc: "Pixels, 480–3840.", type: "number", min: 480, max: 3840, step: 20, suffix: "px" },
+          { key: "popupHeight", label: "Window height", desc: "Pixels, 360–2160.", type: "number", min: 360, max: 2160, step: 20, suffix: "px" },
+          { key: "centerWindow", label: "Center on screen", desc: "Position the window in the middle of your display.", type: "toggle" },
+          { key: "resizable", label: "Resizable window", desc: "Allow dragging the window edges.", type: "toggle" },
+          { key: "scrollbars", label: "Show scrollbars", desc: "Useful when the game viewport is larger than the window.", type: "toggle" },
+          { key: "autoFullscreen", label: "Auto fullscreen", desc: "Fullscreen window mode requests fullscreen immediately.", type: "toggle" }
+        ]
+      }
+    ],
+    picker: [
+      {
+        title: "Wheels", hint: "The two independent build pickers below the stage preview.",
+        rows: [
+          { key: "wheel", label: "Wheel style", desc: "3D curve strength of the picker rows.", type: "select", options: [["full", "Full 3D"], ["soft", "Subtle curve"], ["flat", "Flat list"]] },
+          { key: "wheelRow", label: "Row height", desc: "Taller rows show fewer builds at once.", type: "range", min: 32, max: 56, step: 2, suffix: "px" },
+          { key: "smoothScroll", label: "Smooth wheel scrolling", desc: "Animate the wheel as it snaps a build into the center.", type: "toggle" }
+        ]
+      },
+      {
+        title: "Motion & accessibility", hint: "Reduce animation for comfort or performance.",
+        rows: [
+          { key: "reducedMotion", label: "Reduced motion", desc: "Disable scroll and hover animations.", type: "toggle" },
+          { key: "systemMotion", label: "Use system reduced-motion preference", desc: "Respect your operating-system accessibility setting.", type: "toggle" }
+        ]
+      }
+    ],
+    behavior: [
+      {
+        title: "Startup", hint: "What the launcher shows when it opens.",
+        rows: [
+          { key: "latest", label: "Start on latest build", desc: "Ignore a remembered build and open on the newest timeline entry.", type: "toggle" },
+          { key: "defaultWheel", label: "Startup wheel", desc: "Which picker is selected when nothing else is remembered.", type: "select", options: [["timeline", "Version timeline"], ["clients", "Clients"]] },
+          { key: "hashLinks", label: "Honor page links", desc: "Open the build named by #id in the page URL.", type: "toggle" },
+          { key: "focusSearch", label: "Focus search on load", desc: "Put the cursor in the search box when the launcher opens.", type: "toggle" }
+        ]
+      },
+      {
+        title: "Navigation", hint: "Keyboard and wrap-around behavior.",
+        rows: [
+          { key: "wrapNav", label: "Wrap at ends", desc: "Prev / next loops from the last build back to the first.", type: "toggle" },
+          { key: "shortcuts", label: "Keyboard shortcuts", desc: "Browse with arrows, launch with Enter, and more.", type: "toggle" }
+        ]
+      }
+    ]
+  };
+  function clampNumber(value, minimum, maximum, fallback) {
+    var number = Number(value);
+    if (!isFinite(number)) number = fallback;
+    return Math.max(minimum, Math.min(maximum, number));
+  }
+  function normalizeSettings(input) {
+    var merged = Object.assign({}, SETTINGS_DEFAULTS);
+    if (input && typeof input === "object") {
+      Object.keys(SETTINGS_DEFAULTS).forEach(function (key) {
+        if (Object.prototype.hasOwnProperty.call(input, key)) merged[key] = input[key];
+      });
+    }
+    ["theme", "accent", "radius", "density", "font", "background", "railWidth", "launchMode", "popupPreset", "wheel", "defaultWheel"].forEach(function (key) {
+      if (typeof merged[key] !== "string") merged[key] = SETTINGS_DEFAULTS[key];
+    });
+    ["artwork", "glass", "glow", "noise", "tags", "showCaption", "showFoot", "showCounts", "showSearch", "showNote", "showBonus", "centerWindow", "resizable", "scrollbars", "autoFullscreen", "confirmLaunch", "rememberSelection", "embedBar", "confirmClose", "reducedMotion", "systemMotion", "smoothScroll", "latest", "wrapNav", "shortcuts", "hashLinks", "focusSearch"].forEach(function (key) {
+      merged[key] = !!merged[key];
+    });
+    merged.textScale = clampNumber(merged.textScale, .85, 1.25, 1);
+    merged.stageDim = clampNumber(merged.stageDim, .2, 1, 1);
+    merged.artBrightness = clampNumber(merged.artBrightness, .4, 1.35, 1);
+    merged.artBlur = clampNumber(merged.artBlur, 0, 16, 0);
+    merged.wheelRow = clampNumber(merged.wheelRow, 32, 56, 40);
+    merged.popupWidth = clampNumber(merged.popupWidth, 480, 3840, 1280);
+    merged.popupHeight = clampNumber(merged.popupHeight, 360, 2160, 800);
+    if (!/^#[0-9a-f]{6}$/i.test(String(merged.customAccent))) merged.customAccent = SETTINGS_DEFAULTS.customAccent;
+    return merged;
+  }
   var stored = {};
   try { stored = JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { stored = {}; }
   if (!stored || typeof stored !== "object") stored = {};
   var favs = new Set(Array.isArray(stored.favs) ? stored.favs.filter(function (id) { return !!BY_ID[id]; }) : []);
-  var settings = Object.assign({}, SETTINGS_DEFAULTS);
+  var settings = normalizeSettings(null);
   try {
     var savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
-    if (savedSettings && typeof savedSettings === "object") settings = Object.assign(settings, savedSettings);
+    if (savedSettings && typeof savedSettings === "object") settings = normalizeSettings(savedSettings);
     else {
       var oldTheme = localStorage.getItem(LS + "-theme");
       if (oldTheme === "dark" || oldTheme === "light") settings.theme = oldTheme;
     }
   } catch (e) {}
-  var state = { id: null, wheel: "timeline", query: "", savedOnly: false, dlSavedOnly: false };
+  var state = { id: null, wheel: "timeline", query: "", savedOnly: false, dlSavedOnly: false, playing: null, preset: null };
 
   var $ = function (id) { return document.getElementById(id); };
   var timelineWheel = $("timelineWheel");
@@ -1350,23 +1617,111 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
     if (settings.accent === "custom") return settings.customAccent || "#61e6c2";
     return colors[settings.accent] || buildAccent || colors.mint;
   }
+  var RAIL_WIDTHS = { narrow: ["264px", "300px"], standard: ["292px", "344px"], wide: ["340px", "404px"] };
   function applySettings() {
     var root = document.documentElement;
     applyTheme();
-    root.style.setProperty("--text-scale", String(Math.max(.85, Math.min(1.2, Number(settings.textScale) || 1))));
-    root.style.setProperty("--stage-shade-opacity", String(Math.max(.2, Math.min(1, Number(settings.stageDim) || 1))));
+    root.style.setProperty("--text-scale", String(settings.textScale));
+    root.style.setProperty("--stage-shade-opacity", String(settings.stageDim));
+    root.style.setProperty("--art-brightness", String(settings.artBrightness));
+    root.style.setProperty("--art-blur", settings.artBlur + "px");
+    root.style.setProperty("--wheel-row-size", settings.wheelRow + "px");
+    var rail = RAIL_WIDTHS[settings.railWidth] || RAIL_WIDTHS.standard;
+    root.style.setProperty("--rail-min", rail[0]);
+    root.style.setProperty("--rail-max", rail[1]);
     root.setAttribute("data-density", settings.density === "compact" ? "compact" : "comfortable");
     root.setAttribute("data-art", settings.artwork ? "on" : "off");
+    root.setAttribute("data-bgmode", ["art", "gradient", "solid", "grid"].indexOf(settings.background) >= 0 ? settings.background : "art");
     root.setAttribute("data-glass", settings.glass ? "on" : "off");
+    root.setAttribute("data-glow", settings.glow ? "on" : "off");
+    root.setAttribute("data-noise", settings.noise ? "on" : "off");
     root.setAttribute("data-tags", settings.tags ? "on" : "off");
+    root.setAttribute("data-radius", settings.radius);
+    root.setAttribute("data-font", settings.font);
+    root.setAttribute("data-show-caption", settings.showCaption ? "on" : "off");
+    root.setAttribute("data-show-foot", settings.showFoot ? "on" : "off");
+    root.setAttribute("data-show-counts", settings.showCounts ? "on" : "off");
+    root.setAttribute("data-show-search", settings.showSearch ? "on" : "off");
+    root.setAttribute("data-show-note", settings.showNote ? "on" : "off");
+    root.setAttribute("data-show-bonus", settings.showBonus ? "on" : "off");
+    root.setAttribute("data-embedbar", settings.embedBar ? "on" : "off");
     var reduce = !!settings.reducedMotion || (!!settings.systemMotion && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     root.setAttribute("data-motion", reduce ? "off" : "on");
     root.setAttribute("data-wheel", settings.wheel === "soft" || settings.wheel === "flat" ? settings.wheel : "full");
     updateSettingOutputs();
   }
+  function formatSettingValue(row, value) {
+    if (row.percent) return Math.round(Number(value) * 100) + "%";
+    if (row.suffix === "px") return Math.round(Number(value)) + "px";
+    return String(value);
+  }
   function updateSettingOutputs() {
-    if ($("textScaleValue")) $("textScaleValue").textContent = Math.round((Number(settings.textScale) || 1) * 100) + "%";
-    if ($("dimValue")) $("dimValue").textContent = Math.round((Number(settings.stageDim) || 1) * 100) + "%";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-output]"), function (output) {
+      var key = output.getAttribute("data-output");
+      var row = null;
+      Object.keys(SETTINGS_SCHEMA).forEach(function (panel) {
+        SETTINGS_SCHEMA[panel].forEach(function (group) {
+          group.rows.forEach(function (candidate) { if (candidate.key === key) row = candidate; });
+        });
+      });
+      if (row) output.textContent = formatSettingValue(row, settings[key]);
+    });
+  }
+  function controlMarkup(row) {
+    var key = esc(row.key);
+    var label = esc(row.label);
+    var field;
+    if (row.type === "select") {
+      field = '<select class="setting-control" data-setting="' + key + '" aria-label="' + label + '">' +
+        row.options.map(function (option) {
+          return '<option value="' + esc(option[0]) + '">' + esc(option[1]) + "</option>";
+        }).join("") + "</select>";
+    } else if (row.type === "toggle") {
+      field = '<input class="setting-control" type="checkbox" data-setting="' + key + '" aria-label="' + label + '">';
+    } else if (row.type === "range") {
+      field = '<span class="setting-field"><span class="range-control"><input class="setting-control" type="range" data-setting="' + key +
+        '" min="' + row.min + '" max="' + row.max + '" step="' + row.step + '" aria-label="' + label + '">' +
+        '<output class="range-value" data-output="' + key + '"></output></span></span>';
+    } else if (row.type === "color") {
+      field = '<span class="setting-field"><input class="setting-control" type="color" data-setting="' + key + '" aria-label="' + label + '"></span>';
+    } else {
+      field = '<span class="setting-field"><input class="setting-control" type="number" data-setting="' + key +
+        '" min="' + row.min + '" max="' + row.max + '" step="' + (row.step || 1) + '" aria-label="' + label + '"><span>' +
+        esc(row.suffix || "") + "</span></span>";
+    }
+    return '<label class="setting-row"><span class="setting-copy"><span class="setting-label">' + label +
+      '</span><span class="setting-desc">' + esc(row.desc || "") + "</span></span>" + field + "</label>";
+  }
+  function renderSettingsPanels() {
+    Object.keys(SETTINGS_SCHEMA).forEach(function (panel) {
+      var container = $(panel + "Grid");
+      if (!container) return;
+      container.innerHTML = SETTINGS_SCHEMA[panel].map(function (group) {
+        return '<section class="setting-group"><h3>' + esc(group.title) + '</h3><p class="setting-hint">' +
+          esc(group.hint) + "</p>" + group.rows.map(controlMarkup).join("") + "</section>";
+      }).join("");
+    });
+  }
+  function renderPresetStrip() {
+    var strip = $("presetStrip");
+    if (!strip) return;
+    strip.innerHTML = Object.keys(SETTINGS_PRESETS).map(function (key) {
+      var preset = SETTINGS_PRESETS[key];
+      return '<button class="preset-chip" type="button" data-preset="' + esc(key) + '" aria-pressed="' +
+        String(state.preset === key) + '">' + esc(preset.label) + "</button>";
+    }).join("");
+  }
+  function applyPreset(name) {
+    var preset = SETTINGS_PRESETS[name];
+    if (!preset) return;
+    settings = normalizeSettings(Object.assign({}, settings, preset.values));
+    state.preset = name;
+    saveSettings();
+    applySettings();
+    syncSettingsControls();
+    if (byId(state.id)) setBuild(byId(state.id), state.wheel, false);
+    renderPresetStrip();
+    $("settingsStatus").textContent = preset.label + " preset applied and saved.";
   }
   function byId(id) { return BY_ID[id] || null; }
   function runtimeShort(b) {
@@ -1624,12 +1979,21 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
     launchNoteTimer = window.setTimeout(function () { note.hidden = true; }, 6500);
   }
   function popupFeatures() {
-    var width = Math.max(480, Math.min(3840, Number(settings.popupWidth) || 1280));
-    var height = Math.max(360, Math.min(2160, Number(settings.popupHeight) || 800));
-    return { width: width, height: height };
+    var width = clampNumber(settings.popupWidth, 480, 3840, 1280);
+    var height = clampNumber(settings.popupHeight, 360, 2160, 800);
+    var parts = ["popup=yes", "width=" + width, "height=" + height, "menubar=no", "toolbar=no", "location=no", "status=no", "resizable=" + (settings.resizable ? "yes" : "no"), "scrollbars=" + (settings.scrollbars ? "yes" : "no")];
+    var left = 0, top = 0;
+    if (settings.centerWindow) {
+      var screenWidth = Number(window.screen && window.screen.availWidth) || width;
+      var screenHeight = Number(window.screen && window.screen.availHeight) || height;
+      left = Math.max(0, Math.round((screenWidth - width) / 2));
+      top = Math.max(0, Math.round((screenHeight - height) / 2));
+      parts.push("left=" + left, "top=" + top);
+    }
+    return { width: width, height: height, left: left, top: top, features: parts.join(",") };
   }
   function launchFullscreenWindow(build, size) {
-    var features = "popup=yes,width=" + size.width + ",height=" + size.height + ",resizable=yes,scrollbars=no";
+    var features = size.features.replace("scrollbars=yes", "scrollbars=no");
     var child = window.open("about:blank", "_blank", features);
     if (!child) {
       showLaunchNote("The fullscreen window was blocked. Allow popups for this site, or choose another launch mode in Settings.");
@@ -1640,8 +2004,10 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
     var page = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + title + '</title><style>*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#05080d;color:#eef5fa;font:13px system-ui,sans-serif;overflow:hidden}.bar{position:absolute;z-index:2;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;height:42px;padding:0 12px;background:rgba(7,12,18,.92);border-bottom:1px solid #24323e}.name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:650}.bar button,.bar a{border:1px solid #364653;border-radius:7px;padding:6px 10px;color:#eef5fa;background:#14212b;text-decoration:none;font:inherit;cursor:pointer}.bar button:hover,.bar a:hover{border-color:#61e6c2;color:#61e6c2}iframe{position:absolute;inset:42px 0 0;width:100%;height:calc(100% - 42px);border:0;background:#000}html:fullscreen .bar{opacity:.18;transition:opacity .2s}html:fullscreen .bar:hover{opacity:1}html:fullscreen iframe{inset:0;height:100%}</style></head><body><header class="bar"><span class="name">' + title + '</span><button id="full" type="button">Enter fullscreen</button><a href="' + target + '" target="_self">Open directly</a><button id="close" type="button">Close</button></header><iframe id="game" src="' + target + '" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write" allowfullscreen title="' + title + '"></iframe><script>(function(){var f=document.getElementById("full");f.onclick=function(){var el=document.documentElement;var p=el.requestFullscreen?el.requestFullscreen():null;if(p&&p.catch)p.catch(function(){f.textContent="Fullscreen unavailable"});};document.getElementById("close").onclick=function(){window.close()};document.addEventListener("fullscreenchange",function(){f.textContent=document.fullscreenElement?"Exit fullscreen":"Enter fullscreen"});})();<\/script></body></html>';
     try {
       child.document.open(); child.document.write(page); child.document.close();
-      if (child.moveTo && child.resizeTo) { try { child.moveTo(0, 0); child.resizeTo(size.width, size.height); } catch (e) {} }
-      if (child.document.documentElement.requestFullscreen) {
+      if (child.moveTo && child.resizeTo) {
+        try { child.moveTo(size.left || 0, size.top || 0); child.resizeTo(size.width, size.height); } catch (e) {}
+      }
+      if (settings.autoFullscreen && child.document.documentElement.requestFullscreen) {
         var request = child.document.documentElement.requestFullscreen();
         if (request && request.catch) request.catch(function () {});
       }
@@ -1651,18 +2017,45 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
       showLaunchNote("The fullscreen wrapper could not start. The game was opened directly instead.");
     }
   }
+  function launchEmbedded(b) {
+    state.playing = b.id;
+    $("gameTitle").textContent = b.name;
+    var frame = $("gameFrame");
+    frame.title = b.name + " — embedded game";
+    frame.src = b.url;
+    document.documentElement.setAttribute("data-embedbar", settings.embedBar ? "on" : "off");
+    $("gameDock").hidden = false;
+    $("gameFullscreen").textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+    try { frame.focus(); } catch (e) {}
+  }
+  function closeEmbedded() {
+    var dock = $("gameDock");
+    if (dock.hidden) return;
+    if (settings.confirmClose && !window.confirm("Close the running game? Progress inside the game may not be saved.")) return;
+    var frame = $("gameFrame");
+    frame.src = "about:blank";
+    dock.hidden = true;
+    state.playing = null;
+    if (document.fullscreenElement && document.exitFullscreen) {
+      var exit = document.exitFullscreen();
+      if (exit && exit.catch) exit.catch(function () {});
+    }
+    $("gameFullscreen").textContent = "Fullscreen";
+    $("settingsOpen").focus();
+  }
   function launch(b) {
     if (!b) return;
     if (settings.confirmLaunch && !window.confirm("Launch " + b.name + " (" + runtimeShort(b) + ")?")) return;
     var size = popupFeatures();
     if (settings.launchMode === "current") { window.location.href = b.url; return; }
+    if (settings.launchMode === "embed") { launchEmbedded(b); return; }
     if (settings.launchMode === "tab") {
-      window.open(b.url, "_blank", "noopener,noreferrer");
+      var tab = window.open(b.url, "_blank", "noopener,noreferrer");
+      if (!tab) showLaunchNote("The new tab was blocked. Allow popups for this site or choose another launch mode in Settings.");
       return;
     }
     if (settings.launchMode === "fullscreen") { launchFullscreenWindow(b, size); return; }
-    var features = "popup=yes,width=" + size.width + ",height=" + size.height + ",resizable=yes,scrollbars=yes";
-    var popup = window.open(b.url, "_blank", features);
+    var popup = window.open(b.url, "_blank", size.features);
     if (!popup) showLaunchNote("The popup was blocked. Allow popups for this site or choose another launch mode in Settings.");
   }
   function step(direction) {
@@ -1670,7 +2063,8 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
     if (!list.length) return;
     var index = list.findIndex(function (b) { return b.id === state.id; });
     if (index < 0) index = 0;
-    index = (index + direction + list.length) % list.length;
+    if (settings.wrapNav) index = (index + direction + list.length) % list.length;
+    else index = Math.max(0, Math.min(list.length - 1, index + direction));
     setBuild(list[index], state.wheel, true);
   }
 
@@ -1715,42 +2109,69 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
   });
 
   var settingsScrim = $("settingsScrim");
-  var settingIds = {
-    settingTheme: "theme", settingAccent: "accent", settingCustomAccent: "customAccent", settingDensity: "density",
-    settingTextScale: "textScale", settingArtwork: "artwork", settingDim: "stageDim", settingGlass: "glass",
-    settingLaunchMode: "launchMode", settingPopupWidth: "popupWidth", settingPopupHeight: "popupHeight",
-    settingConfirm: "confirmLaunch", settingRemember: "rememberSelection", settingWheel: "wheel", settingTags: "tags",
-    settingMotion: "reducedMotion", settingLatest: "latest", settingSystemMotion: "systemMotion"
-  };
+  var settingsContent = $("settingsContent");
+  var activePanel = "appearance";
+  function settingsControls() {
+    return settingsScrim.querySelectorAll("[data-setting]");
+  }
   function syncSettingsControls() {
-    Object.keys(settingIds).forEach(function (id) {
-      var control = $(id), key = settingIds[id];
-      if (!control) return;
+    Array.prototype.forEach.call(settingsControls(), function (control) {
+      var key = control.getAttribute("data-setting");
+      if (!Object.prototype.hasOwnProperty.call(SETTINGS_DEFAULTS, key)) return;
       if (control.type === "checkbox") control.checked = !!settings[key];
       else control.value = settings[key];
     });
     updateSettingOutputs();
+    renderPresetStrip();
   }
-  function readSettingsControls() {
-    Object.keys(settingIds).forEach(function (id) {
-      var control = $(id), key = settingIds[id];
-      if (!control) return;
-      if (control.type === "checkbox") settings[key] = control.checked;
-      else if (control.type === "number") {
-        var value = Number(control.value);
-        var minimum = Number(control.min), maximum = Number(control.max);
-        if (!isFinite(value)) value = SETTINGS_DEFAULTS[key];
-        settings[key] = Math.max(minimum, Math.min(maximum, value));
-        control.value = settings[key];
-      } else if (control.type === "range") settings[key] = Number(control.value);
-      else settings[key] = control.value;
-    });
+  function presetForSize(width, height) {
+    return width === 960 && height === 540 ? "960x540" :
+      width === 1280 && height === 720 ? "1280x720" :
+      width === 1600 && height === 900 ? "1600x900" :
+      width === 1920 && height === 1080 ? "1920x1080" :
+      width === 2560 && height === 1440 ? "2560x1440" :
+      width === 3840 && height === 2160 ? "3840x2160" : "custom";
+  }
+  function readSettingControl(control) {
+    var key = control.getAttribute("data-setting");
+    if (!Object.prototype.hasOwnProperty.call(SETTINGS_DEFAULTS, key)) return;
+    if (control.type === "checkbox") settings[key] = control.checked;
+    else if (control.type === "number" || control.type === "range") {
+      settings[key] = clampNumber(control.value, Number(control.min) || 0, Number(control.max) || 0, SETTINGS_DEFAULTS[key]);
+      control.value = settings[key];
+    } else settings[key] = control.value;
+    if (key === "popupPreset" && settings.popupPreset !== "custom") {
+      var parts = settings.popupPreset.split("x");
+      settings.popupWidth = clampNumber(parts[0], 480, 3840, 1280);
+      settings.popupHeight = clampNumber(parts[1], 360, 2160, 800);
+    }
+    if (key === "popupWidth" || key === "popupHeight") {
+      settings.popupPreset = presetForSize(settings.popupWidth, settings.popupHeight);
+    }
+    state.preset = null;
     saveSettings(); applySettings();
     if (byId(state.id)) setBuild(byId(state.id), state.wheel, false);
+    syncSettingsControls();
     $("settingsStatus").textContent = "Saved automatically on this device.";
+  }
+  function setSettingsPanel(name) {
+    var tab = document.querySelector('[data-settings-tab="' + name + '"]');
+    if (!tab) return;
+    activePanel = name;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-settings-tab]"), function (button) {
+      var selected = button === tab;
+      button.setAttribute("aria-selected", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-panel]"), function (panel) {
+      var selected = panel.getAttribute("data-panel") === name;
+      if (selected) panel.setAttribute("data-active", "true"); else panel.removeAttribute("data-active");
+    });
+    settingsContent.scrollTop = 0;
   }
   function openSettings() {
     syncSettingsControls();
+    setSettingsPanel(activePanel);
     settingsScrim.hidden = false;
     $("settingsClose").focus();
   }
@@ -1758,17 +2179,113 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
     settingsScrim.hidden = true;
     $("settingsOpen").focus();
   }
+  function exportSettings() {
+    var payload = { app: "quantum-launcher", version: 1, exportedAt: new Date().toISOString(), settings: settings };
+    try {
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "quantum-launcher-settings.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      $("settingsStatus").textContent = "Settings exported as JSON.";
+    } catch (e) {
+      $("settingsStatus").textContent = "This browser could not export the settings file.";
+    }
+  }
+  function importSettingsFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(String(reader.result || "{}"));
+        var incoming = parsed && parsed.settings && typeof parsed.settings === "object" ? parsed.settings : parsed;
+        if (!incoming || typeof incoming !== "object") throw new Error("not an object");
+        settings = normalizeSettings(incoming);
+        state.preset = null;
+        saveSettings(); applySettings(); syncSettingsControls();
+        if (byId(state.id)) setBuild(byId(state.id), state.wheel, false);
+        $("settingsStatus").textContent = "Settings imported and saved on this device.";
+      } catch (e) {
+        $("settingsStatus").textContent = "That file is not a valid Quantum Launcher settings export.";
+      }
+    };
+    reader.onerror = function () { $("settingsStatus").textContent = "The settings file could not be read."; };
+    reader.readAsText(file);
+  }
+  renderSettingsPanels();
+  renderPresetStrip();
   $("settingsOpen").addEventListener("click", openSettings);
   $("settingsClose").addEventListener("click", closeSettings);
   settingsScrim.addEventListener("click", function (event) { if (event.target === settingsScrim) closeSettings(); });
-  settingsScrim.addEventListener("input", readSettingsControls);
-  settingsScrim.addEventListener("change", readSettingsControls);
+  settingsContent.addEventListener("input", function (event) {
+    if (event.target && event.target.hasAttribute("data-setting") && event.target.type !== "number") readSettingControl(event.target);
+  });
+  settingsContent.addEventListener("change", function (event) {
+    if (event.target && event.target.hasAttribute("data-setting") && event.target.type === "number") readSettingControl(event.target);
+  });
+  document.querySelector(".settings-tabs").addEventListener("click", function (event) {
+    var tab = event.target.closest("[data-settings-tab]");
+    if (tab) setSettingsPanel(tab.getAttribute("data-settings-tab"));
+  });
+  document.querySelector(".settings-tabs").addEventListener("keydown", function (event) {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
+    var tabs = Array.prototype.slice.call(document.querySelectorAll("[data-settings-tab]"));
+    var index = tabs.indexOf(document.activeElement);
+    if (index < 0) return;
+    event.preventDefault();
+    if (event.key === "Home") index = 0;
+    else if (event.key === "End") index = tabs.length - 1;
+    else index = (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    tabs[index].focus();
+    setSettingsPanel(tabs[index].getAttribute("data-settings-tab"));
+  });
+  $("presetStrip").addEventListener("click", function (event) {
+    var chip = event.target.closest("[data-preset]");
+    if (chip) applyPreset(chip.getAttribute("data-preset"));
+  });
+  $("settingsExport").addEventListener("click", exportSettings);
+  $("settingsImport").addEventListener("click", function () { $("settingsImportFile").click(); });
+  $("settingsImportFile").addEventListener("change", function () {
+    importSettingsFile(this.files && this.files[0]);
+    this.value = "";
+  });
   $("settingsReset").addEventListener("click", function () {
-    settings = Object.assign({}, SETTINGS_DEFAULTS);
+    settings = normalizeSettings(null);
+    state.preset = null;
     syncSettingsControls(); saveSettings(); applySettings();
     if (byId(state.id)) setBuild(byId(state.id), state.wheel, false);
     $("settingsStatus").textContent = "Defaults restored and saved.";
   });
+  $("gameClose").addEventListener("click", closeEmbedded);
+  $("gameReload").addEventListener("click", function () {
+    var b = byId(state.playing);
+    if (b) $("gameFrame").src = b.url;
+  });
+  $("gameNewTab").addEventListener("click", function () {
+    var b = byId(state.playing);
+    if (b) window.open(b.url, "_blank", "noopener,noreferrer");
+  });
+  $("gameFullscreen").addEventListener("click", function () {
+    var dock = $("gameDock");
+    if (document.fullscreenElement) {
+      var exit = document.exitFullscreen ? document.exitFullscreen() : null;
+      if (exit && exit.catch) exit.catch(function () {});
+      return;
+    }
+    if (dock.requestFullscreen) {
+      var request = dock.requestFullscreen();
+      if (request && request.catch) request.catch(function () { showLaunchNote("Fullscreen is unavailable in this browser."); });
+    }
+  });
+  document.addEventListener("fullscreenchange", function () {
+    $("gameFullscreen").textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+  });
+  $("advancedStats").textContent = BUILDS.length + " builds · " + VAULT.totalSizeText + " archived · " + TIMELINE.length +
+    " timeline · " + CLIENTS.length + " clients · settings stored locally.";
   applySettings();
   syncSettingsControls();
   if (window.matchMedia) {
@@ -1826,6 +2343,11 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
       if (event.key === "Escape") { dlScrim.hidden = true; $("dlOpen").focus(); }
       return;
     }
+    if (!$("gameDock").hidden) {
+      if (event.key === "Escape") { event.preventDefault(); closeEmbedded(); }
+      return;
+    }
+    if (!settings.shortcuts) return;
     if (event.defaultPrevented) return;
     if (event.target && /^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(event.target.tagName)) return;
     if (event.key === ",") { event.preventDefault(); openSettings(); }
@@ -1842,14 +2364,28 @@ html[data-wheel="soft"] .wheel-item { transform: perspective(560px) rotateX(calc
   renderBonusButtons();
   renderWheels();
 
-  var hash = (location.hash || "").replace(/^#\/?/, "");
+  var hash = settings.hashLinks ? (location.hash || "").replace(/^#\/?/, "") : "";
   var initial = byId(hash);
   if (!initial && !settings.latest && settings.rememberSelection) {
     try { initial = byId(localStorage.getItem(LS + "-last-build")); } catch (e) {}
   }
+  if (!initial && settings.defaultWheel === "clients" && CLIENTS.length) initial = CLIENTS[CLIENTS.length - 1];
   if (!initial) initial = TIMELINE.filter(function (b) { return String(b.version || "") === "26.3"; })[0] || TIMELINE[TIMELINE.length - 1];
   var initialWheel = initial.category === "client" ? "clients" : (initial.category === "extras" ? "bonus" : "timeline");
   setBuild(initial, initialWheel, true, false);
+  if (settings.focusSearch && settings.showSearch) {
+    try { $("wheelSearch").focus({ preventScroll: true }); } catch (e) {}
+  }
+})();
+</script>
+</body>
+</html>
+version || "") === "26.3"; })[0] || TIMELINE[TIMELINE.length - 1];
+  var initialWheel = initial.category === "client" ? "clients" : (initial.category === "extras" ? "bonus" : "timeline");
+  setBuild(initial, initialWheel, true, false);
+  if (settings.focusSearch && settings.showSearch) {
+    try { $("wheelSearch").focus({ preventScroll: true }); } catch (e) {}
+  }
 })();
 </script>
 </body>
